@@ -100,7 +100,7 @@ function copyTree(src, dest) {
   }
 }
 if (bundlesDir) {
-  for (const required of ['bundles.json', 'RECEIPT-FILES.json', 'b']) {
+  for (const required of ['bundles.json', 'RECEIPT-FILES.json.gz', 'b']) {
     if (!fs.existsSync(path.join(bundlesDir, required))) {
       console.error(`--bundles ${bundlesDir} has no ${required}; run tools/build-bundles.mjs first`)
       process.exit(1)
@@ -109,7 +109,7 @@ if (bundlesDir) {
   const bundlesOut = path.join(outDir, 'bundles')
   fs.mkdirSync(bundlesOut, { recursive: true })
   fs.copyFileSync(path.join(bundlesDir, 'bundles.json'), path.join(bundlesOut, 'bundles.json'))
-  fs.copyFileSync(path.join(bundlesDir, 'RECEIPT-FILES.json'), path.join(bundlesOut, 'RECEIPT-FILES.json'))
+  fs.copyFileSync(path.join(bundlesDir, 'RECEIPT-FILES.json.gz'), path.join(bundlesOut, 'RECEIPT-FILES.json.gz'))
   copyTree(path.join(bundlesDir, 'b'), path.join(bundlesOut, 'b'))
 
   const bundlesIndexBytes = fs.readFileSync(path.join(bundlesOut, 'bundles.json'))
@@ -173,7 +173,7 @@ inputs and carry those inputs' terms. Every input is listed with its hash in the
 Bundles under \`bundles/\` (\`bundles.json\` and the tar files it indexes) are TeX
 Live package files, not engine code: macros, fonts, and metrics with their own
 terms, LPPL and others, as TeX Live records for each package. Every member of
-every bundle is listed with its hash in \`bundles/RECEIPT-FILES.json\`.
+every bundle is listed with its hash in \`bundles/RECEIPT-FILES.json.gz\`.
 `)
 
 // Hash the entire payload, including notices and receipts.

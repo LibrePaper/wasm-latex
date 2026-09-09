@@ -58,7 +58,7 @@ function writeBundleFixture(dir, { snapshot = 'texlive-test', phantom = false } 
   }
   const indexBytes = Buffer.from(JSON.stringify(index))
   write(`${dir}/bundles.json`, indexBytes)
-  write(`${dir}/RECEIPT-FILES.json`, { files: { 'tex/latex/base/latex.ltx': coreSha } })
+  write(`${dir}/RECEIPT-FILES.json.gz`, gzipSync(Buffer.from(JSON.stringify([{ path: 'tex/latex/base/latex.ltx', bundle: 'core', sha256: coreSha }]))))
   write(`receipts/BUNDLE-RECEIPT.${snapshot}.json`, {
     procedure: 'node tools/build-bundles.mjs',
     texmf: ['fixture-texmf'],

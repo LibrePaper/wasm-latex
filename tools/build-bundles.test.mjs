@@ -14,6 +14,7 @@ import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
+import { gunzipSync } from 'node:zlib'
 import os from 'node:os'
 import path from 'node:path'
 import test from 'node:test'
@@ -276,7 +277,7 @@ test('build-bundles: end-to-end determinism and grouping', async () => {
   )
 
   // RECEIPT-FILES.json sanity.
-  const receipt = JSON.parse(fs.readFileSync(path.join(out1, 'RECEIPT-FILES.json'), 'utf8'))
+  const receipt = JSON.parse(gunzipSync(fs.readFileSync(path.join(out1, 'RECEIPT-FILES.json.gz'))).toString('utf8'))
   assert.ok(Array.isArray(receipt))
   const receiptPaths = receipt.map((r) => r.path)
   assert.deepEqual(receiptPaths, [...receiptPaths].sort())

@@ -28,6 +28,7 @@
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+import { gzipSync } from 'node:zlib'
 import { bundleFor, slugFor, DEFAULT_CORE, EXCLUDED_BUNDLE_PREFIXES } from './bundle-rules.mjs'
 
 // 2026-03-01T00:00:00Z, same fixed epoch build-format.mjs uses.
@@ -373,7 +374,10 @@ const indexPath = path.join(outDir, 'bundles.json')
 fs.writeFileSync(indexPath, indexJson)
 const indexSha = createHash('sha256').update(indexJson).digest('hex')
 
-// --- RECEIPT-FILES.json ---------------------------------------------------------
+// --- RECEIPT-FILES.json.gz ------------------------------------------------------
+// Every member of every bundle with its hash: an audit record, read by nobody
+// at runtime, and over 25 MiB as plain JSON, which a static asset may not be.
+// Shipped gzipped; zlib writes no timestamp, so the bytes are reproducible.
 
 const fileRecords = []
 for (const rel of [...relToAbs.keys()].sort(byteOrder)) {
@@ -389,9 +393,10 @@ for (const rel of [...relToAbs.keys()].sort(byteOrder)) {
   })
 }
 fs.writeFileSync(
-  path.join(outDir, 'RECEIPT-FILES.json'),
-  `${JSON.stringify(fileRecords, null, 2)}\n`,
+  path.join(outDir, 'RECEIPT-FILES.json.gz'),
+  gzipSync(Buffer.from(`${JSON.stringify(fileRecords, null, 2)}\n`), { level: 9 }),
 )
+fs.rmSync(path.join(outDir, 'RECEIPT-FILES.json'), { force: true })
 
 // --- evidence -------------------------------------------------------------------
 

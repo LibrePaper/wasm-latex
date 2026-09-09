@@ -92,7 +92,7 @@ served with `Cache-Control: immutable` and the edge cache absorbs repeats. The
 index is the one file fetched by a name without a digest; its hash is in the
 release `MANIFEST.json`.
 
-`RECEIPT-FILES.json` beside the index lists every member of every bundle with
+`RECEIPT-FILES.json.gz` beside the index lists every member of every bundle with
 its size and sha256. It ships with the bundles. The committed
 `receipts/BUNDLE-RECEIPT.*.json` is the summary: inputs, epoch, exclusions,
 core list, the index hash, and one line per bundle.
