@@ -541,8 +541,7 @@ dist:
 		echo ""; \
 		echo "SUCCESS: pdfTeX WASM with SyncTeX built successfully."; \
 		echo ""; \
-		echo "To use in the editor, copy these files to public/wasmtex/:"; \
-		echo "  cp dist/wasmtex-pdftex.* ../public/wasmtex/"; \
+		echo "Next: node tools/stage-release.mjs --dist wasm-build/dist --out staged/ (see README)"; \
 	else \
 		echo "ERROR: Build artifacts not found in $(DIST)/"; \
 		echo "Check the build log above for errors."; \
