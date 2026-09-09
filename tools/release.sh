@@ -3,6 +3,7 @@
 # archive on a GitHub Release so the shipped SOURCE.md can point at it.
 #
 #   tools/release.sh preflight       <tag>                 clean tree, tag unused, gh signed in
+#   tools/release.sh commit-receipt                        commit receipts/SOURCE-RECEIPT.json after make source
 #   tools/release.sh publish-source  <tag> [dist-source]   tag HEAD, create the release, upload
 #   tools/release.sh source-url      <tag> [dist-source]   print the download URL for the archive
 #   tools/release.sh annotate        <tag> [staged]        add the manifest hash to the release notes
@@ -22,10 +23,26 @@ short=${head:0:12}
 die() { echo "release: $*" >&2; exit 1; }
 need_tag() { [ -n "$tag" ] || die "a tag is required, e.g. engines-2026.1"; }
 
-archive_for() {  # <dist-source dir> -> path of the archive matching HEAD
+# The archive is built from the commit the receipt names, and the receipt is
+# then committed on top, so HEAD is normally one commit past the archive. That
+# is fine as long as the difference is confined to receipts/: the source the
+# binaries came from is identical. Anything else and the archive is stale.
+built_from() {
+  node -e 'process.stdout.write(require("./receipts/SOURCE-RECEIPT.json").repositoryCommit || "")'
+}
+check_receipt_matches_head() {
+  local from; from=$(built_from)
+  [ -n "$from" ] || die "receipts/SOURCE-RECEIPT.json names no commit; run: make source"
+  if [ "$from" != "$head" ]; then
+    local changed; changed=$(git diff --name-only "$from" "$head" | grep -v '^receipts/' || true)
+    [ -z "$changed" ] || die "HEAD differs from the archive's commit ${from:0:12} outside receipts/ ($changed); run: make source"
+  fi
+}
+archive_for() {  # <dist-source dir> -> path of the archive the receipt names
   local dir=${1:-dist-source}
-  local f="$dir/librepaper-wasm-latex-$short-source.tar.xz"
-  [ -f "$f" ] || die "no archive for HEAD ($short) in $dir; run: make source"
+  local from; from=$(built_from)
+  local f="$dir/librepaper-wasm-latex-${from:0:12}-source.tar.xz"
+  [ -f "$f" ] || die "no archive for ${from:0:12} in $dir; run: make source"
   [ -f "$f.sha256" ] || die "missing $f.sha256"
   echo "$f"
 }
@@ -40,14 +57,26 @@ case "$cmd" in
     echo "preflight ok: HEAD $short, tag $tag unused, gh signed in, repo $repo"
     ;;
 
+  commit-receipt)
+    # After make source: commit the receipt so the tag names it. Nothing to do
+    # when the receipt is unchanged.
+    git diff --quiet -- receipts/SOURCE-RECEIPT.json && { echo "receipt unchanged"; exit 0; }
+    from=$(built_from)
+    git add receipts/SOURCE-RECEIPT.json
+    git commit -q -m "Record the corresponding source for ${from:0:12}" -m "Claude-Session: https://claude.ai/code/session_01JACqCUhphavt1ZsKdgH9UG"
+    echo "committed the receipt for ${from:0:12}"
+    ;;
+
   publish-source)
     need_tag
     "$0" preflight "$tag" >/dev/null
+    check_receipt_matches_head
     archive=$(archive_for "${3:-dist-source}")
     sha=$(cut -d' ' -f1 < "$archive.sha256")
     receipt=$(node -e 'console.log(require("./receipts/SOURCE-RECEIPT.json").sha256)')
     [ "$sha" = "$receipt" ] || die "archive hash $sha does not match receipts/SOURCE-RECEIPT.json ($receipt)"
     git tag -a "$tag" -m "Engine release $tag, corresponding source sha256 $sha"
+    git push -q origin main
     git push -q origin "refs/tags/$tag"
     gh release create "$tag" "$archive" "$archive.sha256" \
       --repo "$repo" --title "$tag" --notes "$(cat <<NOTES

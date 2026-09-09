@@ -125,6 +125,7 @@ release:  ## The whole chain: test, source, publish, stage, annotate (needs TAG=
 	$(MAKE) test
 	$(MAKE) inventory
 	$(MAKE) source
+	tools/release.sh commit-receipt
 	$(MAKE) publish-source TAG=$(TAG)
 	$(MAKE) stage SOURCE_URL="$$(tools/release.sh source-url "$(TAG)" "$(SOURCE_OUT)")"
 	tools/release.sh annotate "$(TAG)" "$(STAGED)"
