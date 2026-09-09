@@ -37,7 +37,11 @@ try {
  const run=async input=>{
   const latex=await import('/app/src/lib/latex.js');
   const status=await import('/app/src/lib/latex/status.js');
-  const compile = tree => Promise.race([latex.compile(tree), new Promise((_,reject)=>setTimeout(()=>reject(Error('Compile timeout: '+JSON.stringify(status.get()))),45000))]);
+  const compile = async tree => {
+   let timer;
+   try { return await Promise.race([latex.compile(tree), new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Compile timeout: '+JSON.stringify(status.get()))),45000)})]); }
+   finally { clearTimeout(timer); }
+  };
   latex.at(location.origin+'/mirror/');
   latex.configure({project:'biber-browser-integration',settings:{engine:'pdflatex'}});
   const tree={main:'main.tex',texts:{'main.tex':input.tex,'refs.bib':input.bib},assets:{}};
@@ -52,7 +56,6 @@ try {
   return {first:{...first,pdf:Array.from(first.pdf||[])},second:{...second,pdf:null},nested:{...nested,pdf:Array.from(nested.pdf||[])},changed:{...changed,pdf:Array.from(changed.pdf||[])}};
  };
  const result=await driver.evaluate(`(${run.toString()})(${JSON.stringify(input)})`);
- fs.writeFileSync(path.join(out,'debug.json'),JSON.stringify(result,null,2));
  for(const name of ['first','second','nested','changed']){
   const r=result[name];
   assert.equal(r.ok,true,`${name}: ${JSON.stringify(r.failure)} ${r.log}`);

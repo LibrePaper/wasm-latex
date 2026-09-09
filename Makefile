@@ -57,12 +57,12 @@ BIBER_OUT ?= $(DIST)
 biber-vendor-check:  ## Verify the pinned TeXlyre Biber source snapshot
 	node tools/check-biber-vendor.mjs
 
-biber-build: biber-vendor-check  ## Build and smoke experimental Biber WASM with Docker (network required)
+biber-build: biber-vendor-check  ## Build and smoke Biber WASM with Docker (network required)
 	docker build -f wasm-build/Dockerfile.biber -t $(BIBER_IMAGE) .
 	mkdir -p "$(BIBER_OUT)"
 	docker run --rm -v "$(abspath $(BIBER_OUT)):/out" $(BIBER_IMAGE)
 
-biber-smoke:  ## Run the Node smoke check on existing experimental Biber artifacts
+biber-smoke:  ## Run the Node smoke check on existing Biber artifacts
 	node wasm-build/biber-smoke.cjs "$(BIBER_OUT)"
 
 biber-browser-check:  ## Exercise pdfTeX and Biber in Chromium (needs built engines, bundles, pdftotext)

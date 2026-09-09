@@ -166,6 +166,8 @@ ${sourceUrl
 It contains this repository's build layer and the exact TeX Live source tree the
 binaries were compiled from, with instructions to rebuild (\`REBUILD.md\`) and to
 substitute a modified LGPL library and relink (\`RELINK.md\`, also beside this file).
+When Biber is present, it also embeds BIBER-SOURCE.tar.gz with the actual patched
+Perl/XS sources, packaged Perl modules, compiler sources and rebuild instructions.
 
 ## Terms
 
@@ -173,7 +175,7 @@ ${families.map((f) => `- **${f.family}** — \`${f.combinedTerms}\`, per \`${f.i
 
 Every statically linked component, its license and its source location are listed
 in \`linked-components.json\` and the link inventories. Retained notices for all of
-them are in \`LICENSES/\`, and \`THIRD_PARTY_NOTICES.md\` explains what applies where.
+them are in \`LICENSES/\` and (for Biber) \`biber-notices/\`, and \`THIRD_PARTY_NOTICES.md\` explains what applies where.
 
 Format files (\`.fmt\`) are not engine code: they are compiled dumps of TeX Live
 inputs and carry those inputs' terms. Every input is listed with its hash in the
