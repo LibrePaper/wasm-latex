@@ -261,8 +261,14 @@ const texlive200 = {}
 const texlive404Source = {}
 const texlive200Source = {}
 
-/** Canonical extension for a kpse format (for extension-less requests). */
-const FORMAT_EXT = { 4: '.afm', 26: '.tex', 32: '.pfb', 36: '.ttf', 47: '.otf' }
+/** Canonical extension for a kpse format (for extension-less requests). Mirrors
+ *  the same fix in xetex-worker.js: 3 (TFM), 33 (VF), 11 (map) and 44 (enc) were
+ *  missing, so a non-font extension-less lookup (e.g. a TFM sidecar) resolved to
+ *  the bare CDN name instead of "<name>.tfm" and 404'd. */
+const FORMAT_EXT = {
+  3: '.tfm', 4: '.afm', 6: '.bib', 7: '.bst', 11: '.map',
+  26: '.tex', 32: '.pfb', 33: '.vf', 36: '.ttf', 44: '.enc', 47: '.otf',
+}
 
 /** Ordered [dir, filename] candidates for the CDN request. Files WITH a known
  *  extension map to their canonical dir. Extension-LESS names are native-font
