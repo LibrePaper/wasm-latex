@@ -156,9 +156,10 @@ network policy too: [`docs/audit-worker-js.md`](docs/audit-worker-js.md).
 - LibrePaper's shipped mirror still points at the pinned WasmTex package
   snapshot until a release built here, with bundles, is imported. The
   importer, the controller's bundle mode, and the failure message that names
-  a missing package are in LibrePaper; the release is not published. LibrePaper
-  also still sends the bundle index to pdfTeX only and does not hand XeTeX its
-  ICU data through `loadicudata`.
+  a missing package are in LibrePaper, and its controller now sends the
+  bundle index to every engine and hands XeTeX its inflated ICU data; the
+  release is not published, and no XeLaTeX document has been compiled in a
+  browser against a bundled release.
 
 The product plan these serve, and where the browser stops and the paired local
 app begins, is [`SPEC-latex.md`](SPEC-latex.md); the user-facing version is

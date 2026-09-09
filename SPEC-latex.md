@@ -398,10 +398,11 @@ Done in LibrePaper:
 
 Not done:
 
-- OpenType font lookup by name in the browser: `xetexfontlist.txt` ships in a
-  bundle now (`tex/xetex/fontlist`, see above), but the XeTeX worker does not
-  yet read it, LibrePaper still sends the bundle index to pdfTeX only, and it
-  does not hand XeTeX its ICU data through `loadicudata`.
+- XeLaTeX in a browser against a bundled release. Everything it needs is in
+  place: the font list ships in `tex/xetex/fontlist` and the worker asks for
+  it by name through the index, and LibrePaper sends every engine the bundle
+  index and hands XeTeX its inflated ICU data. What has not happened is a
+  real browser run; the harness has only exercised XeTeX per file.
 - LuaTeX's timeout; its engine is still unbuilt.
 - The local tier: platform confinement, the shell-escape policy, stored
   renderings, and doctor output for agents. All of it is Rust in LibrePaper
