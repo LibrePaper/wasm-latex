@@ -1,10 +1,10 @@
 # Licensing and release compliance
 
 What this repository may distribute, on what terms, and what has to be true
-before it does. Scoped to what it actually builds: **pdfTeX and BibTeX**. The
-policy for engines not built here is in git history (WasmTex's version of this
-document) and should be reinstated per engine, from its own link inventory, when
-that engine is first built.
+before it does. Scoped to what it actually builds: pdfTeX, BibTeX, BibTeX8,
+makeindex, XeTeX and dvipdfm, each with its own link inventory under
+`receipts/`. LuaHBTeX is not built and has no terms established; WasmTex's
+version of this document, in git history, is where its policy would start.
 
 Nothing here is legal advice. It is a record of the obligations we identified,
 the reasoning, and where the evidence lives.
@@ -119,11 +119,11 @@ with no notice retained at all.
 README's "What is not done yet" lists the gaps in the work generally. These are
 the ones specific to the obligations:
 
-- **Terms for the other engines.** XeTeX, LuaHBTeX, dvipdfmx, BibTeX8 and
-  makeindex have no link inventory, so no terms are established for them.
-  makeindex additionally needs its conspicuous modified-source statement, and
-  XeTeX and LuaHBTeX need the `pplib` question settled against artifacts we
-  built — WasmTex's evidence for that was never seeded here (see
-  `THIRD_PARTY_NOTICES.md`).
+- **Terms for LuaHBTeX.** It has no link inventory, and its `pplib` question
+  has to be settled against artifacts we built; WasmTex's evidence for that
+  was never seeded here (see `THIRD_PARTY_NOTICES.md`).
+- **BibTeX8's notice text.** Its sources are GPL-1.0-or-later and the shipped
+  notice is the GPL-2.0 text, which the "or later" permits; a GPL-1.0 text is
+  not in `LICENSES/`.
 - **An SBOM**, if downstream consumers want one. The link inventory has the
   information; nothing emits SPDX.

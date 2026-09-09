@@ -86,51 +86,17 @@ document both by family name and by file name and feeds the result through
 **Prepare a distributable release.** The engines are GPL, so publishing them
 carries obligations: notices, complete corresponding source, and a working
 relink path for the LGPL library inside them. The root `Makefile` names every
-step and chains them; `tools/release.sh` does the one step that publishes.
-The end-to-end runbook, from Docker builds to the Cloudflare push, is
-[`docs/release.md`](docs/release.md). Run the pipeline up through the
-artifacts:
-
-    make test        # every check that runs without Docker or network
-    make bundles      # pack the vendored texmf tree            -> wasm-build/dist/bundles
-    make format       # dump the pdfTeX and XeTeX formats       -> wasm-build/dist/wasmtex-*.fmt
-    make inventory    # what the linker put in every engine     -> receipts/LINK-INVENTORY.*.json
-    make source       # the corresponding-source archive        -> dist-source/
-
-then either run the whole publish-and-stage chain in one shot:
+step; `make release TAG=<tag>` chains them, publishes the source archive to a
+GitHub Release, stages the payload, runs the gate, and prints the manifest's
+SHA-256, which is what LibrePaper imports against:
 
     make release TAG=engines-2026.1
 
-or drive its individual steps yourself:
-
-    make publish-source TAG=engines-2026.1
-    make stage SOURCE_URL=https://github.com/.../releases/download/<tag>/<archive>
-    make check
-
-`make release` refuses early rather than doing anything partial: a dirty
-working tree, a tag that already exists (locally or on the remote), or `gh`
-not signed in all stop it before it tags HEAD or touches GitHub —
-`tools/release.sh preflight` is what checks. `make publish-source` tags HEAD,
-creates a GitHub Release, and uploads the corresponding-source archive; `make
-stage` assembles `staged/` and runs the release gate; `make release` also
-annotates the finished GitHub Release with the staged manifest's SHA-256, via
-`tools/release.sh annotate`.
-
-Staging runs the release gate. When it passes, `MANIFEST.json` records
-`releaseGate: "passed"`, lists hashes and sizes for the entire payload (including
-notices and receipts), and the command prints the manifest's SHA-256. LibrePaper
-imports that directory with `make latex-mirror LATEX_RELEASE=<staged directory>
-LATEX_RELEASE_SHA256=<reviewed manifest hash>` — the hash `make release` printed
-and annotated onto the GitHub Release is what a reviewer checks before pasting
-it into that command. No build or source checkout is needed by the importer.
-An incomplete stage has no passing marker and cannot be imported. `node
-tools/stage-release.test.mjs` tests this contract without building engines or
-accessing the network.
-
-`check-release.mjs` (`make check`) fails closed. Until the source archive is
-published somewhere and named with `--source-url`, it refuses the release,
-which is the correct answer: a GPL binary without its source is not
-distributable.
+The runbook from Docker builds to the Cloudflare push is
+[`docs/release.md`](docs/release.md); the obligations behind each check are in
+[`docs/licensing.md`](docs/licensing.md). The gate fails closed: until the
+source archive is published and named, it refuses the release, which is the
+correct answer for a GPL binary.
 
 **Know what the workers can reach.** The JavaScript we ship alongside the wasm
 contains no dynamic code and no embedded endpoint — every URL it builds comes
