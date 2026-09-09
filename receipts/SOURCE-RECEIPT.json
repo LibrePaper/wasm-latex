@@ -1,17 +1,47 @@
 {
+  "biberSource": {
+    "name": "BIBER-SOURCE.tar.gz",
+    "sha256": "fffec25a5c4b41f09efaec88162b8a9293c1a1829a71a0f28d48fac75d19a656",
+    "bytes": 96065551
+  },
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-92aeb5f781dc-source.tar.xz",
-  "bytes": 101979760,
-  "sha256": "1e7871662f4f3c1074424b2629df72e4d6785830065d267a503169b7fecdb76d",
-  "repositoryCommit": "92aeb5f781dc3fa246957ad144f151ac4b2ec89f",
+  "archive": "librepaper-wasm-latex-8454ff681417-source.tar.xz",
+  "bytes": 196500396,
+  "sha256": "bd76a38e80ece3f7b328e4966b3cb976c0c1ee971e2b78822b825083279bed09",
+  "repositoryCommit": "8454ff681417fcb94be4deb50d71434ae3a709d5",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
   "correspondsTo": [
     {
+      "name": "biber.build.json",
+      "bytes": 14675,
+      "sha256": "bbc47653fadc8980cfb8ee8d2646924c6291de96b5da6b9fb9aba5fef0281501"
+    },
+    {
+      "name": "biber.data",
+      "bytes": 18261749,
+      "sha256": "260d8c9b5a7cfef62bb5437f97582d22b40f15233e49d707509afeb69993f412"
+    },
+    {
+      "name": "biber.js",
+      "bytes": 959313,
+      "sha256": "6df05fada9d90a19d7f0b20d7fb79ca1658424101276b361e662416eac343728"
+    },
+    {
+      "name": "biber.wasm",
+      "bytes": 9644474,
+      "sha256": "106bf9221aa6f6337407711943bc5718bb138a20d0e22b17e9b54c13f37648b5"
+    },
+    {
+      "name": "biber.worker.js",
+      "bytes": 2805,
+      "sha256": "01b1d8d7acaff59787161208844f5cb4e8b68941ffbf9d838e956de2574bf70f"
+    },
+    {
       "name": "bibtex.js",
-      "bytes": 77802,
-      "sha256": "1355f9aa7a7fa27a514876a448bbe7b17ba07cfb1ec2c1a251a2d4f0ebc9d9b4"
+      "bytes": 77794,
+      "sha256": "c38e9b4870ef09d7c9275d449f911d2341ad3abbe06ed40db430bc2d7be3087d"
     },
     {
       "name": "bibtex.wasm",
@@ -20,13 +50,13 @@
     },
     {
       "name": "bibtex.worker.js",
-      "bytes": 9937,
-      "sha256": "dac754fb129a0b2a7ab8ac9ef4fd307982db40db1e68b79e1cd4fd179e466d7d"
+      "bytes": 9544,
+      "sha256": "6329e78bbe7d4fa51324271e08b884fb2dfc59c9fc11451cd16f736b709fe668"
     },
     {
       "name": "bibtex8.js",
-      "bytes": 79476,
-      "sha256": "ffd5029614868f153877117ed3a82d9189844137f06b0180b0135735b3d6edc9"
+      "bytes": 79468,
+      "sha256": "fa59f3d7102713c8406a17ea83b9e2bfb48bb66860e6f8370b02469b4d4c26f9"
     },
     {
       "name": "bibtex8.wasm",
@@ -35,8 +65,8 @@
     },
     {
       "name": "bibtex8.worker.js",
-      "bytes": 9154,
-      "sha256": "ed41386d57d805b9beb92987f60683d6d086c35520d0693cc03ac22d721bd92d"
+      "bytes": 8761,
+      "sha256": "17ec60270fbf661717597bbbcfca2da31cf00dad9fd2933272523920c61ca02a"
     },
     {
       "name": "bundle-mode.js",
@@ -45,8 +75,8 @@
     },
     {
       "name": "dvipdfm.js",
-      "bytes": 86724,
-      "sha256": "d781e79dfc02d40b9a2ce11cfa8178a1376623cafe74c48751f1ab331ced1d65"
+      "bytes": 86716,
+      "sha256": "c8e3c6ba66ad1b41bd99a7a52f7dbce7f4893f348907bf4366924b178e916fad"
     },
     {
       "name": "dvipdfm.wasm",
@@ -55,8 +85,8 @@
     },
     {
       "name": "dvipdfm.worker.js",
-      "bytes": 18323,
-      "sha256": "b2b1589446af1a64d45f212a2c206bd3de64f7611a8c6d64714ee96cebaeef4b"
+      "bytes": 17932,
+      "sha256": "92329effb1de1b0c0692dba09193807ac15c7a06fcb23f2de85247d0cb9ffc45"
     },
     {
       "name": "icudt68l.dat.gz",
@@ -69,9 +99,29 @@
       "sha256": "f8b93168aa57c42af958a887fc8a8346abe8237c2b1c9a2022b58c99d1912666"
     },
     {
+      "name": "luatex-resolver-evidence.js",
+      "bytes": 582,
+      "sha256": "0e513d7f391df62baf0c655c6bf9952bafebb056e492bd30726d04b64d4d6a8a"
+    },
+    {
+      "name": "luatex.js",
+      "bytes": 119541,
+      "sha256": "82deadb961629cf2dd6d20915e2fb867fc0e58ea5979bc971c3855e325737ead"
+    },
+    {
+      "name": "luatex.wasm",
+      "bytes": 6605235,
+      "sha256": "05b387ff2c91a82e9f7e20295db8d9b3a512f206d01761f46365221409cfe827"
+    },
+    {
+      "name": "luatex.worker.js",
+      "bytes": 24740,
+      "sha256": "12d6d976a7bb7ceea7ba52a732dc4f1db60dc56d9df1d59576c2e0f9dc998e5c"
+    },
+    {
       "name": "makeindex.js",
-      "bytes": 77461,
-      "sha256": "58b2731abcb1419017455ad5b873c61570fe0e139668773aa1cac39d4a304029"
+      "bytes": 77453,
+      "sha256": "0b2ac6e418877b152f34d4d2f67e1c7df1774234c1c3690c15e4eb77dc3dad9a"
     },
     {
       "name": "makeindex.wasm",
@@ -80,13 +130,13 @@
     },
     {
       "name": "makeindex.worker.js",
-      "bytes": 9321,
-      "sha256": "b7f55e9236da678f671ff8e0e01760927cd3b1a621af7a62aa1deb6ba387255f"
+      "bytes": 8928,
+      "sha256": "41e2a896948063e81bcf4eaa21c4a2c590ef5288f45294c06514b970f1fabb28"
     },
     {
       "name": "pdftex-checkpoint.js",
-      "bytes": 111651,
-      "sha256": "7b234c8ef04fb59716487ef7f1fd56f0155488aff4d328a3b26e5f8de9decdef"
+      "bytes": 111643,
+      "sha256": "ba572c503eae34fcf96e1ce8201e176d3a973d692a3784fdd9abcfc0b75f5fbf"
     },
     {
       "name": "pdftex-checkpoint.wasm",
@@ -105,8 +155,8 @@
     },
     {
       "name": "pdftex.js",
-      "bytes": 105102,
-      "sha256": "80da7fce4ad7238271bd5b5c6a7a790fb4f6a527ea84e8193be2721e6646b3c1"
+      "bytes": 105094,
+      "sha256": "3f92a1107f688957b576a102d6ed8250d6aa80cf618c42cb553ea7320f235a6e"
     },
     {
       "name": "pdftex.wasm",
@@ -115,8 +165,8 @@
     },
     {
       "name": "pdftex.worker.js",
-      "bytes": 85385,
-      "sha256": "e7c083ad3a0ba701e2abea597ace58f091cdbf0dd43a00740803d39295e8c2ba"
+      "bytes": 84992,
+      "sha256": "c015db8fd8d7b5d01aa6a9a17460fbde792a723868422163149916231c43aae6"
     },
     {
       "name": "xetex-resolver-evidence.js",
@@ -130,18 +180,18 @@
     },
     {
       "name": "xetex.js",
-      "bytes": 106975,
-      "sha256": "08abd09c617762cb4eb37922899cda818cf7a93d53801e53d28782070125a913"
+      "bytes": 106967,
+      "sha256": "35d862da8485870b38da9e8a08b85dc1ce2a406a9a1cba89c0655d3e8d14fbf4"
     },
     {
       "name": "xetex.wasm",
-      "bytes": 3494352,
-      "sha256": "7f2a1efa54cdc67f570c4547ee372ee9b56f40a0eceaee57647ee9057cc84963"
+      "bytes": 3494333,
+      "sha256": "e1b80dd5cb8d53f155ca09075f8a3fe81cff85b772774919956485f51ba0d4d3"
     },
     {
       "name": "xetex.worker.js",
-      "bytes": 19740,
-      "sha256": "b8a9de292c28ed4e8f1faf181a91d41bd21107cb1f075164747f2a8cc44e66f4"
+      "bytes": 19349,
+      "sha256": "442d521815a38909510fc1250262597ba91a15ef7a781d7b24e63cad2ce75f1a"
     }
   ]
 }
