@@ -157,7 +157,10 @@ push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUD
 	@# name and must never be stale; bundles.json is the one bundling file
 	@# fetched by a bare name too, and gets a short no-cache instead of
 	@# no-store since it changes far less often than the manifest.
-	@printf '/*\n  Cache-Control: public, max-age=31536000, immutable\n/manifest.json\n  Cache-Control: no-store\n/engines/*/bundles/bundles.json\n  Cache-Control: no-cache\n' > $(MIRROR)/_headers
+	@# Cloudflare merges every matching rule, so the two exceptions detach the
+	@# header the /* rule set before setting their own. The files are public
+	@# and digest-named; a browser on any origin may fetch them.
+	@printf '/*\n  Cache-Control: public, max-age=31536000, immutable\n  Access-Control-Allow-Origin: *\n/manifest.json\n  ! Cache-Control\n  Cache-Control: no-store\n/engines/*/bundles/bundles.json\n  ! Cache-Control\n  Cache-Control: no-cache\n' > $(MIRROR)/_headers
 	@if command -v bunx >/dev/null 2>&1; then \
 	  RUNNER="bunx wrangler"; \
 	elif command -v npx >/dev/null 2>&1; then \
