@@ -17,6 +17,7 @@
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+import { gunzipSync } from 'node:zlib'
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(`--${name}`)
@@ -103,7 +104,12 @@ if (!/^https:\/\//.test(manifest.correspondingSource?.url || '') ||
 // 5. Formats declare their inputs.
 for (const a of manifest.artifacts.filter((a) => /\.fmt(?:\.gz)?$/.test(a.name))) {
   const receipts = fs.readdirSync(dir).filter((f) => f.startsWith('FORMAT-RECEIPT.'))
-  const match = receipts.map((f) => read(f)).find((r) => r.format?.sha256 === a.sha256)
+  // A receipt names the dump the engine wrote. A .fmt.gz is that dump
+  // compressed for transport, so it is matched by what it unpacks to.
+  const inner = a.name.endsWith('.gz')
+    ? createHash('sha256').update(gunzipSync(fs.readFileSync(path.join(dir, a.name)))).digest('hex')
+    : a.sha256
+  const match = receipts.map((f) => read(f)).find((r) => r.format?.sha256 === a.sha256 || r.format?.sha256 === inner)
   if (!match) fail(`${a.name}: no FORMAT-RECEIPT names this file; its inputs' licenses are undocumented`)
   else if (!match.inputs?.length) fail(`${a.name}: its receipt records no inputs`)
   else notes.push(`${a.name} declares ${match.inputs.length} inputs`)

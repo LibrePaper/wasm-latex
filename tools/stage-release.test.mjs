@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
+import { gzipSync } from 'node:zlib'
 import fs from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
@@ -77,6 +78,8 @@ try {
   const binary = { name: 'wasmtex-pdftex.wasm', bytes: 6, sha256: hash('binary') }
   write('engines/' + binary.name, 'binary')
   write('engines/wasmtex-pdftex.fmt', 'format')
+  // A gzipped format is matched to its receipt by what it unpacks to.
+  write('engines/wasmtex-xetex.fmt.gz', gzipSync(Buffer.from('xetex-format')))
   for (const name of ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'LICENSES/GPL.txt', 'RELINK.md']) write(name, 'fixture')
   write('linked-components.json', {})
   write('LICENSES/README.md', 'fixture')
@@ -86,6 +89,7 @@ try {
     requiredNotices: ['LICENSES/GPL.txt'],
   })
   write('receipts/FORMAT-RECEIPT.pdftex.json', { format: { sha256: hash('format') }, inputs: [{ name: 'latex.ltx' }] })
+  write('receipts/FORMAT-RECEIPT.xetex.json', { format: { sha256: hash('xetex-format') }, inputs: [{ name: 'xelatex.ini' }] })
   write('receipts/SOURCE-RECEIPT.json', { sha256: 'a'.repeat(64), dirty: false, correspondsTo: [binary] })
   let manifest = runOk()
   assert.equal(manifest.releaseGate, 'passed')

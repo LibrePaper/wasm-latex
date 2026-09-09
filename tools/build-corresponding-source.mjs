@@ -99,7 +99,9 @@ if (!fs.existsSync(configure)) {
 // --- What this source corresponds to ------------------------------------------
 const artifacts = fs.existsSync(distDir)
   ? fs.readdirSync(distDir)
-      .filter((f) => /\.(wasm|js|fmt)$/.test(f))
+      // ICU data is compiled from libs/icu in the same tree, so it corresponds
+      // to this source as much as a .wasm does.
+      .filter((f) => /\.(wasm|js|fmt)$/.test(f) || /^icudt[0-9]+[lb]\.dat$/.test(f))
       .sort()
       .map((f) => {
         const data = fs.readFileSync(path.join(distDir, f))
