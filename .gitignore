@@ -17,3 +17,6 @@ mirror/
 
 # Agent worktrees created by the Claude Code harness
 .claude/worktrees/
+
+# Engines built but not shipped: no link inventory yet
+wasm-build/dist-unshipped/
