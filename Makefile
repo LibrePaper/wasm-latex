@@ -33,7 +33,7 @@ BUNDLES     ?= $(DIST)/bundles
 STAGED      ?= staged
 SOURCE_OUT  ?= dist-source
 IMAGE       ?= librepaper-pdftex-wasm
-FAMILIES    ?= pdftex bibtex bibtex8 makeindex xetex dvipdfm
+FAMILIES    ?= pdftex bibtex bibtex8 biber makeindex xetex dvipdfm
 MIRROR      ?= mirror
 # The Cloudflare Worker that is nothing but these files. Two settings, so they
 # live here as flags rather than in a wrangler.toml of their own. Deployed
@@ -49,6 +49,25 @@ KEYS        ?= ../librepaper/deploy/keys.yaml
 
 .PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push secrets
 
+BIBER_IMAGE ?= librepaper-biber-wasm-experimental
+BIBER_OUT ?= $(DIST)
+.DEFAULT_GOAL := help
+.PHONY: biber-vendor-check biber-build biber-smoke biber-browser-check
+
+biber-vendor-check:  ## Verify the pinned TeXlyre Biber source snapshot
+	node tools/check-biber-vendor.mjs
+
+biber-build: biber-vendor-check  ## Build and smoke experimental Biber WASM with Docker (network required)
+	docker build -f wasm-build/Dockerfile.biber -t $(BIBER_IMAGE) .
+	mkdir -p "$(BIBER_OUT)"
+	docker run --rm -v "$(abspath $(BIBER_OUT)):/out" $(BIBER_IMAGE)
+
+biber-smoke:  ## Run the Node smoke check on existing experimental Biber artifacts
+	node wasm-build/biber-smoke.cjs "$(BIBER_OUT)"
+
+biber-browser-check:  ## Exercise pdfTeX and Biber in Chromium (needs built engines, bundles, pdftotext)
+	node wasm-build/biber-browser-check.mjs $(BIBER_CHECK_ARGS)
+
 help:  ## List targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*## /  /'
 
@@ -56,6 +75,7 @@ vendor:  ## Fetch, verify (signature and hash) and unpack the TeX Live tree, the
 	tools/vendor-texlive.sh
 
 test:  ## Unit tests, pin check, and the resolver test
+	node tools/check-biber-vendor.mjs
 	node tools/check-pins.mjs
 	node tools/stage-release.test.mjs
 	node tools/build-bundles.test.mjs

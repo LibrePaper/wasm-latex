@@ -42,6 +42,22 @@ for (const a of manifest.artifacts) {
 }
 // ...and nothing shipped that the manifest does not name.
 const named = new Set(manifest.artifacts.map((a) => a.name))
+if ([...named].some(name => name.startsWith('biber.'))) {
+  for (const name of ['biber.worker.js', 'biber.js', 'biber.wasm', 'biber.data', 'biber.build.json']) {
+    if (!named.has(name)) fail(`incomplete Biber family: missing ${name}`)
+  }
+  if (has('biber.build.json')) {
+    const build = read('biber.build.json')
+    if (!build.version || !build.controlFile) fail('Biber build has no version/control-file identity')
+    for (const name of ['biber.js', 'biber.wasm', 'biber.data']) {
+      if (!has(name) || build.artifacts?.[name]?.sha256 !== sha(name)) fail(`Biber build receipt does not match ${name}`)
+    }
+    if (!build.sourceArchive?.sha256 || !has('SOURCE-RECEIPT.json') ||
+        read('SOURCE-RECEIPT.json').biberSource?.sha256 !== build.sourceArchive.sha256) {
+      fail('Biber corresponding source is not included in this release source receipt')
+    }
+  }
+}
 for (const f of fs.readdirSync(dir)) {
   if (/\.(wasm|fmt|fmt\.gz)$/.test(f) && !named.has(f)) fail(`unnamed artifact in the directory: ${f}`)
 }

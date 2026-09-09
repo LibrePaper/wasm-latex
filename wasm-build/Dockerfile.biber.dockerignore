@@ -1,0 +1,13 @@
+**
+!third-party/
+!third-party/texlyre-biber/
+!third-party/texlyre-biber/**
+!wasm-build/
+!wasm-build/Dockerfile.biber
+!wasm-build/build-biber.sh
+!wasm-build/biber-smoke.cjs
+!wasm-build/export-biber.sh
+!wasm-build/biber-worker.js
+!wasm-build/BIBER-REBUILD.md
+!tools/
+!tools/biber-build-receipt.mjs

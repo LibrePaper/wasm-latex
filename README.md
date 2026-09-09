@@ -30,6 +30,7 @@ lists every target.
 - [`docs/what-works-in-the-browser.md`](docs/what-works-in-the-browser.md):
   the same seam for authors and agents deciding whether to pair.
 - [`docs/release.md`](docs/release.md): the release runbook.
+- [`docs/biber.md`](docs/biber.md): the pinned TeXlyre Biber build and experimental Docker target.
 - [`docs/mirror.md`](docs/mirror.md): the mirror LibrePaper serves -- layout,
   manifest format 1, and the contract `tools/build-mirror.mjs` and
   `tools/check-mirror.mjs` implement.
@@ -56,5 +57,7 @@ lists every target.
 | `vendor/` | The verified TeX Live tree, ignored, 14 GB. |
 | `LICENSES/`, `THIRD_PARTY_NOTICES.md`, `linked-components.json`, `RELINK.md` | What is linked, on what terms, the notice texts, and the LGPL relink recipe, at the root because that is where they land in a release. |
 
-This repository's own code is MIT ([`LICENSE`](LICENSE)). It tracks source only:
+This repository's own code is MIT ([`LICENSE`](LICENSE)). The vendored TeXlyre
+Biber build retains its [AGPL-3.0 license](third-party/texlyre-biber/LICENSE).
+It tracks source only:
 no engine binaries, formats or TeX Live files are committed.

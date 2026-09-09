@@ -256,6 +256,59 @@ try {
   assert.match(failing.stderr, /core/, 'the failure must name the corrupted bundle')
   fs.writeFileSync(coreTarPath, coreBytes)
   console.log('check-mirror: fails on a corrupted bundle tar')
+
+  // Biber is a complete release family: glue, worker, WASM, data and build
+  // identity must all survive staging and be discoverable from the mirror.
+  const biberNames = ['biber.worker.js', 'biber.js', 'biber.wasm', 'biber.data']
+  const biberArtifacts = biberNames.map(name => {
+    const bytes = Buffer.from(`fixture:${name}`)
+    write(`engines/${name}`, bytes)
+    return { name, bytes: bytes.length, sha256: hash(bytes) }
+  })
+  const biberBuild = {
+    version: '2.22', controlFile: '3.11', sourceArchive: { sha256: 'b'.repeat(64) },
+    artifacts: Object.fromEntries(biberArtifacts.map(a => [a.name, a])),
+  }
+  write('engines/biber.build.json', biberBuild)
+  const buildBytes = fs.readFileSync(path.join(root, 'engines/biber.build.json'))
+  biberArtifacts.push({ name: 'biber.build.json', bytes: buildBytes.length, sha256: hash(buildBytes) })
+  for (const name of ['LICENSE', 'NOTICE', 'UPSTREAM.json']) write(`third-party/texlyre-biber/${name}`, 'fixture')
+  write('engines/biber-notices/NOTICE', 'fixture')
+  write('receipts/LINK-INVENTORY.biber.json', {
+    family: 'biber', combinedTerms: 'AGPL-3.0-only', modules: [{ name: 'biber' }],
+    linked: [{ component: 'Biber fixture', license: 'AGPL-3.0-only', source: 'fixture/' }],
+    requiredNotices: ['biber-notices/NOTICE'],
+  })
+  const sourceReceipt = { sha256: 'a'.repeat(64), dirty: false,
+    biberSource: biberBuild.sourceArchive, correspondsTo: [binary, ...jsArtifacts, ...biberArtifacts] }
+  write('receipts/SOURCE-RECEIPT.json', sourceReceipt)
+  const biberStage = runStage('bundle-src')
+  assert.equal(runBuildMirror(biberStage.digest, 'biber-mirror').status, 0)
+  const bm = JSON.parse(fs.readFileSync(path.join(root, 'biber-mirror/manifest.json')))
+  const br = bm.releases[bm.default_release]
+  assert.deepEqual(br.engines.biber.files, [...biberNames, 'biber.build.json'])
+  assert.equal(br.files['biber.data'].sha256, biberArtifacts.find(a => a.name === 'biber.data').sha256)
+  assert.equal(br.bibliography.biber.version, '2.22')
+  assert.deepEqual(br.bibliography.biber.compatible, ['2.22'])
+  assert.equal(runCheckMirror('biber-mirror').status, 0)
+
+  // A BCF mismatch must fail mirror creation even when all payload hashes
+  // are otherwise valid; it cannot silently advertise an incompatible tool.
+  biberBuild.controlFile = '99.0'
+  write('engines/biber.build.json', biberBuild)
+  const changedBuild = fs.readFileSync(path.join(root, 'engines/biber.build.json'))
+  sourceReceipt.correspondsTo.find(a => a.name === 'biber.build.json').sha256 = hash(changedBuild)
+  write('receipts/SOURCE-RECEIPT.json', sourceReceipt)
+  const badPair = runStage('bundle-src')
+  const refusedPair = runBuildMirror(badPair.digest, 'bad-pair')
+  assert.notEqual(refusedPair.status, 0)
+  assert.match(refusedPair.stderr, /requires BCF/)
+
+  fs.unlinkSync(path.join(root, 'engines/biber.data'))
+  const incomplete = spawnSync(process.execPath, [stage, '--dist', 'engines', '--out', 'incomplete', '--source-url', 'https://example.org/source.tar.xz'], { cwd: root, encoding: 'utf8' })
+  assert.equal(incomplete.status, 0, incomplete.stderr)
+  assert.notEqual(JSON.parse(fs.readFileSync(path.join(root, 'incomplete/MANIFEST.json'))).releaseGate, 'passed')
+  console.log('Biber: complete artifacts, source receipt, notices, version pairing, and missing-data rejection checked')
 } finally {
   fs.rmSync(root, { recursive: true, force: true })
 }

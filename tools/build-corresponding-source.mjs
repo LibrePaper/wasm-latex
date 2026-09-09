@@ -46,7 +46,7 @@ const commit = sh('git', ['rev-parse', 'HEAD']).trim()
 // that feeds a build differs from HEAD. A rewritten document cannot change a
 // binary; an edited Makefile, shim or tool can, and then the archive would not
 // be the source these artifacts came from.
-const BUILD_PATHS = ['wasm-build/', 'tools/', 'linked-components.json']
+const BUILD_PATHS = ['wasm-build/', 'tools/', 'third-party/', 'Makefile', 'linked-components.json']
 const changed = sh('git', ['status', '--porcelain'])
   .split('\n').filter(Boolean).map((l) => l.slice(3).trim())
 const buildChanges = changed.filter((f) => BUILD_PATHS.some((p) => f.startsWith(p)))
@@ -101,7 +101,7 @@ const artifacts = fs.existsSync(distDir)
   ? fs.readdirSync(distDir)
       // ICU data is compiled from libs/icu in the same tree, so it corresponds
       // to this source as much as a .wasm does.
-      .filter((f) => /\.(wasm|js|fmt)$/.test(f) || /^icudt[0-9]+[lb]\.dat\.gz$/.test(f))
+      .filter((f) => /\.(wasm|js|fmt)$/.test(f) || /^biber\.(data|build\.json)$/.test(f) || /^icudt[0-9]+[lb]\.dat\.gz$/.test(f))
       .sort()
       .map((f) => {
         const data = fs.readFileSync(path.join(distDir, f))
@@ -110,11 +110,25 @@ const artifacts = fs.existsSync(distDir)
   : []
 if (!artifacts.length) log(`note: no artifacts found in ${distDir}; the manifest will name none`)
 
+let biberSource = null
+if (artifacts.some(a => a.name === 'biber.wasm')) {
+  const build = JSON.parse(fs.readFileSync(path.join(distDir, 'biber.build.json')))
+  const source = fs.readFileSync(path.join(distDir, 'BIBER-SOURCE.tar.gz'))
+  const digest = createHash('sha256').update(source).digest('hex')
+  if (digest !== build.sourceArchive?.sha256) throw new Error('Biber source archive does not match its build receipt')
+  for (const name of ['biber.js', 'biber.wasm', 'biber.data']) {
+    if (artifacts.find(a => a.name === name)?.sha256 !== build.artifacts?.[name]?.sha256) throw new Error(`Biber source does not correspond to ${name}`)
+  }
+  fs.writeFileSync(path.join(staging, 'BIBER-SOURCE.tar.gz'), source)
+  biberSource = { name: 'BIBER-SOURCE.tar.gz', sha256: digest, bytes: source.length }
+}
+
 const inventories = fs.existsSync('receipts')
   ? fs.readdirSync('receipts').filter((f) => f.startsWith('LINK-INVENTORY.')).sort()
   : []
 
 const manifest = {
+  biberSource,
   schemaVersion: 1,
   producedBy: 'tools/build-corresponding-source.mjs',
   repository: { commit, dirty, uncommittedBuildPaths: buildChanges, uncommittedOther: changed.length - buildChanges.length },
@@ -172,6 +186,7 @@ const sha = createHash('sha256').update(data).digest('hex')
 fs.writeFileSync(`${tarball}.sha256`, `${sha}  ${path.basename(tarball)}\n`)
 
 const receipt = {
+  biberSource,
   schemaVersion: 1,
   archive: path.basename(tarball),
   bytes: data.length,

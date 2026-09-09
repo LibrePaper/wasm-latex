@@ -32,7 +32,7 @@ const log = (...a) => console.error(...a)
 // by name, so the host inflates it and hands it over (loadicudata). Shipped
 // gzipped because the raw file is 27 MiB and a static asset may not exceed 25.
 const ARTIFACTS =
-  /\.(wasm|fmt|fmt\.gz)$|^(pdftex|xetex|dvipdfm|bibtex|bibtex8|makeindex|luatex)(-checkpoint|-resolver-evidence)?(\.worker)?\.js$|^(kpse-resolve|bundle-mode)\.js$|^icudt[0-9]+[lb]\.dat\.gz$/
+  /\.(wasm|fmt|fmt\.gz)$|^(pdftex|xetex|dvipdfm|bibtex|bibtex8|biber|makeindex|luatex)(-checkpoint|-resolver-evidence)?(\.worker)?\.js$|^biber\.(data|build\.json)$|^(kpse-resolve|bundle-mode)\.js$|^icudt[0-9]+[lb]\.dat\.gz$/
 const files = fs.readdirSync(distDir).filter((f) => ARTIFACTS.test(f) && !f.endsWith('.map')).sort()
 if (!files.length) { console.error(`no engine artifacts in ${distDir}`); process.exit(1) }
 
@@ -56,6 +56,9 @@ for (const f of files) {
 // Notices: the union of what every linked component requires, plus the terms
 // covering the format's own inputs.
 const required = new Set(['THIRD_PARTY_NOTICES.md', 'LICENSE'])
+if (files.some(f => f.startsWith('biber.'))) {
+  for (const name of ['LICENSE', 'NOTICE', 'UPSTREAM.json']) required.add(`third-party/texlyre-biber/${name}`)
+}
 const families = []
 for (const inv of inventories) {
   const j = JSON.parse(fs.readFileSync(path.join('receipts', inv), 'utf8'))
@@ -71,17 +74,22 @@ if (fs.existsSync('receipts/SOURCE-RECEIPT.json')) {
   fs.copyFileSync('receipts/SOURCE-RECEIPT.json', path.join(outDir, 'SOURCE-RECEIPT.json'))
 }
 
-const missing = [...required].filter((n) => !fs.existsSync(n))
+const noticeSource = n => n.startsWith('biber-notices/') ? path.join(distDir, n) : n
+const missing = [...required].filter((n) => !fs.existsSync(noticeSource(n)))
 if (missing.length) { console.error(`missing required notice(s): ${missing.join(', ')}`); process.exit(1) }
 for (const n of required) {
   const dest = path.join(outDir, n)
   fs.mkdirSync(path.dirname(dest), { recursive: true })
-  fs.copyFileSync(n, dest)
+  fs.copyFileSync(noticeSource(n), dest)
 }
 // The notices reference the whole LICENSES set; ship it whole rather than
 // leaving a reader with dangling links.
 for (const f of fs.readdirSync('LICENSES')) {
   fs.copyFileSync(path.join('LICENSES', f), path.join(outDir, 'LICENSES', f))
+}
+if (files.includes('biber.wasm')) {
+  if (!fs.existsSync(path.join(distDir, 'biber-notices'))) throw new Error('Biber build notices are missing; rebuild Biber')
+  fs.cpSync(path.join(distDir, 'biber-notices'), path.join(outDir, 'biber-notices'), { recursive: true })
 }
 fs.copyFileSync('RELINK.md', path.join(outDir, 'RELINK.md'))
 fs.copyFileSync('linked-components.json', path.join(outDir, 'linked-components.json'))

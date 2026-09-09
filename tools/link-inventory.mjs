@@ -28,6 +28,16 @@ const quiet = process.argv.includes('--quiet')
 const log = (...a) => { if (!quiet) console.error(...a) }
 
 const spec = JSON.parse(fs.readFileSync(path.join(root, 'linked-components.json'), 'utf8'))
+if (family === 'biber') {
+  const receipt = JSON.parse(fs.readFileSync(path.join(distDir, 'biber.build.json')))
+  for (const [name, expected] of Object.entries({ ...receipt.artifacts, 'biber.map': receipt.linkMap })) {
+    const bytes = fs.readFileSync(path.join(distDir, name))
+    if (createHash('sha256').update(bytes).digest('hex') !== expected.sha256) throw new Error(`Biber build receipt mismatch: ${name}`)
+  }
+  if (outPath) fs.writeFileSync(outPath, JSON.stringify(receipt.inventory, null, 2) + '\n')
+  log(`Biber: ${receipt.inventory.linked.length} source/runtime components, build and link-map hashes verified`)
+  process.exit(0)
+}
 if (!family || !spec.families[family]) {
   console.error(`usage: node tools/link-inventory.mjs --family <${Object.keys(spec.families).join('|')}> [--dist dir] [--out file]`)
   process.exit(2)

@@ -1,0 +1,29 @@
+{
+  "repository": "https://github.com/TeXlyre/texlyre-busytex-build",
+  "commit": "f544a51a99e7d3978bb70608e927a9a23f96d4a7",
+  "license": "AGPL-3.0",
+  "description": "Unmodified selected upstream files. Root README, Makefile and workflow retained as reference material.",
+  "files": {
+    ".github/workflows/build-biber-wasm.yml": "961ff9cc4700784f8359583a6cda80fcd51fbc8a75df0844ad46aec94af946fb",
+    "biber/browser_prerun.js": "1331cd0d1c2c3d9f52968472121df9d3b5346b2f937b23dcf5037e0484befd80",
+    "biber/build_biber.sh": "81a6e5b7a76f1a9f787d9cec7a6d19f183f4ecadfe66870de9bd3c95d7846e9c",
+    "biber/build_deps.sh": "f277597b993954213658e51ec10328b5cb90faff93bc9578307069703eda4eca",
+    "biber/build_xs.sh": "5fd5ea532b4678c10f1179f9ae84d634a4cf73e9da25830be8f7a3ebf273eebe",
+    "biber/config_fixups.sh": "e092128f4f75372458b084047dbf1c3e05187567c70c0d70720cb7c81082bdc4",
+    "biber/emcc_configure_shim.sh": "8390d231c26a23da0d8cf8b13b794f59180bf76a82e401236eee3f90141a4772",
+    "biber/fetch_sources.sh": "4c0364b2f4c4a8319a0761aa67816f7fa22475ae97b3efc0ee3047e9b334009c",
+    "biber/modules.txt": "5715ebbb25c6c7cf8166b8be8acf46297bdcb64481b8ad6de37b80f331ea1b8a",
+    "biber/patches/01-remove-sock-cloexec.patch": "959a567b39420356cb20071b5c063ba1a9b49675e052b9fc9bf4cfa9baab8e26",
+    "biber/patches/02-disable-signal-handling.patch": "7127bb60b963c2e3942ff3249d1b574bb5acaed8b084a9c19a3cf0cba20ac123",
+    "biber/patches/03-errno-emscripten.patch": "87f08dfadebb293dd79d9a494ff851cc3b7f1762fbab6d3efa3ba558067b9ed3",
+    "biber/patches/04-makefile-sh.patch": "5f80f6f9322c122a58e9d891d6b7fad045613d2bad5d57cc6cf72823c65f4d17",
+    "biber/patches/05-perlmain-noexit.patch": "358808897020878b9f034fadcf4865cc326dd8d2b1cc385c2bfcc10bd9e82943",
+    "biber/patches/06-hints-emscripten.patch": "628a4d92e01247641d42eba33103e49cdacd6dfe489cef8f80295a89bf5243f6",
+    "biber/patches/07-re-static-symbols.patch": "78ea261f791428ce41df0d3e02ee966a457b11fa79bbfbf04218e77f562bed1e",
+    "biber/README.md": "2bcaf862fdc388398bbd52fc230e48d0c370701916490e414b06e9a85172af3d",
+    "LICENSE": "8486a10c4393cee1c25392769ddd3b2d6c242d6ec7928e1414efff7dfb2f07ef",
+    "Makefile": "26201f38673d387c72f3422fddd7d4ec4ff4c941acc17fae9020e3d49b9da0cd",
+    "NOTICE": "8d68107da42b5a77f0ddabf46d3467785ae5da92a98bbc954ebb72fa276de2f1",
+    "README.md": "d326080a9a8f9b200f13cca247666d00b94a71f8cc797ff7396b580e50421344"
+  }
+}
