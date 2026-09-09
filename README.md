@@ -56,6 +56,15 @@ check every obligation this repository can check —
     node tools/stage-release.mjs --dist wasm-build/dist --out staged/ --source-url <published URL>
     node tools/check-release.mjs --dir staged/
 
+Staging also runs the release gate. When it passes, `MANIFEST.json` records
+`releaseGate: "passed"`, lists hashes and sizes for the entire payload (including
+notices and receipts), and the command prints the manifest's SHA-256. LibrePaper
+imports that directory with `make latex-mirror LATEX_RELEASE=<staged directory>
+LATEX_RELEASE_SHA256=<reviewed manifest hash>`. No build or source checkout is
+needed by the importer. An incomplete stage has no passing marker and cannot be
+imported. `node tools/stage-release.test.mjs` tests this contract without building
+engines or accessing the network.
+
 `check-release.mjs` fails closed. Until the source archive is published
 somewhere and named with `--source-url`, it refuses the release, which is the
 correct answer: a GPL binary without its source is not distributable.

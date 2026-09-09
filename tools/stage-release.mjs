@@ -14,6 +14,8 @@
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+import { spawnSync } from 'node:child_process'
+import { fileURLToPath } from 'node:url'
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(`--${name}`)
@@ -24,7 +26,7 @@ const outDir = path.resolve(arg('out', 'staged'))
 const sourceUrl = arg('source-url', null)
 const log = (...a) => console.error(...a)
 
-const ARTIFACTS = /\.(wasm|fmt)$|^wasmtex-.*\.js$/
+const ARTIFACTS = /\.(wasm|fmt|fmt\.gz)$|^wasmtex-.*\.js$/
 const files = fs.readdirSync(distDir).filter((f) => ARTIFACTS.test(f) && !f.endsWith('.map')).sort()
 if (!files.length) { console.error(`no engine artifacts in ${distDir}`); process.exit(1) }
 
@@ -108,15 +110,38 @@ inputs and carry those inputs' terms. Every input is listed with its hash in the
 \`FORMAT-RECEIPT.*.json\` beside this file.
 `)
 
+// Hash the entire payload, including notices and receipts.
+function payload(dir, prefix = '') {
+  return fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name)).flatMap((entry) => {
+    const name = prefix + entry.name
+    const location = path.join(dir, entry.name)
+    if (entry.isDirectory()) return payload(location, name + '/')
+    const bytes = fs.readFileSync(location)
+    return [{ name, bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex') }]
+  })
+}
+
 const manifest = {
   schemaVersion: 1,
   producedBy: 'tools/stage-release.mjs',
   stagedAt: null,
   families,
   artifacts: staged,
+  files: payload(outDir),
   correspondingSource: sourceUrl ? { url: sourceUrl, sha256: sourceReceipt?.sha256 ?? null } : null,
 }
 fs.writeFileSync(path.join(outDir, 'MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n')
+
+// Incomplete staging remains inspectable, but cannot be consumed.
+const gate = spawnSync(process.execPath, [fileURLToPath(new URL('./check-release.mjs', import.meta.url)), '--dir', outDir], { encoding: 'utf8' })
+if (gate.error) throw gate.error
+if (gate.status === 0) {
+  manifest.releaseGate = 'passed'
+  fs.writeFileSync(path.join(outDir, 'MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n')
+  log('manifest SHA-256: ' + createHash('sha256').update(fs.readFileSync(path.join(outDir, 'MANIFEST.json'))).digest('hex'))
+} else {
+  log(gate.stderr || 'release gate failed')
+}
 
 log(`staged   ${staged.length} artifact(s) to ${path.relative(process.cwd(), outDir)}`)
 for (const f of families) log(`  ${f.family.padEnd(8)} ${f.combinedTerms}`)

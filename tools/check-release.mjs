@@ -42,7 +42,7 @@ for (const a of manifest.artifacts) {
 // ...and nothing shipped that the manifest does not name.
 const named = new Set(manifest.artifacts.map((a) => a.name))
 for (const f of fs.readdirSync(dir)) {
-  if (/\.(wasm|fmt)$/.test(f) && !named.has(f)) fail(`unnamed artifact in the directory: ${f}`)
+  if (/\.(wasm|fmt|fmt\.gz)$/.test(f) && !named.has(f)) fail(`unnamed artifact in the directory: ${f}`)
 }
 
 // 2. Every linked component classified, with its notice present.
@@ -76,8 +76,9 @@ for (const w of wasms) if (!covered.has(w.name)) fail(`no link inventory covers 
 
 // 4. Corresponding source: named, hashed, and the hash matches its receipt.
 if (!has('SOURCE.md')) fail('no SOURCE.md: recipients are not told where the source is')
-if (!manifest.correspondingSource?.url) {
-  fail('no corresponding-source URL. A GPL binary may not be distributed without the source;' +
+if (!/^https:\/\//.test(manifest.correspondingSource?.url || '') ||
+    !/^[a-f0-9]{64}$/.test(manifest.correspondingSource?.sha256 || '')) {
+  fail('no valid HTTPS corresponding-source URL and SHA-256. A GPL binary may not be distributed without the source;' +
        ' build it with tools/build-corresponding-source.mjs, publish it, and re-stage with --source-url')
 } else if (has('SOURCE-RECEIPT.json')) {
   const receipt = read('SOURCE-RECEIPT.json')
@@ -91,7 +92,7 @@ if (!manifest.correspondingSource?.url) {
   }
   const binaries = new Set(receipt.correspondsTo?.map((a) => `${a.name}:${a.sha256}`) ?? [])
   for (const a of manifest.artifacts) {
-    if (!a.name.endsWith('.fmt') && !binaries.has(`${a.name}:${a.sha256}`)) {
+    if (!/\.fmt(?:\.gz)?$/.test(a.name) && !binaries.has(`${a.name}:${a.sha256}`)) {
       fail(`${a.name} is not the artifact the corresponding source was built for`)
     }
   }
@@ -100,7 +101,7 @@ if (!manifest.correspondingSource?.url) {
 }
 
 // 5. Formats declare their inputs.
-for (const a of manifest.artifacts.filter((a) => a.name.endsWith('.fmt'))) {
+for (const a of manifest.artifacts.filter((a) => /\.fmt(?:\.gz)?$/.test(a.name))) {
   const receipts = fs.readdirSync(dir).filter((f) => f.startsWith('FORMAT-RECEIPT.'))
   const match = receipts.map((f) => read(f)).find((r) => r.format?.sha256 === a.sha256)
   if (!match) fail(`${a.name}: no FORMAT-RECEIPT names this file; its inputs' licenses are undocumented`)
