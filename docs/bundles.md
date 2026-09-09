@@ -51,9 +51,11 @@ tree:
   half-megabyte bundle and part of core, and `pdftex.map` is its own 5.5 MB
   bundle. `fonts/public/amsfonts` (4.6 MB, for `amssymb`) stays separate. A
   plain article fetches core, the map, amsfonts, then its own packages.
-- A bundle over 24 MB is split into `<name>.part1`, `<name>.part2`, ... so that
-  every file stays under the 25 MB static-asset limit. The resolver sees parts
-  as ordinary bundles.
+- A bundle over 20 MiB of tar bytes, headers and padding included, is split
+  into `<name>.part1`, `<name>.part2`, ... so that every file stays well under
+  the 25 MiB static-asset limit. The resolver sees parts as ordinary bundles.
+  XeTeX's ICU data, 27 MiB raw, is shipped gzipped at 11 MiB for the same
+  reason; the host inflates it before `loadicudata`.
 
 Never bundled, because no browser engine can read them: `doc/`, `source/`,
 Metafont sources and PK bitmaps under `fonts/`, AFM metrics, Type 3 fonts, the

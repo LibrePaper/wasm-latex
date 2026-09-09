@@ -59,11 +59,13 @@ function mkTree(root) {
   // texmf-var). texmf-var's copy must win.
   w('fonts/map/pdftex/updmap/pdftex.map', '% pdftex.map (dist, stale)\n')
 
-  // A bundle forced over the test split threshold (400 bytes each, well
-  // above --split-bytes below, while core's few small files stay under it).
-  w('tex/latex/bigpkg/a.sty', '0123456789'.repeat(40))
-  w('tex/latex/bigpkg/b.sty', '0123456789'.repeat(40))
-  w('tex/latex/bigpkg/c.sty', '0123456789'.repeat(40))
+  // A bundle forced over the test split threshold. The threshold counts tar
+  // bytes (512-byte header plus data padded to 512), so a 4000-byte member
+  // costs 4608 in the tar: two of them plus the 1024-byte end blocks exceed
+  // --split-bytes 12000 below, while core's handful of one-block files do not.
+  w('tex/latex/bigpkg/a.sty', '0123456789'.repeat(400))
+  w('tex/latex/bigpkg/b.sty', '0123456789'.repeat(400))
+  w('tex/latex/bigpkg/c.sty', '0123456789'.repeat(400))
 
   return { longRel }
 }
@@ -87,7 +89,7 @@ function runBuilder(texmfDist, texmfVar, outDir, extraArgs = []) {
     '--texmf', texmfVar,
     '--out', outDir,
     '--epoch', '1700000000',
-    '--split-bytes', '1000',
+    '--split-bytes', '12000',
     '--quiet',
     ...extraArgs,
   ]
@@ -210,7 +212,8 @@ test('build-bundles: end-to-end determinism and grouping', async () => {
   assert.equal(index1.files['fonts/vf/public/lm/lmroman10-regular.vf'], fontBundle)
   assert.equal(index1.files['fonts/type1/public/lm/lmroman10-regular.pfb'], fontBundle)
 
-  // Split bundle: bigpkg is 30 bytes > --split-bytes 25, so it must be split.
+  // Split bundle: bigpkg is three 4608-byte tar members against a 12000-byte
+  // threshold, so it must be split.
   const bigpkgParts = Object.keys(index1.bundles).filter((n) => n.startsWith('tex/latex/bigpkg'))
   assert.ok(bigpkgParts.length >= 2, `expected bigpkg to be split, got: ${bigpkgParts.join(', ')}`)
   assert.ok(bigpkgParts.every((n) => /^tex\/latex\/bigpkg(\.part\d+)?$/.test(n)))

@@ -136,7 +136,7 @@ download for grouping.
   actually needs.
 - `bibtex/bst/<pkg>/`, `bibtex/bib/<pkg>/`, `makeindex/<pkg>/`,
   `tex/latex/base/`, and `web2c/` follow the macro rule.
-- Any bundle over 24 MB is split into numbered parts by file order; the
+- Any bundle over 20 MiB of tar bytes is split into numbered parts by file order; the
   index records the part. Almost none reach this; `pgf` and the largest font
   families are the candidates.
 - `texmf-var/fonts/map/` is the one directory taken from the second tree; its

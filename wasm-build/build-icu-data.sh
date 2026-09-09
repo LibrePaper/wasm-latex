@@ -66,4 +66,8 @@ DAT="$WORK/icudt${ICU_MAJOR}l.dat"
 [ -f "$DAT" ] || { echo "ICU data build produced no .dat"; exit 1; }
 echo "Built $DAT ($(wc -c < "$DAT") bytes)"
 
-echo "Publish it next to the engines, gzipped, at the URL the worker fetches."
+# The raw file is 27 MiB and a Workers static asset may not exceed 25 MiB, so the
+# release ships the gzip (11 MiB) and the host inflates it before loadicudata.
+# -n drops the timestamp so the same input gives the same bytes.
+gzip -9 -n -k -f "$DAT"
+echo "Gzipped  $DAT.gz ($(wc -c < "$DAT.gz") bytes) — this is the release artifact"

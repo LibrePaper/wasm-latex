@@ -32,7 +32,9 @@ import { bundleFor, slugFor, DEFAULT_CORE, EXCLUDED_BUNDLE_PREFIXES } from './bu
 
 // 2026-03-01T00:00:00Z, same fixed epoch build-format.mjs uses.
 const DEFAULT_EPOCH = 1772323200
-const DEFAULT_SPLIT_BYTES = 24 * 1024 * 1024
+// A static asset may not exceed 25 MiB. Split at 20 MiB of *tar* bytes, headers
+// and padding included, so no part gets near the limit however the members fall.
+const DEFAULT_SPLIT_BYTES = 20 * 1024 * 1024
 
 function argAll(name) {
   const out = []
@@ -178,8 +180,8 @@ for (const members of bundleMembers.values()) members.sort(byteOrder)
 // name -> array of { partName, members }
 const finalBundles = new Map()
 for (const [name, members] of [...bundleMembers.entries()].sort((a, b) => byteOrder(a[0], b[0]))) {
-  let total = 0
-  for (const rel of members) total += relSize(rel)
+  let total = 1024 // the two zero blocks that end every tar
+  for (const rel of members) total += tarSize(rel)
   if (total <= splitBytes) {
     finalBundles.set(name, members)
     continue
@@ -188,8 +190,8 @@ for (const [name, members] of [...bundleMembers.entries()].sort((a, b) => byteOr
   let cur = []
   let curBytes = 0
   for (const rel of members) {
-    const sz = relSize(rel)
-    if (curBytes > 0 && curBytes + sz > splitBytes) {
+    const sz = tarSize(rel)
+    if (curBytes > 0 && curBytes + sz + 1024 > splitBytes) {
       finalBundles.set(`${name}.part${part}`, cur)
       part += 1
       cur = []
@@ -203,6 +205,16 @@ for (const [name, members] of [...bundleMembers.entries()].sort((a, b) => byteOr
 
 function relSize(rel) {
   return fs.statSync(relToAbs.get(rel)).size
+}
+
+// What a member costs inside the tar: a 512-byte header, a second header plus
+// a padded name block when the path needs a GNU long-name entry, and the data
+// padded to a 512-byte boundary.
+function tarSize(rel) {
+  const size = relSize(rel)
+  const nameBytes = Buffer.byteLength(rel, 'utf8')
+  const longName = nameBytes >= 100 ? 512 + Math.ceil((nameBytes + 1) / 512) * 512 : 0
+  return longName + 512 + Math.ceil(size / 512) * 512
 }
 
 // --- tar writer -----------------------------------------------------------------

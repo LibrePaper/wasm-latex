@@ -63,8 +63,8 @@
     "tex/latex/url"
   ],
   "index": {
-    "bytes": 14444216,
-    "sha256": "9515e99f994e12e7acad4f2e7be03b9fb767bd56cf6f8944c338a933000ce30d"
+    "bytes": 14470608,
+    "sha256": "b04c80396d22e085505846991f7144f04a14daf58be094ee764ecfe5472aded8"
   },
   "bundles": [
     {
@@ -1448,17 +1448,17 @@
     },
     {
       "name": "fonts/SIL/gentium-sil.part1",
-      "url": "b/1ca9ff95c36271f61bebe46e780054355929e0ce7c439aa7e522150e4120d8ef/fonts-SIL-gentium-sil.part1.tar",
-      "size": 24321536,
-      "sha256": "1ca9ff95c36271f61bebe46e780054355929e0ce7c439aa7e522150e4120d8ef",
-      "files": 44
+      "url": "b/458ec62f5f1ec89154c37d7beda368d51620c6a4acc7246e7aaafc9488e052fe/fonts-SIL-gentium-sil.part1.tar",
+      "size": 20314624,
+      "sha256": "458ec62f5f1ec89154c37d7beda368d51620c6a4acc7246e7aaafc9488e052fe",
+      "files": 40
     },
     {
       "name": "fonts/SIL/gentium-sil.part2",
-      "url": "b/c397838600c63432166f0a84d0ca83f4bf349e7eb12acabd4d1a73aebd41d540/fonts-SIL-gentium-sil.part2.tar",
-      "size": 10096128,
-      "sha256": "c397838600c63432166f0a84d0ca83f4bf349e7eb12acabd4d1a73aebd41d540",
-      "files": 10
+      "url": "b/c34b25d77cef324f6d4b11a083dbda5d1ad6de1c5361612a3552dd8208753568/fonts-SIL-gentium-sil.part2.tar",
+      "size": 14103040,
+      "sha256": "c34b25d77cef324f6d4b11a083dbda5d1ad6de1c5361612a3552dd8208753568",
+      "files": 14
     },
     {
       "name": "fonts/SIL/jetbrainsmono-otf",
@@ -1741,11 +1741,18 @@
       "files": 7
     },
     {
-      "name": "fonts/cmap",
-      "url": "b/e23df0849eccac3861e15caca0c55a30f66f9f58a79f9f9bfe4510f70f3919d8/fonts-cmap.tar",
-      "size": 21904896,
-      "sha256": "e23df0849eccac3861e15caca0c55a30f66f9f58a79f9f9bfe4510f70f3919d8",
-      "files": 258
+      "name": "fonts/cmap.part1",
+      "url": "b/d6223c180b032589246b73ffbec38b5cf043626243928e4e7ffcc5379eaff71f/fonts-cmap.part1.tar",
+      "size": 20883456,
+      "sha256": "d6223c180b032589246b73ffbec38b5cf043626243928e4e7ffcc5379eaff71f",
+      "files": 245
+    },
+    {
+      "name": "fonts/cmap.part2",
+      "url": "b/78f000d68ec1dbf61d1d10c7d561a99e03de3ab6140d402a750e72947c6b558d/fonts-cmap.part2.tar",
+      "size": 1022464,
+      "sha256": "78f000d68ec1dbf61d1d10c7d561a99e03de3ab6140d402a750e72947c6b558d",
+      "files": 13
     },
     {
       "name": "fonts/cns/c0so12",
@@ -4016,11 +4023,18 @@
       "files": 5
     },
     {
-      "name": "fonts/dvips/updmap",
-      "url": "b/416dc6dde458ae56791a9bd99072ae872f8b25389654224ca88712026c384bcb/fonts-dvips-updmap.tar",
-      "size": 21975040,
-      "sha256": "416dc6dde458ae56791a9bd99072ae872f8b25389654224ca88712026c384bcb",
-      "files": 6
+      "name": "fonts/dvips/updmap.part1",
+      "url": "b/50e1c088e1f66b4b696b4a91c69c418651a50cfb5baefc6ef3269f196fe3bf66/fonts-dvips-updmap.part1.tar",
+      "size": 16423424,
+      "sha256": "50e1c088e1f66b4b696b4a91c69c418651a50cfb5baefc6ef3269f196fe3bf66",
+      "files": 5
+    },
+    {
+      "name": "fonts/dvips/updmap.part2",
+      "url": "b/84f5a4952a6eb65c78b6758b7b0b4aae9673d9fd98bf3832bbb91d989df2f882/fonts-dvips-updmap.part2.tar",
+      "size": 5552640,
+      "sha256": "84f5a4952a6eb65c78b6758b7b0b4aae9673d9fd98bf3832bbb91d989df2f882",
+      "files": 1
     },
     {
       "name": "fonts/dvips/velthuis",
@@ -4213,45 +4227,59 @@
     },
     {
       "name": "fonts/google/noto.part1",
-      "url": "b/ab1d00786d2e3d2af255b04f2244ac83896d1f1adc30ef4c049356348a55612e/fonts-google-noto.part1.tar",
-      "size": 28086784,
-      "sha256": "ab1d00786d2e3d2af255b04f2244ac83896d1f1adc30ef4c049356348a55612e",
-      "files": 4010
+      "url": "b/fc6998f7a876c0f2e363bbb1b286f55101b9894cdbec74a6ac4816f474ea293b/fonts-google-noto.part1.tar",
+      "size": 20965376,
+      "sha256": "fc6998f7a876c0f2e363bbb1b286f55101b9894cdbec74a6ac4816f474ea293b",
+      "files": 3112
     },
     {
       "name": "fonts/google/noto.part2",
-      "url": "b/daa8572f7225e562c108d58698859baccb30b091de714aadfb4cd44bfec626c3/fonts-google-noto.part2.tar",
-      "size": 24946688,
-      "sha256": "daa8572f7225e562c108d58698859baccb30b091de714aadfb4cd44bfec626c3",
-      "files": 119
+      "url": "b/f316f01bdd17c40e774127a9648f6646a512fea69df7891c6178c54ba1b3df10/fonts-google-noto.part2.tar",
+      "size": 20917248,
+      "sha256": "f316f01bdd17c40e774127a9648f6646a512fea69df7891c6178c54ba1b3df10",
+      "files": 999
     },
     {
       "name": "fonts/google/noto.part3",
-      "url": "b/770559245eb28f58579d5af86bc7e5f52c323dbe37fc13370139e7bcd21d3c50/fonts-google-noto.part3.tar",
-      "size": 24428544,
-      "sha256": "770559245eb28f58579d5af86bc7e5f52c323dbe37fc13370139e7bcd21d3c50",
-      "files": 1388
+      "url": "b/d042fad75cbaec19797b87f272b3e580fcddf40d4e08dbc1ada259e1515a12f4/fonts-google-noto.part3.tar",
+      "size": 20932608,
+      "sha256": "d042fad75cbaec19797b87f272b3e580fcddf40d4e08dbc1ada259e1515a12f4",
+      "files": 41
+    },
+    {
+      "name": "fonts/google/noto.part4",
+      "url": "b/29a004c8e17dff8445a2840265b15581723aea2ea07123755564c4b8da40d545/fonts-google-noto.part4.tar",
+      "size": 14647808,
+      "sha256": "29a004c8e17dff8445a2840265b15581723aea2ea07123755564c4b8da40d545",
+      "files": 1365
     },
     {
       "name": "fonts/google/roboto.part1",
-      "url": "b/31281740624740218248b78ad1c196cd8966d7f4e42c62a3756309040c56cbe5/fonts-google-roboto.part1.tar",
-      "size": 25971712,
-      "sha256": "31281740624740218248b78ad1c196cd8966d7f4e42c62a3756309040c56cbe5",
-      "files": 1096
+      "url": "b/021fac7fe664729c8833dd985bbae00a8ff6cf3e0c9af037d21fc36ed7428a7f/fonts-google-roboto.part1.tar",
+      "size": 20964352,
+      "sha256": "021fac7fe664729c8833dd985bbae00a8ff6cf3e0c9af037d21fc36ed7428a7f",
+      "files": 235
     },
     {
       "name": "fonts/google/roboto.part2",
-      "url": "b/3782ab1b3449f3248bdb89411fba6b72ca1b1991257017e322532c3c16a1618a/fonts-google-roboto.part2.tar",
-      "size": 26399744,
-      "sha256": "3782ab1b3449f3248bdb89411fba6b72ca1b1991257017e322532c3c16a1618a",
-      "files": 1730
+      "url": "b/038b30c794213031b054eba477b299787f535190f7732d237b757220cec77532/fonts-google-roboto.part2.tar",
+      "size": 20965888,
+      "sha256": "038b30c794213031b054eba477b299787f535190f7732d237b757220cec77532",
+      "files": 2032
     },
     {
       "name": "fonts/google/roboto.part3",
-      "url": "b/e7e2fc1b7d5d5e0e392f1c5cb322cdd714e5d2adb915647b687f5ccf2b70c771/fonts-google-roboto.part3.tar",
-      "size": 26213376,
-      "sha256": "e7e2fc1b7d5d5e0e392f1c5cb322cdd714e5d2adb915647b687f5ccf2b70c771",
-      "files": 1836
+      "url": "b/56cc359a26f5fe5cce7de606db8a23c12c915599099fed603f6f5ce42810bb56/fonts-google-roboto.part3.tar",
+      "size": 20782592,
+      "sha256": "56cc359a26f5fe5cce7de606db8a23c12c915599099fed603f6f5ce42810bb56",
+      "files": 907
+    },
+    {
+      "name": "fonts/google/roboto.part4",
+      "url": "b/9082784aaaccfccb3e004a5d994f8a9692c5c5ac99156005babfb5f08ccb54bf/fonts-google-roboto.part4.tar",
+      "size": 15873024,
+      "sha256": "9082784aaaccfccb3e004a5d994f8a9692c5c5ac99156005babfb5f08ccb54bf",
+      "files": 1488
     },
     {
       "name": "fonts/google/tinos",
@@ -4283,31 +4311,31 @@
     },
     {
       "name": "fonts/huerta/alegreya.part1",
-      "url": "b/f13ec4092ea4c95b4040144b2ddacde1aedca4612a9da6626c49b6abf9408b97/fonts-huerta-alegreya.part1.tar",
-      "size": 25779200,
-      "sha256": "f13ec4092ea4c95b4040144b2ddacde1aedca4612a9da6626c49b6abf9408b97",
-      "files": 838
+      "url": "b/7e715f488367e152df062e5215f41f4b62562f49f67f418237f5822104700d50/fonts-huerta-alegreya.part1.tar",
+      "size": 20940288,
+      "sha256": "7e715f488367e152df062e5215f41f4b62562f49f67f418237f5822104700d50",
+      "files": 520
     },
     {
       "name": "fonts/huerta/alegreya.part2",
-      "url": "b/98b55ac915ab2bdec5ff610a3138b3117c89304f7d3a587b527f73158394e195/fonts-huerta-alegreya.part2.tar",
-      "size": 26467840,
-      "sha256": "98b55ac915ab2bdec5ff610a3138b3117c89304f7d3a587b527f73158394e195",
-      "files": 1737
+      "url": "b/6073699bf61aad297733833aba848afd523aa4b9a274b1a2d0a4d9a806fb21a7/fonts-huerta-alegreya.part2.tar",
+      "size": 20969984,
+      "sha256": "6073699bf61aad297733833aba848afd523aa4b9a274b1a2d0a4d9a806fb21a7",
+      "files": 1364
     },
     {
       "name": "fonts/huerta/alegreya.part3",
-      "url": "b/184617146f2c41b976b73c3bd8f9bda7e1c15d49ea023f7e293ce42f2594f007/fonts-huerta-alegreya.part3.tar",
-      "size": 25461248,
-      "sha256": "184617146f2c41b976b73c3bd8f9bda7e1c15d49ea023f7e293ce42f2594f007",
-      "files": 495
+      "url": "b/c0de4bb6f3f5e76e13038d749369a51a4a791f438715a4d31c2a4933fa666ee8/fonts-huerta-alegreya.part3.tar",
+      "size": 20792832,
+      "sha256": "c0de4bb6f3f5e76e13038d749369a51a4a791f438715a4d31c2a4933fa666ee8",
+      "files": 1147
     },
     {
       "name": "fonts/huerta/alegreya.part4",
-      "url": "b/f8f2e655c406c71c7f862da4a1f3a840ff3d86b9ccf2ffd24c02b43a04f66a25/fonts-huerta-alegreya.part4.tar",
-      "size": 3804160,
-      "sha256": "f8f2e655c406c71c7f862da4a1f3a840ff3d86b9ccf2ffd24c02b43a04f66a25",
-      "files": 1346
+      "url": "b/2b067e5aa2fa795ecdb1cf45ccc94c038f454bc208bb6966880e16a5a3673996/fonts-huerta-alegreya.part4.tar",
+      "size": 18809344,
+      "sha256": "2b067e5aa2fa795ecdb1cf45ccc94c038f454bc208bb6966880e16a5a3673996",
+      "files": 1385
     },
     {
       "name": "fonts/huerta/bitter",
@@ -4325,17 +4353,17 @@
     },
     {
       "name": "fonts/ibm/plex.part1",
-      "url": "b/c81d621d2995c428b1eb83651093be2df4459497c506b24aa3e101b9e0b04410/fonts-ibm-plex.part1.tar",
-      "size": 26068480,
-      "sha256": "c81d621d2995c428b1eb83651093be2df4459497c506b24aa3e101b9e0b04410",
-      "files": 1234
+      "url": "b/50ba8db59ac6986af251a3deaf6d10509932fe01dba071a3d6384139ca72f390/fonts-ibm-plex.part1.tar",
+      "size": 20965376,
+      "sha256": "50ba8db59ac6986af251a3deaf6d10509932fe01dba071a3d6384139ca72f390",
+      "files": 1189
     },
     {
       "name": "fonts/ibm/plex.part2",
-      "url": "b/f7112b33a06be76c566fc4fa62c83f143dc1acd49ed1199af75bc90525e55ffe/fonts-ibm-plex.part2.tar",
-      "size": 2888704,
-      "sha256": "f7112b33a06be76c566fc4fa62c83f143dc1acd49ed1199af75bc90525e55ffe",
-      "files": 367
+      "url": "b/fa6b59a7632f2aaf97945f0a462fd4c488dae36b1ec2a72e61ef8f485806d0e1/fonts-ibm-plex.part2.tar",
+      "size": 7991808,
+      "sha256": "fa6b59a7632f2aaf97945f0a462fd4c488dae36b1ec2a72e61ef8f485806d0e1",
+      "files": 412
     },
     {
       "name": "fonts/iginomarini/imfellenglish",
@@ -4758,11 +4786,18 @@
       "files": 470
     },
     {
-      "name": "fonts/ofm",
-      "url": "b/f9c6a9f62653e4c3306bd0bffc636daae21608c24e4e7dd4024c043a1a690d9a/fonts-ofm.tar",
-      "size": 23840256,
-      "sha256": "f9c6a9f62653e4c3306bd0bffc636daae21608c24e4e7dd4024c043a1a690d9a",
-      "files": 48
+      "name": "fonts/ofm.part1",
+      "url": "b/d4361dacb5b609dcd7023c307fe2abd20eae3afb06f813dc9ea4bd60b8b84fd6/fonts-ofm.part1.tar",
+      "size": 20963840,
+      "sha256": "d4361dacb5b609dcd7023c307fe2abd20eae3afb06f813dc9ea4bd60b8b84fd6",
+      "files": 23
+    },
+    {
+      "name": "fonts/ofm.part2",
+      "url": "b/5666927ad3cd09f0b282e508269a9a6d3ef5fa2c3d4b76d4fad5ea5732f3ac44/fonts-ofm.part2.tar",
+      "size": 2877440,
+      "sha256": "5666927ad3cd09f0b282e508269a9a6d3ef5fa2c3d4b76d4fad5ea5732f3ac44",
+      "files": 25
     },
     {
       "name": "fonts/omnibus-type/asapsym",
@@ -5011,17 +5046,24 @@
     },
     {
       "name": "fonts/public/arphic-ttf.part1",
-      "url": "b/1563280ec01801a52e7b05fc83c1d94c26ae773cfa1824b5747fa21088fb1c15/fonts-public-arphic-ttf.part1.tar",
-      "size": 23386624,
-      "sha256": "1563280ec01801a52e7b05fc83c1d94c26ae773cfa1824b5747fa21088fb1c15",
-      "files": 2
+      "url": "b/711bbfc26f2be044c82bc637d7ffabb83a2c4a64216d81f698822294b0c00095/fonts-public-arphic-ttf.part1.tar",
+      "size": 10580992,
+      "sha256": "711bbfc26f2be044c82bc637d7ffabb83a2c4a64216d81f698822294b0c00095",
+      "files": 1
     },
     {
       "name": "fonts/public/arphic-ttf.part2",
-      "url": "b/17dd28c65d82c9105b29e6817a11feba2c7299b5bcc56f9e048668dd7b715c50/fonts-public-arphic-ttf.part2.tar",
-      "size": 9827840,
-      "sha256": "17dd28c65d82c9105b29e6817a11feba2c7299b5bcc56f9e048668dd7b715c50",
+      "url": "b/91c2e8f9e2730f224b76c392290652140287c1bac14f0d1b605a3a56360b31cb/fonts-public-arphic-ttf.part2.tar",
+      "size": 17999360,
+      "sha256": "91c2e8f9e2730f224b76c392290652140287c1bac14f0d1b605a3a56360b31cb",
       "files": 2
+    },
+    {
+      "name": "fonts/public/arphic-ttf.part3",
+      "url": "b/bac727a7a1c5a81d1e330fbabda2aad7f397dff3e0055e9f4dcd4fb5f540a2d7/fonts-public-arphic-ttf.part3.tar",
+      "size": 4635136,
+      "sha256": "bac727a7a1c5a81d1e330fbabda2aad7f397dff3e0055e9f4dcd4fb5f540a2d7",
+      "files": 1
     },
     {
       "name": "fonts/public/arsenal",
@@ -5347,31 +5389,31 @@
     },
     {
       "name": "fonts/public/cbfonts.part1",
-      "url": "b/072ef706525d55ecf1aa757e80bafd40f49249ce31cff7a1ccc82c4297bf7e5a/fonts-public-cbfonts.part1.tar",
-      "size": 26167296,
-      "sha256": "072ef706525d55ecf1aa757e80bafd40f49249ce31cff7a1ccc82c4297bf7e5a",
-      "files": 1324
+      "url": "b/db9df3465b93920b05dab92dfbe60550b720387926954fa4770f715fc952f447/fonts-public-cbfonts.part1.tar",
+      "size": 20911104,
+      "sha256": "db9df3465b93920b05dab92dfbe60550b720387926954fa4770f715fc952f447",
+      "files": 1282
     },
     {
       "name": "fonts/public/cbfonts.part2",
-      "url": "b/8a42cb8150e214e5d440ceb8171af2ff7a180892196f86f4777818d54bc00358/fonts-public-cbfonts.part2.tar",
-      "size": 25266176,
-      "sha256": "8a42cb8150e214e5d440ceb8171af2ff7a180892196f86f4777818d54bc00358",
-      "files": 213
+      "url": "b/9118e4764f6e49dd87be3477f709a26b18e21a32ffd2791f216fc179dbf4097f/fonts-public-cbfonts.part2.tar",
+      "size": 20950016,
+      "sha256": "9118e4764f6e49dd87be3477f709a26b18e21a32ffd2791f216fc179dbf4097f",
+      "files": 147
     },
     {
       "name": "fonts/public/cbfonts.part3",
-      "url": "b/809690ccff70b9d4777552c4b588cb0321dd46c66a98e3aeccc1bbd1bb19a8dc/fonts-public-cbfonts.part3.tar",
-      "size": 25408512,
-      "sha256": "809690ccff70b9d4777552c4b588cb0321dd46c66a98e3aeccc1bbd1bb19a8dc",
-      "files": 346
+      "url": "b/270771103d07eed29bd8e87858c82878d8472bc134f87e0cb9e9e2b28cfb856c/fonts-public-cbfonts.part3.tar",
+      "size": 20953088,
+      "sha256": "270771103d07eed29bd8e87858c82878d8472bc134f87e0cb9e9e2b28cfb856c",
+      "files": 265
     },
     {
       "name": "fonts/public/cbfonts.part4",
-      "url": "b/35c28022b509cc71134a75a26fb77dcc59860f61794a8f333352f671ffd599e6/fonts-public-cbfonts.part4.tar",
-      "size": 389120,
-      "sha256": "35c28022b509cc71134a75a26fb77dcc59860f61794a8f333352f671ffd599e6",
-      "files": 5
+      "url": "b/b6184b38cc6a7a62dd6e213d33a1086b8fa9aed21f7e77cb10dbf2a9c8ee7786/fonts-public-cbfonts.part4.tar",
+      "size": 14416896,
+      "sha256": "b6184b38cc6a7a62dd6e213d33a1086b8fa9aed21f7e77cb10dbf2a9c8ee7786",
+      "files": 194
     },
     {
       "name": "fonts/public/cc-pl",
@@ -5466,24 +5508,24 @@
     },
     {
       "name": "fonts/public/cm-super.part1",
-      "url": "b/9ea8dea3d1d0c51038b6d5d85d4f84fd9c76119ba1eec3be605ba40da4f6c63f/fonts-public-cm-super.part1.tar",
-      "size": 25252864,
-      "sha256": "9ea8dea3d1d0c51038b6d5d85d4f84fd9c76119ba1eec3be605ba40da4f6c63f",
-      "files": 168
+      "url": "b/1c13b036f4750918eaedddd2077a45bdf4676acea00dd122ff0f6fe05149bbf4/fonts-public-cm-super.part1.tar",
+      "size": 20921344,
+      "sha256": "1c13b036f4750918eaedddd2077a45bdf4676acea00dd122ff0f6fe05149bbf4",
+      "files": 142
     },
     {
       "name": "fonts/public/cm-super.part2",
-      "url": "b/9a7266322e7d4034dde9b4567dfa1191f4833b166c84c715d7ce62c4242ef808/fonts-public-cm-super.part2.tar",
-      "size": 25146880,
-      "sha256": "9a7266322e7d4034dde9b4567dfa1191f4833b166c84c715d7ce62c4242ef808",
-      "files": 178
+      "url": "b/5b6bc93ce04f08eaca6ec92781b12699c5a70eae0ba7f4ba25bf097680f5d39f/fonts-public-cm-super.part2.tar",
+      "size": 20889600,
+      "sha256": "5b6bc93ce04f08eaca6ec92781b12699c5a70eae0ba7f4ba25bf097680f5d39f",
+      "files": 148
     },
     {
       "name": "fonts/public/cm-super.part3",
-      "url": "b/70ad2bdc9e880c6943b3f31d1af958750c3f6013822e777c06b7e167da29f66a/fonts-public-cm-super.part3.tar",
-      "size": 9638400,
-      "sha256": "70ad2bdc9e880c6943b3f31d1af958750c3f6013822e777c06b7e167da29f66a",
-      "files": 63
+      "url": "b/bf0bc7ab81341a6c1a60786e9b2fc13b747180c99b58effdd29aeedec3b654f7/fonts-public-cm-super.part3.tar",
+      "size": 18227200,
+      "sha256": "bf0bc7ab81341a6c1a60786e9b2fc13b747180c99b58effdd29aeedec3b654f7",
+      "files": 119
     },
     {
       "name": "fonts/public/cm-unicode",
@@ -5766,11 +5808,18 @@
       "files": 52
     },
     {
-      "name": "fonts/public/drm",
-      "url": "b/e195a4f8cebda77bceca0644ad0c5c1564af8c4757ec65a687dedd6357aacbf6/fonts-public-drm.tar",
-      "size": 23425024,
-      "sha256": "e195a4f8cebda77bceca0644ad0c5c1564af8c4757ec65a687dedd6357aacbf6",
-      "files": 1000
+      "name": "fonts/public/drm.part1",
+      "url": "b/bc7c726ccc87c0812310ee156ac1a65ced279d04f3e05b91e80537513d8d6a71/fonts-public-drm.part1.tar",
+      "size": 20907008,
+      "sha256": "bc7c726ccc87c0812310ee156ac1a65ced279d04f3e05b91e80537513d8d6a71",
+      "files": 959
+    },
+    {
+      "name": "fonts/public/drm.part2",
+      "url": "b/93ddc8d6c3b6d3b924bf6058cf32f51b246b07521aab800fd7d059366f0432c6/fonts-public-drm.part2.tar",
+      "size": 2519040,
+      "sha256": "93ddc8d6c3b6d3b924bf6058cf32f51b246b07521aab800fd7d059366f0432c6",
+      "files": 41
     },
     {
       "name": "fonts/public/dsserif",
@@ -5991,17 +6040,17 @@
     },
     {
       "name": "fonts/public/fandol.part1",
-      "url": "b/15f11258e602b92646c7e9dae822b9a3fe0a44fc0cd62ac627c9ff4831b01cb4/fonts-public-fandol.part1.tar",
-      "size": 24186880,
-      "sha256": "15f11258e602b92646c7e9dae822b9a3fe0a44fc0cd62ac627c9ff4831b01cb4",
-      "files": 6
+      "url": "b/77f8514e4685a5748671f26d86fac84c9a6ae15159b66ab13328460e8e782aa2/fonts-public-fandol.part1.tar",
+      "size": 16395776,
+      "sha256": "77f8514e4685a5748671f26d86fac84c9a6ae15159b66ab13328460e8e782aa2",
+      "files": 5
     },
     {
       "name": "fonts/public/fandol.part2",
-      "url": "b/a6c2c00615b15add74a4832d0222566498ead574a7e6b0575563483ec507bf84/fonts-public-fandol.part2.tar",
-      "size": 10727936,
-      "sha256": "a6c2c00615b15add74a4832d0222566498ead574a7e6b0575563483ec507bf84",
-      "files": 2
+      "url": "b/0d4ca46cd70d44c3dfd38fe24d94661b3b3f7e59831e138f5f0d1d76930636e0/fonts-public-fandol.part2.tar",
+      "size": 18519040,
+      "sha256": "0d4ca46cd70d44c3dfd38fe24d94661b3b3f7e59831e138f5f0d1d76930636e0",
+      "files": 3
     },
     {
       "name": "fonts/public/fbb",
@@ -6047,24 +6096,24 @@
     },
     {
       "name": "fonts/public/fira.part1",
-      "url": "b/f6cfa32d67ada0488364045e4c8ed4b5cb3636d2309c784f4cbb89bdfe0f271b/fonts-public-fira.part1.tar",
-      "size": 25714176,
-      "sha256": "f6cfa32d67ada0488364045e4c8ed4b5cb3636d2309c784f4cbb89bdfe0f271b",
-      "files": 774
+      "url": "b/e558788e6aad11b05d52b8b17f26bb40ac555b5ef9441df9a9a5a8dddcb45497/fonts-public-fira.part1.tar",
+      "size": 20965376,
+      "sha256": "e558788e6aad11b05d52b8b17f26bb40ac555b5ef9441df9a9a5a8dddcb45497",
+      "files": 547
     },
     {
       "name": "fonts/public/fira.part2",
-      "url": "b/bd433639cbac3aa3df2a865861ce37b96012ed7ffbe8829127cd8fb9e780dfe3/fonts-public-fira.part2.tar",
-      "size": 25595904,
-      "sha256": "bd433639cbac3aa3df2a865861ce37b96012ed7ffbe8829127cd8fb9e780dfe3",
-      "files": 770
+      "url": "b/8f2e3b449ab12f776c9a28c75275111598f7c9c3d12339db8ed8d0ef14bf7ad5/fonts-public-fira.part2.tar",
+      "size": 20688384,
+      "sha256": "8f2e3b449ab12f776c9a28c75275111598f7c9c3d12339db8ed8d0ef14bf7ad5",
+      "files": 974
     },
     {
       "name": "fonts/public/fira.part3",
-      "url": "b/ad97be25b9d1c14fe8d342111bca60a6c26cb44c05adb4a8fc7a5ea44b2bb74b/fonts-public-fira.part3.tar",
-      "size": 2948608,
-      "sha256": "ad97be25b9d1c14fe8d342111bca60a6c26cb44c05adb4a8fc7a5ea44b2bb74b",
-      "files": 532
+      "url": "b/63baa0a856088b76836312fcb28ef58942f311f0e02ce9dcff166e8a53eb10f5/fonts-public-fira.part3.tar",
+      "size": 12604928,
+      "sha256": "63baa0a856088b76836312fcb28ef58942f311f0e02ce9dcff166e8a53eb10f5",
+      "files": 555
     },
     {
       "name": "fonts/public/firamath",
@@ -6327,17 +6376,17 @@
     },
     {
       "name": "fonts/public/gregoriotex.part1",
-      "url": "b/2c090fa4ad3354353cbed2f4ca865471404d5b8d966bff2057922bcbfe3cd6f2/fonts-public-gregoriotex.part1.tar",
-      "size": 24646144,
-      "sha256": "2c090fa4ad3354353cbed2f4ca865471404d5b8d966bff2057922bcbfe3cd6f2",
-      "files": 19
+      "url": "b/3e0935c5dc464da44432e94b89b43344ab4416987d38b3fd183dbd902206ec32/fonts-public-gregoriotex.part1.tar",
+      "size": 20552704,
+      "sha256": "3e0935c5dc464da44432e94b89b43344ab4416987d38b3fd183dbd902206ec32",
+      "files": 16
     },
     {
       "name": "fonts/public/gregoriotex.part2",
-      "url": "b/d3180d274c51c3c1bc42dd248b7bf4d94e68704091851602fad79b88303a49ef/fonts-public-gregoriotex.part2.tar",
-      "size": 1577472,
-      "sha256": "d3180d274c51c3c1bc42dd248b7bf4d94e68704091851602fad79b88303a49ef",
-      "files": 3
+      "url": "b/f1dc39a3b9c5f1efee22b627b4662cde51a3629ddede91c57473cdb9e2e5a787/fonts-public-gregoriotex.part2.tar",
+      "size": 5670912,
+      "sha256": "f1dc39a3b9c5f1efee22b627b4662cde51a3629ddede91c57473cdb9e2e5a787",
+      "files": 6
     },
     {
       "name": "fonts/public/gudea",
@@ -6466,11 +6515,18 @@
       "files": 140
     },
     {
-      "name": "fonts/public/inconsolata-nerd-font",
-      "url": "b/8c2355daa2761c6132844dfda7b63734b5d39d2f9d1476a2abcc47a9a981852f/fonts-public-inconsolata-nerd-font.tar",
-      "size": 25024000,
-      "sha256": "8c2355daa2761c6132844dfda7b63734b5d39d2f9d1476a2abcc47a9a981852f",
-      "files": 12
+      "name": "fonts/public/inconsolata-nerd-font.part1",
+      "url": "b/69afd648292594b937b87adaded9677dea41bd0ba85a1a6c2768ad8b1248f74c/fonts-public-inconsolata-nerd-font.part1.tar",
+      "size": 20805120,
+      "sha256": "69afd648292594b937b87adaded9677dea41bd0ba85a1a6c2768ad8b1248f74c",
+      "files": 10
+    },
+    {
+      "name": "fonts/public/inconsolata-nerd-font.part2",
+      "url": "b/8ed65c3d87516e27419f18bd5c7fe5cfcbd1e87dd76fbabe93d9eba993d0e506/fonts-public-inconsolata-nerd-font.part2.tar",
+      "size": 4219904,
+      "sha256": "8ed65c3d87516e27419f18bd5c7fe5cfcbd1e87dd76fbabe93d9eba993d0e506",
+      "files": 2
     },
     {
       "name": "fonts/public/initials",
@@ -6488,17 +6544,17 @@
     },
     {
       "name": "fonts/public/inter.part1",
-      "url": "b/caca6e277b8264f94f6099e7d34615e2abed6701b6e7dd6911d4f8ac39c24207/fonts-public-inter.part1.tar",
-      "size": 25220096,
-      "sha256": "caca6e277b8264f94f6099e7d34615e2abed6701b6e7dd6911d4f8ac39c24207",
-      "files": 839
+      "url": "b/c4bd72cd7ee6a698c9330d52a9ec5acfdaf848acc6e0ec08f0c3b38db6b2ae35/fonts-public-inter.part1.tar",
+      "size": 20555264,
+      "sha256": "c4bd72cd7ee6a698c9330d52a9ec5acfdaf848acc6e0ec08f0c3b38db6b2ae35",
+      "files": 831
     },
     {
       "name": "fonts/public/inter.part2",
-      "url": "b/313ac7f176e95877502decfa73c6ec0ec981f3be185c9b6672fcd75072c3fd16/fonts-public-inter.part2.tar",
-      "size": 4918784,
-      "sha256": "313ac7f176e95877502decfa73c6ec0ec981f3be185c9b6672fcd75072c3fd16",
-      "files": 385
+      "url": "b/feaa9d0d041ffff0fc325b6f2087c8a975c4a3c63ac7e1768e701448caa31719/fonts-public-inter.part2.tar",
+      "size": 9583616,
+      "sha256": "feaa9d0d041ffff0fc325b6f2087c8a975c4a3c63ac7e1768e701448caa31719",
+      "files": 393
     },
     {
       "name": "fonts/public/ipaex-type1",
@@ -6516,10 +6572,17 @@
     },
     {
       "name": "fonts/public/ipaex.part2",
-      "url": "b/47ec5d6ff4ae6f35ef145d040c7de79eafabb92be8925b9c1c40ff9b1294408a/fonts-public-ipaex.part2.tar",
-      "size": 22331904,
-      "sha256": "47ec5d6ff4ae6f35ef145d040c7de79eafabb92be8925b9c1c40ff9b1294408a",
-      "files": 3
+      "url": "b/3254249a19c233d7195f238b6844574b32f41a0036c9c8b97cac8dd0255f9506/fonts-public-ipaex.part2.tar",
+      "size": 14285312,
+      "sha256": "3254249a19c233d7195f238b6844574b32f41a0036c9c8b97cac8dd0255f9506",
+      "files": 2
+    },
+    {
+      "name": "fonts/public/ipaex.part3",
+      "url": "b/0c8612b3db6a80d857b42fd1e516d76e078150955835c44f01b2021f37348d4d/fonts-public-ipaex.part3.tar",
+      "size": 8047616,
+      "sha256": "0c8612b3db6a80d857b42fd1e516d76e078150955835c44f01b2021f37348d4d",
+      "files": 1
     },
     {
       "name": "fonts/public/jamtimes",
@@ -6530,24 +6593,31 @@
     },
     {
       "name": "fonts/public/japanese-otf.part1",
-      "url": "b/e3e4c9b8c276e2313f18016528390839105bc864282ce839a56bb3b6708c80de/fonts-public-japanese-otf.part1.tar",
-      "size": 26521088,
-      "sha256": "e3e4c9b8c276e2313f18016528390839105bc864282ce839a56bb3b6708c80de",
-      "files": 1807
+      "url": "b/c079a62f8d555ef58e91382943142e58ab15cdd2323780a4c7c67f1377bf8098/fonts-public-japanese-otf.part1.tar",
+      "size": 20877312,
+      "sha256": "c079a62f8d555ef58e91382943142e58ab15cdd2323780a4c7c67f1377bf8098",
+      "files": 1685
     },
     {
       "name": "fonts/public/japanese-otf.part2",
-      "url": "b/3273ffab4d9b6917beea6ab3a682d4565ca3fe88d39ab21041e77d866dd43428/fonts-public-japanese-otf.part2.tar",
-      "size": 25574912,
-      "sha256": "3273ffab4d9b6917beea6ab3a682d4565ca3fe88d39ab21041e77d866dd43428",
-      "files": 501
+      "url": "b/3a2c9a10bdd811a1d29e5ae3d790d5adac4dd4cd52fa0e0416daea0b4b86d77a/fonts-public-japanese-otf.part2.tar",
+      "size": 20966400,
+      "sha256": "3a2c9a10bdd811a1d29e5ae3d790d5adac4dd4cd52fa0e0416daea0b4b86d77a",
+      "files": 371
     },
     {
       "name": "fonts/public/japanese-otf.part3",
-      "url": "b/215a8a76b80e12e46edbd1cc68d04c921046953d0aa4642164b7be16d990a753/fonts-public-japanese-otf.part3.tar",
-      "size": 16440320,
-      "sha256": "215a8a76b80e12e46edbd1cc68d04c921046953d0aa4642164b7be16d990a753",
-      "files": 324
+      "url": "b/86f0683cd030b34f6973754edb7fcf3f01987e98ed4746dfd84150608e1b3b2e/fonts-public-japanese-otf.part3.tar",
+      "size": 20962304,
+      "sha256": "86f0683cd030b34f6973754edb7fcf3f01987e98ed4746dfd84150608e1b3b2e",
+      "files": 501
+    },
+    {
+      "name": "fonts/public/japanese-otf.part4",
+      "url": "b/92b68ee846bb9699e634c518a765215dafeb808a73746f9b083324b90dba8c6e/fonts-public-japanese-otf.part4.tar",
+      "size": 5731328,
+      "sha256": "92b68ee846bb9699e634c518a765215dafeb808a73746f9b083324b90dba8c6e",
+      "files": 75
     },
     {
       "name": "fonts/public/jlreq",
@@ -6572,66 +6642,87 @@
     },
     {
       "name": "fonts/public/juliamono.part1",
-      "url": "b/090ad9379f68c69482b48bf1239bbf6b9457441b023e6dc5ed3fa3059381cb61/fonts-public-juliamono.part1.tar",
-      "size": 23152128,
-      "sha256": "090ad9379f68c69482b48bf1239bbf6b9457441b023e6dc5ed3fa3059381cb61",
-      "files": 7
+      "url": "b/61c88efbf4172cfe9740e8b09c4366b30851b68bae12d253cce1bc10fc4edd28/fonts-public-juliamono.part1.tar",
+      "size": 19956224,
+      "sha256": "61c88efbf4172cfe9740e8b09c4366b30851b68bae12d253cce1bc10fc4edd28",
+      "files": 6
     },
     {
       "name": "fonts/public/juliamono.part2",
-      "url": "b/3c810e1966a2e221b78d7e21a2f99620e269bdd460a3536de548fec50c346588/fonts-public-juliamono.part2.tar",
-      "size": 23130624,
-      "sha256": "3c810e1966a2e221b78d7e21a2f99620e269bdd460a3536de548fec50c346588",
-      "files": 7
+      "url": "b/352e47ea91c621ac9ebc30a5e59b98b2576008dce192f62cf4a9523284e80ce4/fonts-public-juliamono.part2.tar",
+      "size": 19686400,
+      "sha256": "352e47ea91c621ac9ebc30a5e59b98b2576008dce192f62cf4a9523284e80ce4",
+      "files": 6
+    },
+    {
+      "name": "fonts/public/juliamono.part3",
+      "url": "b/1c7e0d1c0c7c72639cc9f7a131487b66ed8b65223a541e04eaca5d56613a04e8/fonts-public-juliamono.part3.tar",
+      "size": 6641152,
+      "sha256": "1c7e0d1c0c7c72639cc9f7a131487b66ed8b65223a541e04eaca5d56613a04e8",
+      "files": 2
     },
     {
       "name": "fonts/public/junicode.part1",
-      "url": "b/a030aa8700ed7f2cc8fc657b070f235b8700e3fa5d3678822f983ba1c0fbf5eb/fonts-public-junicode.part1.tar",
-      "size": 25070080,
-      "sha256": "a030aa8700ed7f2cc8fc657b070f235b8700e3fa5d3678822f983ba1c0fbf5eb",
-      "files": 26
+      "url": "b/57bb17cd48b049a8de9fb6f5cd5be929288b021ca875c73473d11acbc5f2b2af/fonts-public-junicode.part1.tar",
+      "size": 20280320,
+      "sha256": "57bb17cd48b049a8de9fb6f5cd5be929288b021ca875c73473d11acbc5f2b2af",
+      "files": 21
     },
     {
       "name": "fonts/public/junicode.part2",
-      "url": "b/65c1d4b619f7e7897d91a767ae859de00212d3e657d700445bcb8e8f87885c01/fonts-public-junicode.part2.tar",
-      "size": 25533952,
-      "sha256": "65c1d4b619f7e7897d91a767ae859de00212d3e657d700445bcb8e8f87885c01",
-      "files": 514
+      "url": "b/b830c85717734fdabe8bb5887aba3627e0e05b8c042e149dc26ccf3daad2c916/fonts-public-junicode.part2.tar",
+      "size": 20930560,
+      "sha256": "b830c85717734fdabe8bb5887aba3627e0e05b8c042e149dc26ccf3daad2c916",
+      "files": 179
     },
     {
       "name": "fonts/public/junicode.part3",
-      "url": "b/4b33321143ba6f06590806bd7cadc411152a110e8718f356df18eee58179214e/fonts-public-junicode.part3.tar",
-      "size": 25829376,
-      "sha256": "4b33321143ba6f06590806bd7cadc411152a110e8718f356df18eee58179214e",
-      "files": 903
+      "url": "b/b08d3077e306839a4283ee3a5535f1f04ef616b7bff8c960df985f74487b26a2/fonts-public-junicode.part3.tar",
+      "size": 20907520,
+      "sha256": "b08d3077e306839a4283ee3a5535f1f04ef616b7bff8c960df985f74487b26a2",
+      "files": 739
     },
     {
       "name": "fonts/public/junicode.part4",
-      "url": "b/62d9be828f4bfa648c505ab9c5385ba5ab6d2e7df80963d4b816c9b025aea4b6/fonts-public-junicode.part4.tar",
-      "size": 25796096,
-      "sha256": "62d9be828f4bfa648c505ab9c5385ba5ab6d2e7df80963d4b816c9b025aea4b6",
-      "files": 925
+      "url": "b/81342906986578081b26588a042a14eda6042b3102e787a15d54b0266a09b679/fonts-public-junicode.part4.tar",
+      "size": 20966912,
+      "sha256": "81342906986578081b26588a042a14eda6042b3102e787a15d54b0266a09b679",
+      "files": 746
     },
     {
       "name": "fonts/public/junicode.part5",
-      "url": "b/b11c6e5df78ed0524cfc7bc7df579ee11732e3cc70d9b9b7f8b0159b9cf7e16d/fonts-public-junicode.part5.tar",
-      "size": 24078336,
-      "sha256": "b11c6e5df78ed0524cfc7bc7df579ee11732e3cc70d9b9b7f8b0159b9cf7e16d",
-      "files": 189
+      "url": "b/fa55870273a22fea990b63228dd1fdfe62be9adf7fbc6426d825b1f6b380b63f/fonts-public-junicode.part5.tar",
+      "size": 20859392,
+      "sha256": "fa55870273a22fea990b63228dd1fdfe62be9adf7fbc6426d825b1f6b380b63f",
+      "files": 745
     },
     {
       "name": "fonts/public/junicode.part6",
-      "url": "b/3d739650ae06d8b18df5b1c197b13204519947a300cbe799fb8e25d267417658/fonts-public-junicode.part6.tar",
-      "size": 23919104,
-      "sha256": "3d739650ae06d8b18df5b1c197b13204519947a300cbe799fb8e25d267417658",
-      "files": 14
+      "url": "b/c98ae05e806cf195141ca5b549450702fd47fd5eb112bb0d2bb7bb51d249c702/fonts-public-junicode.part6.tar",
+      "size": 20563456,
+      "sha256": "c98ae05e806cf195141ca5b549450702fd47fd5eb112bb0d2bb7bb51d249c702",
+      "files": 126
     },
     {
       "name": "fonts/public/junicode.part7",
-      "url": "b/f096f42671d84e800e863c3a3fea92545fec29ff5375db3d6a06ae5cdf6f5a03/fonts-public-junicode.part7.tar",
-      "size": 24040448,
-      "sha256": "f096f42671d84e800e863c3a3fea92545fec29ff5375db3d6a06ae5cdf6f5a03",
-      "files": 849
+      "url": "b/35c64ac32b63127833330395e6b29f29a55aa17297044a3ff4e4654519f21237/fonts-public-junicode.part7.tar",
+      "size": 20689408,
+      "sha256": "35c64ac32b63127833330395e6b29f29a55aa17297044a3ff4e4654519f21237",
+      "files": 12
+    },
+    {
+      "name": "fonts/public/junicode.part8",
+      "url": "b/32f40ae27ad608a5b9e32db2ccee4f7aa8ece5aaf82d8e36d53af0f8a07b32fa/fonts-public-junicode.part8.tar",
+      "size": 20376064,
+      "sha256": "32f40ae27ad608a5b9e32db2ccee4f7aa8ece5aaf82d8e36d53af0f8a07b32fa",
+      "files": 12
+    },
+    {
+      "name": "fonts/public/junicode.part9",
+      "url": "b/07323f27ef481ef035c31e1a48fc9ef8779e8257a9fc48498522978f3df6c89a/fonts-public-junicode.part9.tar",
+      "size": 8695808,
+      "sha256": "07323f27ef481ef035c31e1a48fc9ef8779e8257a9fc48498522978f3df6c89a",
+      "files": 840
     },
     {
       "name": "fonts/public/junicodevf",
@@ -6725,11 +6816,18 @@
       "files": 16
     },
     {
-      "name": "fonts/public/libertine",
-      "url": "b/e01015e862674c7cea628f3e639d0c37b35a898d694473ead1c99d7c3c03758c/fonts-public-libertine.tar",
-      "size": 23502336,
-      "sha256": "e01015e862674c7cea628f3e639d0c37b35a898d694473ead1c99d7c3c03758c",
-      "files": 1122
+      "name": "fonts/public/libertine.part1",
+      "url": "b/66632312caa114be3a8e429b6bb7d4385f61ff366967e1421a022c4284e329c7/fonts-public-libertine.part1.tar",
+      "size": 20781056,
+      "sha256": "66632312caa114be3a8e429b6bb7d4385f61ff366967e1421a022c4284e329c7",
+      "files": 767
+    },
+    {
+      "name": "fonts/public/libertine.part2",
+      "url": "b/231cdd71ef37b0a67aaec8688d708ab2bde477b275b105d499428eb100ee56cb/fonts-public-libertine.part2.tar",
+      "size": 2722304,
+      "sha256": "231cdd71ef37b0a67aaec8688d708ab2bde477b275b105d499428eb100ee56cb",
+      "files": 355
     },
     {
       "name": "fonts/public/libertinegc",
@@ -6795,18 +6893,25 @@
       "files": 33
     },
     {
-      "name": "fonts/public/lm",
-      "url": "b/83498b9cdba455924d3e2254679d9d9a8cdccd369187356b7525e655c724f936/fonts-public-lm.tar",
-      "size": 22397952,
-      "sha256": "83498b9cdba455924d3e2254679d9d9a8cdccd369187356b7525e655c724f936",
-      "files": 852
-    },
-    {
       "name": "fonts/public/lm-math",
       "url": "b/5831198a57d8fa70345a1d430a0b0e9ee372b2c92ec2daf1d28d5259fe99f1b7/fonts-public-lm-math.tar",
       "size": 735744,
       "sha256": "5831198a57d8fa70345a1d430a0b0e9ee372b2c92ec2daf1d28d5259fe99f1b7",
       "files": 1
+    },
+    {
+      "name": "fonts/public/lm.part1",
+      "url": "b/b1d2b9305ef59d6e7bdd965a61448c6bbd7cae0023b57f8f36fff4501ee6f636/fonts-public-lm.part1.tar",
+      "size": 20902912,
+      "sha256": "b1d2b9305ef59d6e7bdd965a61448c6bbd7cae0023b57f8f36fff4501ee6f636",
+      "files": 828
+    },
+    {
+      "name": "fonts/public/lm.part2",
+      "url": "b/d5730f53a49d9d113ffa6e167d4e733b3be4d5df09071c66694600c18f743c2d/fonts-public-lm.part2.tar",
+      "size": 1496064,
+      "sha256": "d5730f53a49d9d113ffa6e167d4e733b3be4d5df09071c66694600c18f743c2d",
+      "files": 24
     },
     {
       "name": "fonts/public/logix",
@@ -6859,28 +6964,35 @@
     },
     {
       "name": "fonts/public/lxgw-fonts.part2",
-      "url": "b/a533c2d2f4bb139c5c71eae3e3a142eea7702b24a2eaf6d5302f378d414f0f24/fonts-public-lxgw-fonts.part2.tar",
-      "size": 22344704,
-      "sha256": "a533c2d2f4bb139c5c71eae3e3a142eea7702b24a2eaf6d5302f378d414f0f24",
-      "files": 2
+      "url": "b/a05b8d5ef4b3c2ae8bee94ecda1af7e2e31f95561ff9c2570ac1d91a4dd8cd61/fonts-public-lxgw-fonts.part2.tar",
+      "size": 10442752,
+      "sha256": "a05b8d5ef4b3c2ae8bee94ecda1af7e2e31f95561ff9c2570ac1d91a4dd8cd61",
+      "files": 1
     },
     {
       "name": "fonts/public/lxgw-fonts.part3",
-      "url": "b/be5c027e56c30cb091ad50591dbc92864f165d7008b4579f7cfef6f89bc7d70b/fonts-public-lxgw-fonts.part3.tar",
+      "url": "b/3a2856fcb8c7e544051a25329f4d8dd0844ae036a89761d4d0e5100708238b20/fonts-public-lxgw-fonts.part3.tar",
+      "size": 11902976,
+      "sha256": "3a2856fcb8c7e544051a25329f4d8dd0844ae036a89761d4d0e5100708238b20",
+      "files": 1
+    },
+    {
+      "name": "fonts/public/lxgw-fonts.part4",
+      "url": "b/be5c027e56c30cb091ad50591dbc92864f165d7008b4579f7cfef6f89bc7d70b/fonts-public-lxgw-fonts.part4.tar",
       "size": 14165504,
       "sha256": "be5c027e56c30cb091ad50591dbc92864f165d7008b4579f7cfef6f89bc7d70b",
       "files": 1
     },
     {
-      "name": "fonts/public/lxgw-fonts.part4",
-      "url": "b/8f1d9641b9e7150eec834fa6b2b6225775c63ef5892aa7bce66d5f8166bdc866/fonts-public-lxgw-fonts.part4.tar",
+      "name": "fonts/public/lxgw-fonts.part5",
+      "url": "b/8f1d9641b9e7150eec834fa6b2b6225775c63ef5892aa7bce66d5f8166bdc866/fonts-public-lxgw-fonts.part5.tar",
       "size": 17484800,
       "sha256": "8f1d9641b9e7150eec834fa6b2b6225775c63ef5892aa7bce66d5f8166bdc866",
       "files": 1
     },
     {
-      "name": "fonts/public/lxgw-fonts.part5",
-      "url": "b/f45645d6111ebe7e9bc7b82372e67583553193ecb33f9feeefa1a4fcaaa09b79/fonts-public-lxgw-fonts.part5.tar",
+      "name": "fonts/public/lxgw-fonts.part6",
+      "url": "b/f45645d6111ebe7e9bc7b82372e67583553193ecb33f9feeefa1a4fcaaa09b79/fonts-public-lxgw-fonts.part6.tar",
       "size": 8825856,
       "sha256": "f45645d6111ebe7e9bc7b82372e67583553193ecb33f9feeefa1a4fcaaa09b79",
       "files": 1
@@ -7027,24 +7139,24 @@
     },
     {
       "name": "fonts/public/montserrat.part1",
-      "url": "b/db560a696c88f1abca9fe5ccc3842d44c30deb73bfd07b5d8fda83e7ddf8cecc/fonts-public-montserrat.part1.tar",
-      "size": 26081280,
-      "sha256": "db560a696c88f1abca9fe5ccc3842d44c30deb73bfd07b5d8fda83e7ddf8cecc",
-      "files": 1244
+      "url": "b/2fd85040cb35eda280e14b2cde6732418ff67f8ca363b0ec6075504f46efd922/fonts-public-montserrat.part1.tar",
+      "size": 20968960,
+      "sha256": "2fd85040cb35eda280e14b2cde6732418ff67f8ca363b0ec6075504f46efd922",
+      "files": 912
     },
     {
       "name": "fonts/public/montserrat.part2",
-      "url": "b/01d2661787d37c1e37ec37ffddd4d1e6b65756325807f475086075e329594da4/fonts-public-montserrat.part2.tar",
-      "size": 26214400,
-      "sha256": "01d2661787d37c1e37ec37ffddd4d1e6b65756325807f475086075e329594da4",
-      "files": 1418
+      "url": "b/dfeb78293ab5363334d8b1d96c0585e5be16e3096903863093aa0d078ee60034/fonts-public-montserrat.part2.tar",
+      "size": 20971008,
+      "sha256": "dfeb78293ab5363334d8b1d96c0585e5be16e3096903863093aa0d078ee60034",
+      "files": 1570
     },
     {
       "name": "fonts/public/montserrat.part3",
-      "url": "b/fdee6a5e72d9a344faf82cd240ec65f278311a31f5eae1a676243ef6bcd9c580/fonts-public-montserrat.part3.tar",
-      "size": 2989056,
-      "sha256": "fdee6a5e72d9a344faf82cd240ec65f278311a31f5eae1a676243ef6bcd9c580",
-      "files": 1154
+      "url": "b/30ee78d122d7cd26434d9328a49a2a6ac5c26542d5f59a58a70179536ba08589/fonts-public-montserrat.part3.tar",
+      "size": 13344768,
+      "sha256": "30ee78d122d7cd26434d9328a49a2a6ac5c26542d5f59a58a70179536ba08589",
+      "files": 1334
     },
     {
       "name": "fonts/public/morisawa",
@@ -7076,24 +7188,31 @@
     },
     {
       "name": "fonts/public/nanumtype1.part1",
-      "url": "b/44a9d290cb07f21e5e7a981d462511abb681e2baf3762125af4fa4d7fc0195f0/fonts-public-nanumtype1.part1.tar",
-      "size": 25932800,
-      "sha256": "44a9d290cb07f21e5e7a981d462511abb681e2baf3762125af4fa4d7fc0195f0",
-      "files": 1246
+      "url": "b/592a96fed30c751f03c07c1df17548a4156b3deb01650e9c2f9a9c2ae62f3556/fonts-public-nanumtype1.part1.tar",
+      "size": 20832256,
+      "sha256": "592a96fed30c751f03c07c1df17548a4156b3deb01650e9c2f9a9c2ae62f3556",
+      "files": 1201
     },
     {
       "name": "fonts/public/nanumtype1.part2",
-      "url": "b/aabdeab2c58af7eda9463518d38ac7e36a723a4eef52a05a005e0aae08638b6a/fonts-public-nanumtype1.part2.tar",
-      "size": 6161408,
-      "sha256": "aabdeab2c58af7eda9463518d38ac7e36a723a4eef52a05a005e0aae08638b6a",
-      "files": 45
+      "url": "b/10421248b9e497e7d35057074fe3f381ce0b31e2f36fd933f9325efa0b507b93/fonts-public-nanumtype1.part2.tar",
+      "size": 11261952,
+      "sha256": "10421248b9e497e7d35057074fe3f381ce0b31e2f36fd933f9325efa0b507b93",
+      "files": 90
     },
     {
-      "name": "fonts/public/newcomputermodern",
-      "url": "b/9473252c54bfd0f8b92bc319a731f718dc703038b614e068eb00cf846303250d/fonts-public-newcomputermodern.tar",
-      "size": 21130240,
-      "sha256": "9473252c54bfd0f8b92bc319a731f718dc703038b614e068eb00cf846303250d",
-      "files": 41
+      "name": "fonts/public/newcomputermodern.part1",
+      "url": "b/24df4ed2e6fdabea18d3ac36d3d0fd3ee7ed3c0fcbd8d907ee6af1d1c93668c3/fonts-public-newcomputermodern.part1.tar",
+      "size": 20087296,
+      "sha256": "24df4ed2e6fdabea18d3ac36d3d0fd3ee7ed3c0fcbd8d907ee6af1d1c93668c3",
+      "files": 34
+    },
+    {
+      "name": "fonts/public/newcomputermodern.part2",
+      "url": "b/af4106e8f49e299b30c9aa18d9813368bcd21e1e9968543a54222b0b70c822fb/fonts-public-newcomputermodern.part2.tar",
+      "size": 1043968,
+      "sha256": "af4106e8f49e299b30c9aa18d9813368bcd21e1e9968543a54222b0b70c822fb",
+      "files": 7
     },
     {
       "name": "fonts/public/newpx",
@@ -7426,17 +7545,24 @@
     },
     {
       "name": "fonts/public/pxufont.part1",
-      "url": "b/5fa076bfcbd92d503c8d2f68a259edee4276b452775c22e3dc751be96f3d7a98/fonts-public-pxufont.part1.tar",
-      "size": 25446912,
-      "sha256": "5fa076bfcbd92d503c8d2f68a259edee4276b452775c22e3dc751be96f3d7a98",
-      "files": 487
+      "url": "b/316dbf427b4c6b07caec60a09514fc65f2c573f1a131ad91cc3f6f29d6184285/fonts-public-pxufont.part1.tar",
+      "size": 20884480,
+      "sha256": "316dbf427b4c6b07caec60a09514fc65f2c573f1a131ad91cc3f6f29d6184285",
+      "files": 480
     },
     {
       "name": "fonts/public/pxufont.part2",
-      "url": "b/0bdad8d03c034580d4742de96e9b3de34650c97d4f36019b647604a1e41cb6eb/fonts-public-pxufont.part2.tar",
-      "size": 21681664,
-      "sha256": "0bdad8d03c034580d4742de96e9b3de34650c97d4f36019b647604a1e41cb6eb",
-      "files": 33
+      "url": "b/3b7225f7e48ab87ce4bc2fd17aac6a4c1d22818065c4996086fcb28f423bbfc9/fonts-public-pxufont.part2.tar",
+      "size": 20931584,
+      "sha256": "3b7225f7e48ab87ce4bc2fd17aac6a4c1d22818065c4996086fcb28f423bbfc9",
+      "files": 32
+    },
+    {
+      "name": "fonts/public/pxufont.part3",
+      "url": "b/c3430fd64380c16a59c525e094ae006af37278481d77b94a79234e201f1c9d77/fonts-public-pxufont.part3.tar",
+      "size": 5313536,
+      "sha256": "c3430fd64380c16a59c525e094ae006af37278481d77b94a79234e201f1c9d77",
+      "files": 8
     },
     {
       "name": "fonts/public/qpxqtx",
@@ -7846,17 +7972,17 @@
     },
     {
       "name": "fonts/public/unfonts-core.part1",
-      "url": "b/3cb09ec52f5ac11384e5c454f1b8f4ab646def6401b70302899dd8c781524104/fonts-public-unfonts-core.part1.tar",
-      "size": 24949760,
-      "sha256": "3cb09ec52f5ac11384e5c454f1b8f4ab646def6401b70302899dd8c781524104",
-      "files": 8
+      "url": "b/e04ed9090d2dcfec0b9fdd0e326ff6415d143179b26a3824f15c558f235cca31/fonts-public-unfonts-core.part1.tar",
+      "size": 19687424,
+      "sha256": "e04ed9090d2dcfec0b9fdd0e326ff6415d143179b26a3824f15c558f235cca31",
+      "files": 6
     },
     {
       "name": "fonts/public/unfonts-core.part2",
-      "url": "b/1ac415e1c4e4e5a00b4c283bcb72c4e45be7bdf45ffb9ce11b411aa00e115ed5/fonts-public-unfonts-core.part2.tar",
-      "size": 9284608,
-      "sha256": "1ac415e1c4e4e5a00b4c283bcb72c4e45be7bdf45ffb9ce11b411aa00e115ed5",
-      "files": 4
+      "url": "b/01c7129ec5c915927e0796c18a52e576e77dd1fa1ea9038ea3049be24e0bf6a5/fonts-public-unfonts-core.part2.tar",
+      "size": 14546944,
+      "sha256": "01c7129ec5c915927e0796c18a52e576e77dd1fa1ea9038ea3049be24e0bf6a5",
+      "files": 6
     },
     {
       "name": "fonts/public/unfonts-extra",
@@ -7993,24 +8119,24 @@
     },
     {
       "name": "fonts/public/ysabeau.part1",
-      "url": "b/09fa45b44cb8f6feb5522ff62e51dd8b48b84ec8b28c3842a80eff09ae380a57/fonts-public-ysabeau.part1.tar",
-      "size": 27662336,
-      "sha256": "09fa45b44cb8f6feb5522ff62e51dd8b48b84ec8b28c3842a80eff09ae380a57",
-      "files": 3335
+      "url": "b/122a1bbd778e824b381ba6baa0cda11634ab35682a3373f1239f6787b23d67fd/fonts-public-ysabeau.part1.tar",
+      "size": 20967936,
+      "sha256": "122a1bbd778e824b381ba6baa0cda11634ab35682a3373f1239f6787b23d67fd",
+      "files": 2368
     },
     {
       "name": "fonts/public/ysabeau.part2",
-      "url": "b/43bd9952ce32a73f4d0df735dc435cefcd1982e20b68d816bc3d4558be9f33a0/fonts-public-ysabeau.part2.tar",
-      "size": 26615808,
-      "sha256": "43bd9952ce32a73f4d0df735dc435cefcd1982e20b68d816bc3d4558be9f33a0",
-      "files": 2118
+      "url": "b/0f02e564c9accf8cab4a9a518676233ce4d9978a2b401b80a3f50b396aa1bfcd/fonts-public-ysabeau.part2.tar",
+      "size": 20971520,
+      "sha256": "0f02e564c9accf8cab4a9a518676233ce4d9978a2b401b80a3f50b396aa1bfcd",
+      "files": 2987
     },
     {
       "name": "fonts/public/ysabeau.part3",
-      "url": "b/60d774c55c619f081e988dc9559b194586fe1b1ec721a13f5f614df5187f3a50/fonts-public-ysabeau.part3.tar",
-      "size": 7564288,
-      "sha256": "60d774c55c619f081e988dc9559b194586fe1b1ec721a13f5f614df5187f3a50",
-      "files": 1967
+      "url": "b/f3168fad5bacbce810080cd401fdb23277c8593d20ccd6d9fd43c52e9ba0701b/fonts-public-ysabeau.part3.tar",
+      "size": 19902976,
+      "sha256": "f3168fad5bacbce810080cd401fdb23277c8593d20ccd6d9fd43c52e9ba0701b",
+      "files": 2065
     },
     {
       "name": "fonts/public/zhmetrics-uptex",
@@ -8105,17 +8231,24 @@
     },
     {
       "name": "fonts/typoland/lato.part1",
-      "url": "b/2d1d2af2bb5a7ded6e0b9b7abaccc57b51f096e68373ad613e48d959ba8c5472/fonts-typoland-lato.part1.tar",
-      "size": 25846272,
-      "sha256": "2d1d2af2bb5a7ded6e0b9b7abaccc57b51f096e68373ad613e48d959ba8c5472",
-      "files": 1155
+      "url": "b/f6b5281401a6878ff9df0e1db353803013ec890a1c984a1e9056dba98958f614/fonts-typoland-lato.part1.tar",
+      "size": 20967936,
+      "sha256": "f6b5281401a6878ff9df0e1db353803013ec890a1c984a1e9056dba98958f614",
+      "files": 1007
     },
     {
       "name": "fonts/typoland/lato.part2",
-      "url": "b/43bdc38c324ea8e660f4c1d807309ea7efa2eaccf25e0fa61f41705b950fb59f/fonts-typoland-lato.part2.tar",
-      "size": 19636224,
-      "sha256": "43bdc38c324ea8e660f4c1d807309ea7efa2eaccf25e0fa61f41705b950fb59f",
-      "files": 609
+      "url": "b/58b66666fe977615b973d657d66e4569618f501bdc6322fd62079c87b38b41d0/fonts-typoland-lato.part2.tar",
+      "size": 20704768,
+      "sha256": "58b66666fe977615b973d657d66e4569618f501bdc6322fd62079c87b38b41d0",
+      "files": 176
+    },
+    {
+      "name": "fonts/typoland/lato.part3",
+      "url": "b/eea3234cdd5cfb200a84c2d243e353f4779585fd73810173ad81054468bd0068/fonts-typoland-lato.part3.tar",
+      "size": 3810816,
+      "sha256": "eea3234cdd5cfb200a84c2d243e353f4779585fd73810173ad81054468bd0068",
+      "files": 581
     },
     {
       "name": "fonts/uhc/umj",
@@ -9176,17 +9309,24 @@
     },
     {
       "name": "tex/context/base.part1",
-      "url": "b/db8975a4f4094ab7084a67d9f28e1774fe3a3cd235127d0cb7ce2813f2ac8a53/tex-context-base.part1.tar",
-      "size": 26033664,
-      "sha256": "db8975a4f4094ab7084a67d9f28e1774fe3a3cd235127d0cb7ce2813f2ac8a53",
-      "files": 1171
+      "url": "b/61609cd02022bbca78be06173794225debc2965697c619c4e5a2e343fe216ce4/tex-context-base.part1.tar",
+      "size": 20969472,
+      "sha256": "61609cd02022bbca78be06173794225debc2965697c619c4e5a2e343fe216ce4",
+      "files": 850
     },
     {
       "name": "tex/context/base.part2",
-      "url": "b/310cd52681bfccc375e67f94016b4becccfeb368745ac920770454134713873b/tex-context-base.part2.tar",
-      "size": 20251648,
-      "sha256": "310cd52681bfccc375e67f94016b4becccfeb368745ac920770454134713873b",
-      "files": 1169
+      "url": "b/9e6c34b0314b5eb02ba10c4e4d04a4b89d264c5503b989a340a1d9484ca2730a/tex-context-base.part2.tar",
+      "size": 20962304,
+      "sha256": "9e6c34b0314b5eb02ba10c4e4d04a4b89d264c5503b989a340a1d9484ca2730a",
+      "files": 1233
+    },
+    {
+      "name": "tex/context/base.part3",
+      "url": "b/3a57743c378229782b50699565b05c5d8e7c566c6450110b75a6a0eda51c08b0/tex-context-base.part3.tar",
+      "size": 4354560,
+      "sha256": "3a57743c378229782b50699565b05c5d8e7c566c6450110b75a6a0eda51c08b0",
+      "files": 257
     },
     {
       "name": "tex/context/bib",
@@ -10869,11 +11009,18 @@
       "files": 1
     },
     {
-      "name": "tex/generic/pst-geo",
-      "url": "b/4f5641ea3e55e88860ac65b9df9b200481696ce3f3345b115e37a77065c716f2/tex-generic-pst-geo.tar",
-      "size": 24736256,
-      "sha256": "4f5641ea3e55e88860ac65b9df9b200481696ce3f3345b115e37a77065c716f2",
-      "files": 54
+      "name": "tex/generic/pst-geo.part1",
+      "url": "b/ee6e9e14a0dc5912dcc5e1905e5621e1da86aa2c499d38cd2b78f2f094e302b4/tex-generic-pst-geo.part1.tar",
+      "size": 20768768,
+      "sha256": "ee6e9e14a0dc5912dcc5e1905e5621e1da86aa2c499d38cd2b78f2f094e302b4",
+      "files": 42
+    },
+    {
+      "name": "tex/generic/pst-geo.part2",
+      "url": "b/a86d9eee351a764d1b1602ed43c2329dcba535d98b9610424b99622f9cc6f33a/tex-generic-pst-geo.part2.tar",
+      "size": 3968512,
+      "sha256": "a86d9eee351a764d1b1602ed43c2329dcba535d98b9610424b99622f9cc6f33a",
+      "files": 12
     },
     {
       "name": "tex/generic/pst-geometrictools",
@@ -38422,8 +38569,8 @@
     }
   ],
   "totals": {
-    "bundles": 5479,
+    "bundles": 5500,
     "files": 159000,
-    "bytes": 3491559936
+    "bytes": 3491581440
   }
 }
