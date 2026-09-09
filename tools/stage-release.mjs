@@ -24,6 +24,7 @@ const arg = (name, fallback) => {
 const distDir = path.resolve(arg('dist', 'wasm-build/dist'))
 const outDir = path.resolve(arg('out', 'staged'))
 const sourceUrl = arg('source-url', null)
+const bundlesDir = arg('bundles', null) ? path.resolve(arg('bundles', null)) : null
 const log = (...a) => console.error(...a)
 
 const ARTIFACTS = /\.(wasm|fmt|fmt\.gz)$|^wasmtex-.*\.js$/
@@ -80,6 +81,62 @@ for (const f of fs.readdirSync('LICENSES')) {
 fs.copyFileSync('RELINK.md', path.join(outDir, 'RELINK.md'))
 fs.copyFileSync('linked-components.json', path.join(outDir, 'linked-components.json'))
 
+// Bundles: package delivery for the browser tier (SPEC-latex.md, "Hosting").
+// Copied verbatim into out/bundles/ so bundles.json's relative "b/<sha256>/..."
+// URLs keep resolving after the copy, then recorded on the manifest so the
+// importer can verify the index the same way it verifies engine artifacts.
+let bundlesInfo = null
+function copyTree(src, dest) {
+  fs.mkdirSync(dest, { recursive: true })
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const from = path.join(src, entry.name)
+    const to = path.join(dest, entry.name)
+    if (entry.isDirectory()) copyTree(from, to)
+    else fs.copyFileSync(from, to)
+  }
+}
+if (bundlesDir) {
+  for (const required of ['bundles.json', 'RECEIPT-FILES.json', 'b']) {
+    if (!fs.existsSync(path.join(bundlesDir, required))) {
+      console.error(`--bundles ${bundlesDir} has no ${required}; run tools/build-bundles.mjs first`)
+      process.exit(1)
+    }
+  }
+  const bundlesOut = path.join(outDir, 'bundles')
+  fs.mkdirSync(bundlesOut, { recursive: true })
+  fs.copyFileSync(path.join(bundlesDir, 'bundles.json'), path.join(bundlesOut, 'bundles.json'))
+  fs.copyFileSync(path.join(bundlesDir, 'RECEIPT-FILES.json'), path.join(bundlesOut, 'RECEIPT-FILES.json'))
+  copyTree(path.join(bundlesDir, 'b'), path.join(bundlesOut, 'b'))
+
+  const bundlesIndexBytes = fs.readFileSync(path.join(bundlesOut, 'bundles.json'))
+  const bundlesIndex = JSON.parse(bundlesIndexBytes)
+  const bundleNames = Object.keys(bundlesIndex.bundles ?? {})
+  const bytes = bundleNames.reduce((sum, name) => sum + (bundlesIndex.bundles[name].size ?? 0), 0)
+
+  // The receipt lives beside the format receipts in receipts/, written by
+  // build-bundles.mjs --evidence. The one the manifest names is the one whose
+  // recorded index hash is the index being staged; any other is a different build.
+  const indexSha = createHash('sha256').update(bundlesIndexBytes).digest('hex')
+  const bundleReceipts = fs.readdirSync('receipts').filter((f) => f.startsWith('BUNDLE-RECEIPT.'))
+  const receiptFile = bundleReceipts.find((f) => {
+    try { return JSON.parse(fs.readFileSync(path.join('receipts', f), 'utf8')).index?.sha256 === indexSha } catch { return false }
+  })
+  if (!receiptFile) {
+    console.error(`no receipts/BUNDLE-RECEIPT.*.json records the index in ${bundlesDir}; run tools/build-bundles.mjs --evidence`)
+    process.exit(1)
+  }
+  fs.copyFileSync(path.join('receipts', receiptFile), path.join(outDir, receiptFile))
+
+  bundlesInfo = {
+    index: 'bundles/bundles.json',
+    sha256: indexSha,
+    snapshot: bundlesIndex.snapshot,
+    count: bundleNames.length,
+    bytes,
+    receipt: receiptFile,
+  }
+}
+
 const sourceReceipt = fs.existsSync('receipts/SOURCE-RECEIPT.json')
   ? JSON.parse(fs.readFileSync('receipts/SOURCE-RECEIPT.json', 'utf8'))
   : null
@@ -108,6 +165,11 @@ them are in \`LICENSES/\`, and \`THIRD_PARTY_NOTICES.md\` explains what applies 
 Format files (\`.fmt\`) are not engine code: they are compiled dumps of TeX Live
 inputs and carry those inputs' terms. Every input is listed with its hash in the
 \`FORMAT-RECEIPT.*.json\` beside this file.
+
+Bundles under \`bundles/\` (\`bundles.json\` and the tar files it indexes) are TeX
+Live package files, not engine code: macros, fonts, and metrics with their own
+terms, LPPL and others, as TeX Live records for each package. Every member of
+every bundle is listed with its hash in \`bundles/RECEIPT-FILES.json\`.
 `)
 
 // Hash the entire payload, including notices and receipts.
@@ -129,6 +191,7 @@ const manifest = {
   artifacts: staged,
   files: payload(outDir),
   correspondingSource: sourceUrl ? { url: sourceUrl, sha256: sourceReceipt?.sha256 ?? null } : null,
+  bundles: bundlesInfo,
 }
 fs.writeFileSync(path.join(outDir, 'MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n')
 
@@ -146,6 +209,9 @@ if (gate.status === 0) {
 log(`staged   ${staged.length} artifact(s) to ${path.relative(process.cwd(), outDir)}`)
 for (const f of families) log(`  ${f.family.padEnd(8)} ${f.combinedTerms}`)
 log(`notices  LICENSES/ (${fs.readdirSync('LICENSES').length} files), THIRD_PARTY_NOTICES.md, LICENSE, RELINK.md`)
+if (bundlesInfo) {
+  log(`bundles  ${bundlesInfo.count} bundle(s), ${(bundlesInfo.bytes / 1e6).toFixed(1)} MB, snapshot ${bundlesInfo.snapshot}`)
+}
 if (!sourceUrl) {
   log('\nNo --source-url given: SOURCE.md says so, and tools/check-release.mjs will')
   log('refuse this directory. Publish the source archive first.')

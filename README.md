@@ -45,6 +45,22 @@ the result. See [`docs/format-generation.md`](docs/format-generation.md).
 The texmf tree comes from the official TeX Live release archive, verified
 against TUG's signed hash: [`docs/texlive-snapshot-2026.md`](docs/texlive-snapshot-2026.md).
 
+**Build the package bundles.** `tools/build-bundles.mjs` packs the same tree
+into one tar per package directory, 5,503 bundles and 3.5 GB for 2026, indexed
+by `bundles.json`, so the browser fetches a package in one request instead of
+one request per file. Deterministic, receipted, and never bundles what a browser
+engine cannot read. See [`docs/bundles.md`](docs/bundles.md).
+
+    node tools/build-bundles.mjs \
+      --texmf vendor/texlive-2026/texlive-20260301-texmf/texmf-dist \
+      --texmf vendor/texlive-2026/texmf-var \
+      --out wasm-build/dist/bundles \
+      --evidence receipts/BUNDLE-RECEIPT.texlive-2026.json
+
+`tools/build-format.mjs --bundles wasm-build/dist/bundles --expect-inputs
+receipts/FORMAT-RECEIPT.pdftex-2026.json` builds the format through the
+bundles instead of the tree and checks it resolved the same inputs.
+
 **Prepare a distributable release.** The engines are GPL, so publishing them
 carries obligations: notices, complete corresponding source, and a working
 relink path for the LGPL library inside them. Four commands discharge and then
@@ -53,7 +69,7 @@ check every obligation this repository can check —
 
     node tools/link-inventory.mjs --family pdftex --out receipts/LINK-INVENTORY.pdftex.json
     node tools/build-corresponding-source.mjs --dist wasm-build/dist --out dist-source/
-    node tools/stage-release.mjs --dist wasm-build/dist --out staged/ --source-url <published URL>
+    node tools/stage-release.mjs --dist wasm-build/dist --bundles wasm-build/dist/bundles --out staged/ --source-url <published URL>
     node tools/check-release.mjs --dir staged/
 
 Staging also runs the release gate. When it passes, `MANIFEST.json` records
@@ -76,20 +92,28 @@ network policy too: [`docs/audit-worker-js.md`](docs/audit-worker-js.md).
 
 ## What is not done yet
 
-- Only pdfTeX and BibTeX are built here. XeTeX, LuaHBTeX, dvipdfm, BibTeX8 and
-  makeindex have their Dockerfiles and gates but have never been run.
+- pdfTeX, BibTeX, BibTeX8, makeindex, XeTeX and dvipdfm are built here, with
+  ICU data for XeTeX. XeTeX boots but has no format file and has compiled no
+  document yet. LuaHBTeX has its Dockerfile and gates but has never been run.
 - The engine Dockerfiles still clone TeX Live source from GitHub rather than
   using a vendored tarball.
-- Compliance is established for pdfTeX and BibTeX only. The other five engines
-  have no link inventory, so no terms are established for them.
+- Compliance is established for every engine built. LuaHBTeX has no link
+  inventory, so no terms are established for it.
 - Nowhere is the source archive published yet, and LibrePaper does not link to
   it from the page serving the engines. That is a product decision, and until
   it is made `check-release.mjs` blocks the release.
 - A clean rebuild *from the source archive* is not yet verified to reproduce
   the distributed bytes.
-- LibrePaper itself still fetches TeX Live packages from upstream's CDN at
-  compile time. This repository makes the engine ours; the package mirror is
-  the next job.
+- LibrePaper's shipped mirror still points at the pinned WasmTex package
+  snapshot until a release built here, with bundles, is imported. The
+  importer, the controller's bundle mode, and the failure message that names
+  a missing package are in LibrePaper; the release is not published.
+- Only the pdfTeX worker resolves through bundles. The XeTeX, LuaTeX and
+  dvipdfm workers still resolve one file at a time.
+
+The product plan these serve, and where the browser stops and the paired local
+app begins, is [`SPEC-latex.md`](SPEC-latex.md); the user-facing version is
+[`docs/what-works-in-the-browser.md`](docs/what-works-in-the-browser.md).
 
 ## Two upstreams
 
@@ -141,8 +165,8 @@ LibrePaper has its own controller. Written since the seed: `tools/`,
 | Path | What |
 |---|---|
 | `wasm-build/` | The build: Dockerfiles, Makefile, worker controllers, C shims, and the from-source orchestration and gates for the engines not built here yet. Outputs to `dist/` (ignored). |
-| `tools/` | Everything that runs here: format builder, link inventory, pin check, release staging and gate. |
-| `receipts/` | Our build evidence — link inventories, format inputs, source-archive hashes. |
+| `tools/` | Everything that runs here: format builder, bundle builder, link inventory, pin check, release staging and gate. |
+| `receipts/` | Our build evidence — link inventories, format inputs, bundle summary, source-archive hashes. |
 | `vendor/` | The verified TeX Live tree (ignored; 14 GB). |
 | `docs/` | How each part works and what is still missing. |
 | `LICENSES/` | Verbatim third-party notice texts, shipped whole with any release. |

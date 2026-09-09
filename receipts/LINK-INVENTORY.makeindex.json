@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "family": "makeindex",
+  "combinedTerms": "LicenseRef-MakeIndex-Notice AND LGPL-2.1-or-later",
+  "combinedTermsReason": "makeindex links no Xpdf, libpng or zlib. Its only copyleft component is kpathsea (LGPL-2.1-or-later); texk/makeindexk itself carries the 1989 MakeIndex Distribution Notice (a source-availability permission notice, not the GPL) per texk/makeindexk/COPYING in the pinned TeX Live source.",
+  "modules": [
+    {
+      "name": "wasmtex-makeindex",
+      "wasm": {
+        "bytes": 128682,
+        "sha256": "a0e199a8ed19c98830be277c2aed5c5a283521c8b96e7f3689107a36f8bb71e7"
+      },
+      "archives": 5,
+      "objects": 8
+    }
+  ],
+  "linked": [
+    {
+      "kind": "archive",
+      "component": "compiler-rt",
+      "version": null,
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Apache-2.0.txt",
+        "LICENSES/LLVM-exception.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libcompiler_rt.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "dlmalloc (via Emscripten)",
+      "version": null,
+      "license": "CC-PDDC",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libdlmalloc.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten libc (musl)",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/musl.txt",
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libc.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten syscall stubs",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libstubs.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "kpathsea",
+      "version": null,
+      "license": "LGPL-2.1-or-later",
+      "licenseChoice": null,
+      "staticLinkObligation": "lgpl-relink",
+      "source": "texlive-source/texk/kpathsea",
+      "notices": [
+        "LICENSES/LGPL-2.1.txt"
+      ],
+      "relink": "RELINK.md",
+      "selectedAs": [
+        "/build/wasm-makeindex/texk/kpathsea/.libs/libkpathsea.a"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "makeindex (texk/makeindexk)",
+      "license": "LicenseRef-MakeIndex-Notice",
+      "staticLinkObligation": "notice",
+      "source": "texlive-source/texk/makeindexk",
+      "notices": [
+        "LICENSES/MakeIndex.txt"
+      ],
+      "objectCount": 6,
+      "selectedAs": [
+        "genind_0.o",
+        "mkind_1.o",
+        "qsort_2.o",
+        "scanid_3.o",
+        "scanst_4.o",
+        "sortid_5.o"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "This repository's engine shims (wasm-build/*.c), seeded from WasmTex",
+      "license": "MIT",
+      "staticLinkObligation": "notice",
+      "source": "repo/wasm-build",
+      "notices": [
+        "LICENSE",
+        "LICENSES/WasmTex.txt"
+      ],
+      "objectCount": 2,
+      "selectedAs": [
+        "kpse-hook.o",
+        "makeindex-entry.o"
+      ]
+    }
+  ],
+  "requiredNotices": [
+    "LICENSE",
+    "LICENSES/Apache-2.0.txt",
+    "LICENSES/Emscripten-3.1.46.txt",
+    "LICENSES/LGPL-2.1.txt",
+    "LICENSES/LLVM-exception.txt",
+    "LICENSES/MakeIndex.txt",
+    "LICENSES/WasmTex.txt",
+    "LICENSES/musl.txt"
+  ]
+}

@@ -135,6 +135,16 @@ function compileMakeindexRoutine() {
     }
   }
 
+  // kpse_set_program_name (kpathsea/progname.c) lstats argv[0] to find the
+  // program's own directory (for SELFAUTOLOC-style texmf.cnf expansions). In
+  // MEMFS there is no real "makeindex" binary on disk, so without this the
+  // lstat fails and kpathsea calls exit(1) before makeindex prints anything
+  // or touches the .idx file — silently and misleadingly reported as "ok" by
+  // the status<=1 check below. bibtex-worker.js and bibtex8-worker.js already
+  // work around this by touching a placeholder file named after argv[0]; do
+  // the same here (argv[0] is "makeindex" — see makeindex-entry.c).
+  try { FS.writeFile(WORKROOT + "/makeindex", ""); } catch (e) {}
+
   writeTexmfCnf();
   _setMainEntry(allocateString(self.mainfile));
 

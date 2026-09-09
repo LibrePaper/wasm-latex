@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "family": "bibtex8",
+  "combinedTerms": "GPL-2.0-or-later",
+  "combinedTermsReason": "bibtex8 (texk/bibtex-x) source headers read \"published by the Free Software Foundation; either version 1, or (at your option) any later version\" (GPL-1.0-or-later); its only other copyleft component is kpathsea (LGPL-2.1-or-later). Both permit later versions, so the combined unit is GPL-2.0-or-later, the earliest version both licenses share by their own \"or later\" terms.",
+  "modules": [
+    {
+      "name": "wasmtex-bibtex8",
+      "wasm": {
+        "bytes": 222168,
+        "sha256": "f2ad8f96a35cd5d0b7fd291cd966f0659664bc60ab1d88594af62569a41f1d6c"
+      },
+      "archives": 5,
+      "objects": 8
+    }
+  ],
+  "linked": [
+    {
+      "kind": "objects",
+      "component": "bibtex8 (texk/bibtex-x, built with -DSUPPORT_8BIT)",
+      "license": "GPL-1.0-or-later",
+      "staticLinkObligation": "gpl-source",
+      "source": "texlive-source/texk/bibtex-x",
+      "notices": [
+        "LICENSES/GPL-2.0.txt"
+      ],
+      "objectCount": 6,
+      "selectedAs": [
+        "bibtex8-bibtex-1.o",
+        "bibtex8-bibtex-2.o",
+        "bibtex8-bibtex-3.o",
+        "bibtex8-bibtex-4.o",
+        "bibtex8-bibtex.o",
+        "bibtex8-utils.o"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "compiler-rt",
+      "version": null,
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Apache-2.0.txt",
+        "LICENSES/LLVM-exception.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libcompiler_rt.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "dlmalloc (via Emscripten)",
+      "version": null,
+      "license": "CC-PDDC",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libdlmalloc.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten libc (musl)",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/musl.txt",
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libc.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten syscall stubs",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libstubs.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "kpathsea",
+      "version": null,
+      "license": "LGPL-2.1-or-later",
+      "licenseChoice": null,
+      "staticLinkObligation": "lgpl-relink",
+      "source": "texlive-source/texk/kpathsea",
+      "notices": [
+        "LICENSES/LGPL-2.1.txt"
+      ],
+      "relink": "RELINK.md",
+      "selectedAs": [
+        "/build/wasm-bibtex8/texk/kpathsea/.libs/libkpathsea.a"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "This repository's engine shims (wasm-build/*.c), seeded from WasmTex",
+      "license": "MIT",
+      "staticLinkObligation": "notice",
+      "source": "repo/wasm-build",
+      "notices": [
+        "LICENSE",
+        "LICENSES/WasmTex.txt"
+      ],
+      "objectCount": 2,
+      "selectedAs": [
+        "bibtex8-entry.o",
+        "kpse-hook.o"
+      ]
+    }
+  ],
+  "requiredNotices": [
+    "LICENSE",
+    "LICENSES/Apache-2.0.txt",
+    "LICENSES/Emscripten-3.1.46.txt",
+    "LICENSES/GPL-2.0.txt",
+    "LICENSES/LGPL-2.1.txt",
+    "LICENSES/LLVM-exception.txt",
+    "LICENSES/WasmTex.txt",
+    "LICENSES/musl.txt"
+  ]
+}

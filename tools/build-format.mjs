@@ -24,6 +24,9 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
 import vm from 'node:vm'
+import { createRequire } from 'node:module'
+
+const require = createRequire(import.meta.url)
 
 // 2026-03-01T00:00:00Z — the TeX Live 2026 release date. Any fixed value works;
 // this one keeps the format's internal date stamp meaningful.
@@ -52,6 +55,22 @@ const verbose = process.argv.includes('--verbose')
 const quiet = process.argv.includes('--quiet')
 const log = (...a) => { if (!quiet) console.error(...a) }
 
+// --bundles <dir>: resolve through a bundle index (SPEC-latex.md "Package
+// delivery: bundles, not files") instead of the per-file harness resolver
+// below. --texmf trees are still required in this mode: they are the fallback
+// for anything the index has no entry for (in practice, nothing but a
+// format-10 request should ever fall back — see resolveViaBundleIndex in
+// pdftex-worker.js).
+const bundlesDirArg = arg('bundles', null)
+const bundlesDir = bundlesDirArg ? path.resolve(bundlesDirArg) : null
+let bundlesIndexRaw = null
+let bundlesIndex = null
+if (bundlesDir) {
+  const indexPath = path.join(bundlesDir, 'bundles.json')
+  bundlesIndexRaw = fs.readFileSync(indexPath, 'utf8')
+  bundlesIndex = JSON.parse(bundlesIndexRaw)
+}
+
 if (!texmfDirs.length || texmfDirs.some((d) => !fs.existsSync(d))) {
   console.error('usage: node tools/build-format.mjs --texmf <tree> [--texmf <tree>...] [--out file] [--evidence file]')
   console.error('the texmf trees are the format\'s only input besides the engine; there is no network fallback')
@@ -65,28 +84,11 @@ if (!texmfDirs.length || texmfDirs.some((d) => !fs.existsSync(d))) {
 // resolver has to as well. Getting this wrong is quiet: the format still builds,
 // it is just built from the wrong latex.ltx.
 //
-// Each entry lists path prefixes in kpathsea preference order, mirroring the
-// TEXINPUTS-style paths pdflatex runs with, e.g.
-//   TEXINPUTS = .;$TEXMF/tex/{latex,generic,}//
-// which is why tex/latex/base/latex.ltx beats tex/latex-dev/base/latex.ltx, and
-// babel's hyphen.cfg beats cslatex's. A file outside every listed prefix is not
-// that format's file and is not offered to the engine.
-const FORMAT_SEARCH_ORDER = {
-  3: ['fonts/tfm/'],                            // TFM metrics
-  4: ['fonts/afm/'],                            // AFM metrics
-  6: ['bibtex/bib/'],                           // .bib
-  7: ['bibtex/bst/'],                           // .bst
-  11: ['fonts/map/'],                           // font maps
-  26: ['tex/latex/', 'tex/generic/', 'tex/'],     // .tex .sty .cls .def .cfg .ltx .ini
-  28: ['web2c/'],                               // pool files
-  32: ['fonts/type1/'],                         // .pfb
-  33: ['fonts/vf/'],                            // virtual fonts
-  36: ['fonts/truetype/'],
-  44: ['fonts/enc/'],                           // encodings
-  47: ['fonts/opentype/'],
-  48: ['tex/generic/config/', 'web2c/'],        // pdftex.cfg
-  51: ['tex/luatex/', 'tex/generic/', 'scripts/'], // .lua
-}
+// FORMAT_SEARCH_ORDER lives in wasm-build/kpse-resolve.cjs (one copy, per
+// SPEC-latex.md's "The resolver": the runtime worker ranks candidate paths from
+// bundles.json with the same table, and two copies of that ordering would
+// drift).
+const { FORMAT_SEARCH_ORDER, readTar, sha256Hex } = require('../wasm-build/kpse-resolve.cjs')
 
 const index = new Map()   // basename -> [{ root, rel }, ...]
 let fileCount = 0
@@ -147,6 +149,20 @@ function resolveFile(format, name) {
 // here, since nothing leaves the machine.
 const ENDPOINT = 'texmf-local:/'
 
+// --- Bundle-mode bookkeeping (only populated when --bundles is given; the
+// default path never touches any of this, which is what keeps it byte-for-byte
+// equivalent to before) ---------------------------------------------------
+let currentPhase = 'boot' // 'boot' | 'index' | 'format' | 'smoke'
+const xhrCounts = {} // phase -> { perFile, bundle, index }
+function countXhr(kind) {
+  if (!bundlesDir) return
+  const c = xhrCounts[currentPhase] || (xhrCounts[currentPhase] = { perFile: 0, bundle: 0, index: 0 })
+  c[kind]++
+}
+const bundlesFetched = [] // [{url, size, sha256}], one per bundle tar actually served
+const bundleMembersByPath = new Map() // texmf-relative path -> Buffer, from tars served so far
+const resolverEvidence = [] // [{phase, requestedName, format, outcome, attempts}], from `resolver` messages
+
 class XMLHttpRequestShim {
   constructor() {
     this.status = 0
@@ -163,8 +179,46 @@ class XMLHttpRequestShim {
   getResponseHeader() { return null }
   send() {
     const rest = this._url.startsWith(ENDPOINT) ? this._url.slice(ENDPOINT.length) : this._url
+
+    // bundles.json itself: served the same way a static-asset host would.
+    if (bundlesDir && rest === 'bundles.json') {
+      countXhr('index')
+      this.status = 200
+      const buf = Buffer.from(bundlesIndexRaw, 'utf8')
+      const copy = new Uint8Array(buf.length)
+      copy.set(buf)
+      this.response = this.responseType === 'arraybuffer' ? copy.buffer : copy
+      this.responseText = this.responseType === 'arraybuffer' ? '' : bundlesIndexRaw
+      return
+    }
+
+    // A bundle tar, at its digested "b/<sha256>/<slug>.tar" path.
+    if (bundlesDir && rest.startsWith('b/')) {
+      const filePath = path.join(bundlesDir, rest)
+      if (!fs.existsSync(filePath)) { this.status = 404; countXhr('bundle'); return }
+      countXhr('bundle')
+      const data = fs.readFileSync(filePath)
+      const digest = createHash('sha256').update(data).digest('hex')
+      bundlesFetched.push({ url: rest, size: data.length, sha256: digest })
+      // Index every member's bytes by texmf-relative path, so the evidence
+      // writer below can report a sha256 per resolved file even though no
+      // per-file request was ever made for it.
+      const u8 = new Uint8Array(data.buffer, data.byteOffset, data.byteLength)
+      readTar(u8, (relpath, memberBytes) => {
+        if (!bundleMembersByPath.has(relpath)) bundleMembersByPath.set(relpath, Buffer.from(memberBytes))
+      })
+      if (verbose) log(`  bundle ${rest} (${data.length} bytes)`)
+      this.status = 200
+      const copy = new Uint8Array(data.length)
+      copy.set(data)
+      this.response = this.responseType === 'arraybuffer' ? copy.buffer : copy
+      this.responseText = ''
+      return
+    }
+
     const m = /^pdftex\/(\d+)\/(.+)$/.exec(rest)
     if (!m) { this.status = 404; return }
+    countXhr('perFile')
     const format = Number(m[1])
     const name = decodeURIComponent(m[2])
     const hit = resolveFile(format, name)
@@ -206,6 +260,9 @@ let notify = () => {}
 const traceMessages = process.argv.includes('--trace-messages')
 const deliver = (msg) => {
   if (traceMessages) log(`  <- ${msg.cmd ?? '(ready)'} ${msg.result ?? ''}`)
+  if (bundlesDir && msg.cmd === 'resolver' && msg.evidence) {
+    resolverEvidence.push({ phase: currentPhase, ...msg.evidence })
+  }
   messages.push(msg)
   notify()
 }
@@ -280,7 +337,20 @@ log('engine booted')
 
 sandbox.onmessage({ data: { cmd: 'settexliveurl', url: ENDPOINT } })
 
+if (bundlesDir) {
+  currentPhase = 'index'
+  sandbox.onmessage({ data: { cmd: 'loadbundleindex', data: bundlesIndexRaw, msgId: 1 } })
+  const loaded = await nextMessage((m) => m.cmd === 'loadbundleindex', 60000, 'the bundle index to load')
+  if (loaded.result !== 'ok') {
+    console.error(loaded.log ?? '')
+    console.error('\nloadbundleindex failed')
+    process.exit(1)
+  }
+  log(`bundles  index loaded: ${loaded.bundles} bundles, ${loaded.files} files, ${loaded.cached} restored from Cache Storage`)
+}
+
 const started = Date.now()
+currentPhase = 'format'
 sandbox.onmessage({ data: { cmd: 'compileformat' } })
 const done = await nextMessage((m) => m.cmd === 'compile', 30 * 60 * 1000, 'the format build')
 const seconds = ((Date.now() - started) / 1000).toFixed(1)
@@ -290,6 +360,11 @@ if (done.result !== 'ok') {
   console.error(`\nformat build failed with status ${done.status} after ${seconds}s`)
   console.error(`${resolved.length} files resolved, ${missing.length} requests unsatisfied`)
   process.exit(1)
+}
+
+if (bundlesDir) {
+  const c = xhrCounts.format || { perFile: 0, bundle: 0, index: 0 }
+  log(`xhr      format phase: ${c.perFile} per-file, ${c.bundle} bundle, ${c.index} index`)
 }
 
 // Everything resolved so far belongs to the format; the smoke compile below
@@ -315,6 +390,7 @@ if (unknownFormats.size) {
 // loads the bytes we just wrote back into the same engine and compiles a
 // document with them, so a broken format fails here rather than in a browser.
 if (process.argv.includes("--smoke")) {
+  currentPhase = 'smoke'
   const doc = [
     "\\documentclass{article}",
     "\\begin{document}",
@@ -336,7 +412,82 @@ if (process.argv.includes("--smoke")) {
     process.exit(1)
   }
   log(`smoke    compiled a document with this format, ${pdf.length} byte PDF`)
+
+  if (bundlesDir) {
+    const c = xhrCounts.smoke || { perFile: 0, bundle: 0, index: 0 }
+    log(`xhr      smoke phase: ${c.perFile} per-file, ${c.bundle} bundle, ${c.index} index`)
+    // The numbers to hold the design to (SPEC-latex.md): a warm compile makes
+    // no per-file request at all. The smoke document is plain pdfLaTeX, so
+    // everything it needs must come from `core` — if this fires, the core
+    // bundle list (or the resolver ranking) is missing something.
+    if (c.perFile !== 0) {
+      console.error(`\nbundle-mode smoke compile made ${c.perFile} per-file request(s); expected zero`)
+      process.exit(1)
+    }
+  }
 }
+
+// In bundle mode, resolved/missing (the per-file XHR log) mostly stays empty —
+// see resolveViaBundleIndex in pdftex-worker.js, which never falls through to
+// the per-file path except for an unbundled format-10 request. The bundle
+// equivalent comes from the `resolver` evidence messages captured above:
+// every request resolved through a bundle carries the bundle name and the
+// texmf-relative path in its evidence attempt, which is enough (with the tar
+// bytes the shim already parsed) to report a sha256 per resolved file the
+// same way the per-file path does.
+// A name asked for twice reports twice: the first time with the bundle and
+// path it came from, later times from the worker's session cache with neither.
+// One input per (format, name), the one that knows where it came from.
+const bundleInputsByRequest = new Map()
+if (bundlesDir) {
+  for (const e of resolverEvidence) {
+    if (e.phase !== 'format' || e.outcome !== 'resolved' || e.attempts?.[0]?.source !== 'bundle') continue
+    const key = `${e.format}/${e.requestedName}`
+    if (e.attempts[0].path || !bundleInputsByRequest.has(key)) bundleInputsByRequest.set(key, e)
+  }
+}
+const bundleFormatInputs = [...bundleInputsByRequest.values()].map((e) => {
+  const relpath = e.attempts[0].path
+  const member = relpath ? bundleMembersByPath.get(relpath) : null
+  return {
+    format: e.format,
+    name: e.requestedName,
+    path: relpath ?? null,
+    bundle: e.attempts[0].bundle ?? null,
+    bytes: member ? member.length : null,
+    sha256: member ? createHash('sha256').update(member).digest('hex') : null,
+  }
+})
+for (const i of bundleFormatInputs) {
+  if (!i.sha256) { console.error(`bundle mode: no bytes recorded for ${i.format}/${i.name}; the evidence would be incomplete`); process.exit(1) }
+}
+
+// --expect-inputs <FORMAT-RECEIPT.json>: the bundle-built format must resolve
+// exactly the files the per-file build resolved, hash for hash. The bytes of
+// the two formats differ (TeX records the path it opened a few hyphenation
+// loaders under, and the bundle layout nests those under /texmf/), so this,
+// not byte identity, is the check that both paths rank the same inputs.
+const expectInputsPath = arg('expect-inputs', null)
+if (expectInputsPath && bundlesDir) {
+  const strip = (p) => (p ?? '').replace(/^.*\/texmf-dist\//, '').replace(/^.*\/texmf-var\//, '')
+  const expected = JSON.parse(fs.readFileSync(expectInputsPath, 'utf8'))
+  const want = new Set(expected.inputs.map((i) => `${strip(i.path)}@${i.sha256}`))
+  const got = new Set(bundleFormatInputs.map((i) => `${i.path}@${i.sha256}`))
+  const onlyWant = [...want].filter((x) => !got.has(x))
+  const onlyGot = [...got].filter((x) => !want.has(x))
+  if (onlyWant.length || onlyGot.length) {
+    console.error(`bundle mode resolved a different input set than ${expectInputsPath}:`)
+    for (const x of onlyWant) console.error(`  per-file only: ${x}`)
+    for (const x of onlyGot) console.error(`  bundle only:   ${x}`)
+    process.exit(1)
+  }
+  log(`inputs   ${got.size} files, identical to ${path.relative(process.cwd(), expectInputsPath)}`)
+}
+const bundleFormatMissing = bundlesDir
+  ? resolverEvidence
+      .filter((e) => e.phase === 'format' && e.outcome !== 'resolved')
+      .map((e) => ({ format: e.format, name: e.requestedName, outcome: e.outcome }))
+  : []
 
 if (evidencePath) {
   fs.writeFileSync(evidencePath, JSON.stringify({
@@ -345,8 +496,12 @@ if (evidencePath) {
     texmf: texmfDirs,
     sourceDateEpoch: epoch,
     format: { name: path.basename(outPath), bytes: fmt.length, sha256: sha },
-    inputs: formatInputs.sort((a, b) => a.path.localeCompare(b.path)),
-    unsatisfied: formatMissing,
+    inputs: formatInputs.concat(bundleFormatInputs).sort((a, b) => (a.path ?? '').localeCompare(b.path ?? '')),
+    unsatisfied: formatMissing.concat(bundleFormatMissing),
+    ...(bundlesDir ? {
+      bundles: path.relative(process.cwd(), bundlesDir),
+      bundlesFetched: bundlesFetched.slice().sort((a, b) => a.url.localeCompare(b.url)),
+    } : {}),
   }, null, 2) + '\n')
   log(`evidence ${path.relative(process.cwd(), evidencePath)}`)
 }

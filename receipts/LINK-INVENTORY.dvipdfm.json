@@ -1,0 +1,247 @@
+{
+  "schemaVersion": 1,
+  "family": "dvipdfm",
+  "combinedTerms": "GPL-2.0-or-later",
+  "combinedTermsReason": "dvipdfm-x (texk/dvipdfm-x) is GPL-2.0-or-later; it links kpathsea (LGPL-2.1-or-later), libpng and zlib (permissive) and no Xpdf, so the combined unit is GPL-2.0-or-later.",
+  "modules": [
+    {
+      "name": "wasmtex-dvipdfm",
+      "wasm": {
+        "bytes": 832374,
+        "sha256": "72fce45bf59aa214328a63593647477b5646ae0ff39d18f74dcd8e93dcb959f0"
+      },
+      "archives": 7,
+      "objects": 75
+    }
+  ],
+  "linked": [
+    {
+      "kind": "archive",
+      "component": "compiler-rt",
+      "version": null,
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Apache-2.0.txt",
+        "LICENSES/LLVM-exception.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libcompiler_rt.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "dlmalloc (via Emscripten)",
+      "version": null,
+      "license": "CC-PDDC",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libdlmalloc.a"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "dvipdfm-x (texk/dvipdfm-x), including its bundled Mersenne Twister mt19937ar.c (BSD-3-Clause)",
+      "license": "GPL-2.0-or-later",
+      "staticLinkObligation": "gpl-source",
+      "source": "texlive-source/texk/dvipdfm-x",
+      "notices": [
+        "LICENSES/GPL-2.0.txt"
+      ],
+      "objectCount": 72,
+      "selectedAs": [
+        "agl.o",
+        "bmpimage.o",
+        "cff.o",
+        "cff_dict.o",
+        "cid.o",
+        "cidtype0.o",
+        "cidtype2.o",
+        "cmap.o",
+        "cmap_read.o",
+        "cmap_write.o",
+        "cs_type2.o",
+        "dpxconf.o",
+        "dpxcrypt.o",
+        "dpxfile.o",
+        "dpxutil.o",
+        "dvi.o",
+        "dvipdfmx.o",
+        "epdf.o",
+        "error.o",
+        "fontmap.o",
+        "jp2image.o",
+        "jpegimage.o",
+        "mem.o",
+        "mfileio.o",
+        "mpost.o",
+        "mt19937ar.o",
+        "numbers.o",
+        "otl_opt.o",
+        "pdfcolor.o",
+        "pdfdev.o",
+        "pdfdoc.o",
+        "pdfdraw.o",
+        "pdfencoding.o",
+        "pdfencrypt.o",
+        "pdffont.o",
+        "pdfnames.o",
+        "pdfobj.o",
+        "pdfparse.o",
+        "pdfresource.o",
+        "pdfximage.o",
+        "pkfont.o",
+        "pngimage.o",
+        "pst.o",
+        "pst_obj.o",
+        "sfnt.o",
+        "spc_color.o",
+        "spc_dvipdfmx.o",
+        "spc_dvips.o",
+        "spc_html.o",
+        "spc_misc.o",
+        "spc_pdfm.o",
+        "spc_tpic.o",
+        "spc_util.o",
+        "spc_xtx.o",
+        "specials.o",
+        "subfont.o",
+        "t1_char.o",
+        "t1_load.o",
+        "tfm.o",
+        "truetype.o",
+        "tt_aux.o",
+        "tt_cmap.o",
+        "tt_glyf.o",
+        "tt_gsub.o",
+        "tt_post.o",
+        "tt_table.o",
+        "type0.o",
+        "type1.o",
+        "type1c.o",
+        "unicode.o",
+        "vf.o",
+        "xbb.o"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten libc (musl)",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/musl.txt",
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libc.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten syscall stubs",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libstubs.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "kpathsea",
+      "version": null,
+      "license": "LGPL-2.1-or-later",
+      "licenseChoice": null,
+      "staticLinkObligation": "lgpl-relink",
+      "source": "texlive-source/texk/kpathsea",
+      "notices": [
+        "LICENSES/LGPL-2.1.txt"
+      ],
+      "relink": "RELINK.md",
+      "selectedAs": [
+        "/build/wasm-dpx/texk/kpathsea/.libs/libkpathsea.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "libpng (Emscripten port)",
+      "version": null,
+      "license": "libpng-2.0",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46 port (libpng)",
+      "notices": [
+        "LICENSES/libpng.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libpng.a"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "This repository's engine shims (wasm-build/*.c), seeded from WasmTex",
+      "license": "MIT",
+      "staticLinkObligation": "notice",
+      "source": "repo/wasm-build",
+      "notices": [
+        "LICENSE",
+        "LICENSES/WasmTex.txt"
+      ],
+      "objectCount": 3,
+      "selectedAs": [
+        "dvipdfm-entry.o",
+        "dvipdfm-stubs.o",
+        "kpse-hook.o"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "zlib (Emscripten port)",
+      "version": null,
+      "license": "Zlib",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46 port (zlib)",
+      "notices": [
+        "LICENSES/zlib.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libz.a"
+      ]
+    }
+  ],
+  "requiredNotices": [
+    "LICENSE",
+    "LICENSES/Apache-2.0.txt",
+    "LICENSES/Emscripten-3.1.46.txt",
+    "LICENSES/GPL-2.0.txt",
+    "LICENSES/LGPL-2.1.txt",
+    "LICENSES/LLVM-exception.txt",
+    "LICENSES/WasmTex.txt",
+    "LICENSES/libpng.txt",
+    "LICENSES/musl.txt",
+    "LICENSES/zlib.txt"
+  ]
+}

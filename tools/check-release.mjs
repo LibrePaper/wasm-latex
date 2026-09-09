@@ -118,6 +118,72 @@ else {
   }
 }
 
+// 7. Bundles (SPEC-latex.md, "The index" and "Hosting"): package delivery for
+// the browser tier, staged only when tools/stage-release.mjs was run with
+// --bundles. The index is the existence check the worker trusts, so every
+// claim it makes about a bundle must hold, and nothing may exist on disk that
+// the index does not name.
+if (manifest.bundles) {
+  const b = manifest.bundles
+  if (!has(b.index)) {
+    fail(`bundle index named in the manifest is missing: ${b.index}`)
+  } else if (sha(b.index) !== b.sha256) {
+    fail(`bundle index changed after staging: ${b.index}`)
+  } else {
+    const index = read(b.index)
+    if (index.schemaVersion !== 1) fail(`${b.index}: unsupported schemaVersion ${index.schemaVersion}`)
+    const bundles = index.bundles ?? {}
+    const names = Object.keys(bundles)
+    if (names.length !== b.count) fail(`manifest.bundles.count is ${b.count} but the index names ${names.length}`)
+
+    const onDiskTars = new Set()
+    const walkTars = (dir, prefix = '') => {
+      if (!fs.existsSync(dir)) return
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const rel = prefix + entry.name
+        if (entry.isDirectory()) walkTars(path.join(dir, entry.name), rel + '/')
+        else onDiskTars.add(rel)
+      }
+    }
+    walkTars(path.join(dir, 'bundles', 'b'))
+
+    const namedTars = new Set()
+    for (const name of names) {
+      const entry = bundles[name]
+      const bundlePath = path.join('bundles', entry.url)
+      if (!has(bundlePath)) { fail(`bundle ${name}: file missing at ${entry.url}`); continue }
+      const bytes = fs.readFileSync(path.join(dir, bundlePath))
+      const actualSha = createHash('sha256').update(bytes).digest('hex')
+      if (actualSha !== entry.sha256) fail(`bundle ${name}: sha256 mismatch (index says ${entry.sha256})`)
+      if (bytes.length !== entry.size) fail(`bundle ${name}: size mismatch (index says ${entry.size}, is ${bytes.length})`)
+      const segments = entry.url.split('/')
+      if (segments[0] !== 'b' || segments[1] !== entry.sha256) {
+        fail(`bundle ${name}: url ${entry.url} does not carry its own sha256 as its directory segment`)
+      }
+      namedTars.add(path.relative('b', entry.url).split(path.sep).join('/'))
+    }
+    for (const t of onDiskTars) {
+      if (!namedTars.has(t)) fail(`bundles/b/${t} exists but no index entry names it`)
+    }
+
+    for (const [file, bundleName] of Object.entries(index.files ?? {})) {
+      if (!bundles[bundleName]) fail(`${b.index}: files["${file}"] names unknown bundle "${bundleName}"`)
+    }
+
+    if (!has(b.receipt)) {
+      fail(`bundle receipt named in the manifest is missing: ${b.receipt}`)
+    } else {
+      const receipt = read(b.receipt)
+      if (receipt.index?.sha256 !== b.sha256) {
+        fail(`${b.receipt}: index.sha256 does not match the staged bundle index`)
+      }
+    }
+
+    const fileCount = Object.keys(index.files ?? {}).length
+    notes.push(`bundles: ${names.length} bundles, ${fileCount} files, ${(b.bytes / 1e6).toFixed(1)} MB`)
+  }
+}
+
 for (const n of notes) console.error(`  ${n}`)
 if (failures.length) {
   console.error(`\n${failures.length} blocker(s) — this directory must not be published:\n`)
@@ -126,4 +192,4 @@ if (failures.length) {
 }
 console.error(`\n${path.relative(process.cwd(), dir)}: every obligation this repository can check is discharged.`)
 console.error('Checked: artifact integrity, component classification, notices, LGPL relink,')
-console.error('corresponding source, and format inputs.')
+console.error(`corresponding source, and format inputs${manifest.bundles ? ', and bundles.' : '.'}`)

@@ -16,6 +16,34 @@
       ],
       "combinedTerms": "LicenseRef-BibTeX-Web2C-Notices AND LGPL-2.1-or-later",
       "combinedTermsReason": "BibTeX links no Xpdf, libpng or zlib. Its only copyleft component is kpathsea (LGPL-2.1-or-later); the BibTeX and web2c sources carry permission notices rather than the GPL."
+    },
+    "makeindex": {
+      "modules": [
+        "wasmtex-makeindex"
+      ],
+      "combinedTerms": "LicenseRef-MakeIndex-Notice AND LGPL-2.1-or-later",
+      "combinedTermsReason": "makeindex links no Xpdf, libpng or zlib. Its only copyleft component is kpathsea (LGPL-2.1-or-later); texk/makeindexk itself carries the 1989 MakeIndex Distribution Notice (a source-availability permission notice, not the GPL) per texk/makeindexk/COPYING in the pinned TeX Live source."
+    },
+    "bibtex8": {
+      "modules": [
+        "wasmtex-bibtex8"
+      ],
+      "combinedTerms": "GPL-2.0-or-later",
+      "combinedTermsReason": "bibtex8 (texk/bibtex-x) source headers read \"published by the Free Software Foundation; either version 1, or (at your option) any later version\" (GPL-1.0-or-later); its only other copyleft component is kpathsea (LGPL-2.1-or-later). Both permit later versions, so the combined unit is GPL-2.0-or-later, the earliest version both licenses share by their own \"or later\" terms."
+    },
+    "xetex": {
+      "modules": [
+        "wasmtex-xetex"
+      ],
+      "combinedTerms": "GPL-2.0-only",
+      "combinedTermsReason": "Matches THIRD_PARTY_NOTICES.md's existing XeTeX entry: XeTeX permits GPL-2.0-or-later, but the linked Xpdf 4.06 copy is selected under GPL-2.0-only and the emscripten-ported FreeType this build links is dual FTL/GPL and also selected under GPL-2.0-only for this combined release (docs/THIRD_PARTY_NOTICES.md, \"Emscripten and ports\"). A v2-only component fixes the whole combined unit at GPL-2.0-only; the LGPL kpathsea/Graphite2/TECkit, MIT WTPDF adapter, ICU, HarfBuzz, libpng and zlib notices are retained but do not raise the combined floor."
+    },
+    "dvipdfm": {
+      "modules": [
+        "wasmtex-dvipdfm"
+      ],
+      "combinedTerms": "GPL-2.0-or-later",
+      "combinedTermsReason": "dvipdfm-x (texk/dvipdfm-x) is GPL-2.0-or-later; it links kpathsea (LGPL-2.1-or-later), libpng and zlib (permissive) and no Xpdf, so the combined unit is GPL-2.0-or-later."
     }
   },
   "archives": [
@@ -136,6 +164,112 @@
       ],
       "source": "toolchain: emscripten/emsdk 3.1.46",
       "staticLinkObligation": "notice"
+    },
+    {
+      "match": "sysroot/lib/wasm32-emscripten/libnoexit.a",
+      "component": "Emscripten noexit runtime support",
+      "license": "MIT",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "staticLinkObligation": "notice"
+    },
+    {
+      "match": "sysroot/lib/wasm32-emscripten/libfreetype.a",
+      "component": "FreeType (Emscripten port)",
+      "license": "GPL-2.0-only",
+      "licenseChoice": "FreeType is dual FTL/GPL-licensed; the GPL-2.0-only option is elected for this combined unit (already fixed at GPL-2.0-only by the linked Xpdf 4.06 copy). See THIRD_PARTY_NOTICES.md, \"Emscripten and ports\".",
+      "notices": [
+        "LICENSES/FreeType.txt",
+        "LICENSES/GPL-2.0.txt"
+      ],
+      "source": "toolchain: emscripten/emsdk 3.1.46 port (FreeType)",
+      "staticLinkObligation": "gpl-source"
+    },
+    {
+      "match": "sysroot/lib/wasm32-emscripten/libicu_common.a",
+      "component": "ICU 68.2 (Emscripten port, common)",
+      "license": "ICU",
+      "notices": [
+        "LICENSES/ICU-68.2.txt"
+      ],
+      "source": "toolchain: emscripten/emsdk 3.1.46 port (ICU 68.2)",
+      "staticLinkObligation": "notice"
+    },
+    {
+      "match": "sysroot/lib/wasm32-emscripten/libicu_stubdata.a",
+      "component": "ICU 68.2 (Emscripten port, stub data)",
+      "license": "ICU",
+      "notices": [
+        "LICENSES/ICU-68.2.txt"
+      ],
+      "source": "toolchain: emscripten/emsdk 3.1.46 port (ICU 68.2)",
+      "staticLinkObligation": "notice"
+    },
+    {
+      "match": "sysroot/lib/wasm32-emscripten/libpng.a",
+      "component": "libpng (Emscripten port)",
+      "license": "libpng-2.0",
+      "notices": [
+        "LICENSES/libpng.txt"
+      ],
+      "source": "toolchain: emscripten/emsdk 3.1.46 port (libpng)",
+      "staticLinkObligation": "notice"
+    },
+    {
+      "match": "sysroot/lib/wasm32-emscripten/libz.a",
+      "component": "zlib (Emscripten port)",
+      "license": "Zlib",
+      "notices": [
+        "LICENSES/zlib.txt"
+      ],
+      "source": "toolchain: emscripten/emsdk 3.1.46 port (zlib)",
+      "staticLinkObligation": "notice"
+    },
+    {
+      "match": "libs/graphite2/libgraphite2.a",
+      "component": "Graphite2",
+      "license": "LGPL-2.1-or-later",
+      "licenseChoice": "Graphite2 is multi-licensed (LGPL-2.1-or-later, MPL-1.1, GPL-2.0-or-later); the LGPL option is retained per THIRD_PARTY_NOTICES.md, \"Emscripten and ports\".",
+      "notices": [
+        "LICENSES/Graphite2.txt"
+      ],
+      "source": "texlive-source/libs/graphite2",
+      "staticLinkObligation": "lgpl-relink",
+      "relink": "RELINK.md"
+    },
+    {
+      "match": "libs/harfbuzz/libharfbuzz.a",
+      "component": "HarfBuzz",
+      "license": "MIT",
+      "notices": [
+        "LICENSES/HarfBuzz.txt"
+      ],
+      "source": "texlive-source/libs/harfbuzz",
+      "staticLinkObligation": "notice"
+    },
+    {
+      "match": "libs/teckit/libTECkit.a",
+      "component": "TECkit",
+      "license": "LGPL-2.1-or-later",
+      "licenseChoice": "TECkit is dual CPL/LGPL-licensed; the LGPL option is retained per THIRD_PARTY_NOTICES.md, \"Emscripten and ports\".",
+      "notices": [
+        "LICENSES/TECkit.txt"
+      ],
+      "source": "texlive-source/libs/teckit",
+      "staticLinkObligation": "lgpl-relink",
+      "relink": "RELINK.md"
+    },
+    {
+      "match": "/lib.a",
+      "component": "web2c runtime library (texk/web2c/lib)",
+      "license": "GPL-2.0-or-later",
+      "notices": [
+        "LICENSES/GPL-2.0.txt"
+      ],
+      "source": "texlive-source/texk/web2c/lib",
+      "staticLinkObligation": "gpl-source"
     }
   ],
   "objectGroups": [
@@ -170,6 +304,27 @@
       "staticLinkObligation": "gpl-source"
     },
     {
+      "match": "^xetex-(xetex0|xetexini|xetexextra|xetex-pool)\\.o$",
+      "component": "XeTeX (texk/web2c, texk/web2c/xetexdir)",
+      "license": "GPL-2.0-or-later",
+      "notices": [
+        "LICENSES/GPL-2.0.txt",
+        "LICENSES/XeTeX.txt"
+      ],
+      "source": "texlive-source/texk/web2c",
+      "staticLinkObligation": "gpl-source"
+    },
+    {
+      "match": "^xetex-synctex\\.o$",
+      "component": "SyncTeX",
+      "license": "LicenseRef-SyncTeX",
+      "notices": [
+        "LICENSES/SyncTeX.txt"
+      ],
+      "source": "texlive-source/texk/web2c/synctexdir",
+      "staticLinkObligation": "notice"
+    },
+    {
       "match": "^synctex_",
       "component": "SyncTeX",
       "license": "LicenseRef-SyncTeX",
@@ -190,7 +345,7 @@
       "staticLinkObligation": "notice"
     },
     {
-      "match": "^(wasm-entry|kpse-hook|trace-hook|bibtex-entry)_",
+      "match": "^(wasm-entry|kpse-hook|trace-hook|bibtex-entry|makeindex-entry|bibtex8-entry|xetex-entry|fontconfig-shim|icu-data-loader|dvipdfm-entry|dvipdfm-stubs)(_[0-9]+)?(\\.o)?$",
       "component": "This repository's engine shims (wasm-build/*.c), seeded from WasmTex",
       "license": "MIT",
       "notices": [
@@ -199,6 +354,36 @@
       ],
       "source": "repo/wasm-build",
       "staticLinkObligation": "notice"
+    },
+    {
+      "match": "^(genind|mkind|qsort|scanid|scanst|sortid)_[0-9]+\\.o$",
+      "component": "makeindex (texk/makeindexk)",
+      "license": "LicenseRef-MakeIndex-Notice",
+      "notices": [
+        "LICENSES/MakeIndex.txt"
+      ],
+      "source": "texlive-source/texk/makeindexk",
+      "staticLinkObligation": "notice"
+    },
+    {
+      "match": "^bibtex8-(bibtex(-[0-9]+)?|utils)\\.o$",
+      "component": "bibtex8 (texk/bibtex-x, built with -DSUPPORT_8BIT)",
+      "license": "GPL-1.0-or-later",
+      "notices": [
+        "LICENSES/GPL-2.0.txt"
+      ],
+      "source": "texlive-source/texk/bibtex-x",
+      "staticLinkObligation": "gpl-source"
+    },
+    {
+      "match": "^(agl|bmpimage|cff|cff_dict|cid|cidtype0|cidtype2|cmap|cmap_read|cmap_write|cs_type2|dpxconf|dpxcrypt|dpxfile|dpxutil|dvi|dvipdfmx|epdf|error|fontmap|jp2image|jpegimage|mem|mfileio|mpost|mt19937ar|numbers|otl_opt|pdfcolor|pdfdev|pdfdoc|pdfdraw|pdfencoding|pdfencrypt|pdffont|pdfnames|pdfobj|pdfparse|pdfresource|pdfximage|pkfont|pngimage|pst|pst_obj|sfnt|spc_color|spc_dvipdfmx|spc_dvips|spc_html|spc_misc|spc_pdfm|spc_tpic|spc_util|spc_xtx|specials|subfont|t1_char|t1_load|tfm|truetype|tt_aux|tt_cmap|tt_glyf|tt_gsub|tt_post|tt_table|type0|type1|type1c|unicode|vf|xbb)\\.o$",
+      "component": "dvipdfm-x (texk/dvipdfm-x), including its bundled Mersenne Twister mt19937ar.c (BSD-3-Clause)",
+      "license": "GPL-2.0-or-later",
+      "notices": [
+        "LICENSES/GPL-2.0.txt"
+      ],
+      "source": "texlive-source/texk/dvipdfm-x",
+      "staticLinkObligation": "gpl-source"
     }
   ]
 }
