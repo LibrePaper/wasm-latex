@@ -9,6 +9,13 @@ This notice records the components known to be used by the current source tree. 
 binary or CDN distributor must also retain every notice from the exact source and
 data files included in that release.
 
+**Scope.** This repository tracks source only: no engine binaries, formats, or
+TeX Live files are committed (`wasm-build/dist/` and `vendor/` are ignored). The
+obligations below attach to the artifacts a build produces and to anyone who
+distributes them, which is why the notices are kept here rather than only in the
+place binaries eventually land. Sections describing files this repository does not
+contain have been removed; what remains describes what a build here links or emits.
+
 ## WasmTex
 
 This repository's build layer was seeded from WasmTex
@@ -24,10 +31,11 @@ and it remains under its own copyright and notice.
 Retaining that notice is a condition of the MIT license and applies to any
 distribution of this repository or a work derived from it.
 
-## SyncTeX parser
+## SyncTeX
 
-`src/synctex/synctex-parser.ts` ports algorithms from the TeX Live reference
-`synctex_parser.c` by Jérôme Laurens.
+The engines are built with SyncTeX support: `wasm-build/Makefile` compiles
+`texk/web2c/synctexdir/synctex.c` from the pinned TeX Live source into every
+pdfTeX unit, under renamed symbols. The code is by Jérôme Laurens.
 
 - Copyright: 2008-2017 Jérôme Laurens
 - License: MIT-like permission notice with a non-endorsement clause
@@ -38,18 +46,18 @@ distribution of this repository or a work derived from it.
 
 The engine build is pinned to TeX Live source commit
 `143f1723353b20202645f241db429b080a8adcdf`. The generated JavaScript, WebAssembly,
-worker, and format files under `public/wasmtex/<year>/` and `wasm-build/dist*/` are
+worker, and format files a build writes to `wasm-build/dist/` are
 not covered solely by the WasmTex MIT license.
 
 | Artifact family | Principal upstream terms |
 | --- | --- |
-| pdfTeX | **GPL-2.0-only for this combined release**: pdfTeX permits GPL-2.0-or-later, while the linked Xpdf 4.04 copy is selected under GPL-2.0-only. Web2C, kpathsea, SyncTeX, libpng, zlib, and other notices are retained. |
+| pdfTeX | **GPL-2.0-only for this combined release**: pdfTeX permits GPL-2.0-or-later, while the linked Xpdf 4.06 copy is selected under GPL-2.0-only. Web2C, kpathsea, SyncTeX, libpng, zlib, and other notices are retained. |
 | BibTeX | The BibTeX 0.99d/TeX notice in `LICENSES/BibTeX.txt`, Web2C notices, and LGPL-2.1-or-later kpathsea with complete-source relink support. |
 | BibTeX8 | GPL-2.0-or-later source in `texk/bibtex-x`, plus kpathsea and linked-library terms. |
 | makeindex | The identical MakeIndex Distribution Notice, plus LGPL-2.1-or-later kpathsea with complete-source relink support. The WebAssembly port is a modified version and the release notice says how to obtain its source. |
-| XeTeX | **GPL-2.0-only for this combined release**, plus the XeTeX notice. Xpdf 4.04 and FreeType are selected under GPL-2.0-only. The MIT WTPDF adapter, LGPL kpathsea/Graphite2/TECkit, ICU, HarfBuzz, libpng, zlib, and other notices are retained. |
+| XeTeX | **GPL-2.0-only for this combined release**, plus the XeTeX notice. Xpdf 4.06 and FreeType are selected under GPL-2.0-only. The MIT WTPDF adapter, LGPL kpathsea/Graphite2/TECkit, ICU, HarfBuzz, libpng, zlib, and other notices are retained. |
 | dvipdfmx | GPL-2.0-or-later terms, plus kpathsea, FreeType, libpng, zlib, and other linked-library terms. |
-| LuaHBTeX | **GPL-2.0-only for this combined release**: LuaHBTeX permits GPL-2.0-or-later and Xpdf 4.04 is selected under GPL-2.0-only. The MIT WTPDF/SHA-2 code, LGPL kpathsea/Graphite2/zziplib, Lua and other embedded-library notices are retained. |
+| LuaHBTeX | **GPL-2.0-only for this combined release**: LuaHBTeX permits GPL-2.0-or-later and Xpdf 4.06 is selected under GPL-2.0-only. The MIT WTPDF/SHA-2 code, LGPL kpathsea/Graphite2/zziplib, Lua and other embedded-library notices are retained. |
 
 Relevant license texts included here are:
 
@@ -60,7 +68,8 @@ Relevant license texts included here are:
 - [`LICENSES/BibTeX.txt`](LICENSES/BibTeX.txt)
 - [`LICENSES/XeTeX.txt`](LICENSES/XeTeX.txt)
 - [`LICENSES/SyncTeX.txt`](LICENSES/SyncTeX.txt)
-- [`LICENSES/Xpdf-4.04-README.txt`](LICENSES/Xpdf-4.04-README.txt)
+- [`LICENSES/Xpdf-4.06-GPL-2.0.txt`](LICENSES/Xpdf-4.06-GPL-2.0.txt)
+- [`LICENSES/Xpdf-4.06-README.txt`](LICENSES/Xpdf-4.06-README.txt)
 
 The exact archive-to-component mapping is machine-readable in
 [`scripts/engine-components-2026.json`](scripts/engine-components-2026.json). The
@@ -103,12 +112,12 @@ Such an artifact would require one of the following:
 This is a documentation/evidence blocker; it is not a claim that upstream lacks a
 valid private or historical grant.
 
-The current WTPDF/Xpdf XeTeX and LuaHBTeX candidates no longer contain this
-dependency. Their build evidence is recorded in
-[`docs/license-evidence/xetex-wtpdf-23f2ce1.md`](docs/license-evidence/xetex-wtpdf-23f2ce1.md)
-and
-[`docs/license-evidence/luahbtex-wtpdf-666663b.md`](docs/license-evidence/luahbtex-wtpdf-666663b.md).
-Those results remove the `pplib` evidence blocker for new builds only. Linked
+Upstream reported that its WTPDF/Xpdf XeTeX and LuaHBTeX candidates no longer contain
+this dependency, in build-evidence documents (`xetex-wtpdf-23f2ce1.md`,
+`luahbtex-wtpdf-666663b.md`) that were not seeded into this repository. Neither engine
+has been built here yet. Treat the blocker as standing for anything built here until
+a link audit of our own XeTeX and LuaHBTeX artifacts is recorded — an upstream claim
+whose evidence we do not hold is not our evidence. Linked
 component notices, license selections, and the relink method are now recorded in the
 machine-readable inventory; the corresponding-source, security, compatibility, and
 public-audit gates still apply.
@@ -121,7 +130,15 @@ licensed runtime code. See [`LICENSES/Emscripten-3.1.46.txt`](LICENSES/Emscripte
 
 Emscripten ports retain their upstream licenses. In particular, current builds use
 ports including FreeType, ICU, libpng, and zlib. FreeType is dual-licensed; this
-release selects its **GPL-2.0-only** option for the XeTeX unit. The alternative
+release selects its **GPL-2.0-only** option for the XeTeX unit.
+
+The Xpdf version matters to that selection, and the prose here previously said
+4.04 while the pinned TeX Live source ships 4.06. Verified against the source the
+build actually compiles: `libs/xpdf/xpdf-src` reports `xpdfVersion "4.06"`, and its
+`COPYING`, `COPYING3`, and `README` are byte-identical to
+`LICENSES/Xpdf-4.06-GPL-2.0.txt`, `LICENSES/GPL-3.0.txt`, and
+`LICENSES/Xpdf-4.06-README.txt`. The 4.04 texts have been removed;
+`scripts/engine-components-2026.json` already recorded 4.06. The alternative
 FreeType License is retained for provenance in
 [`LICENSES/FreeType.txt`](LICENSES/FreeType.txt), but is not the selected license for
 that combined binary.
@@ -168,22 +185,8 @@ procedure for `.fmt` files distributed with an engine release remain part of tha
 release's evidence. See <https://tug.org/texlive/copying.html> and the scope in
 [`docs/licensing.md`](docs/licensing.md).
 
-## Host-provided and optional peers
+## Application-side components
 
-The library build treats these packages as peer dependencies and does not copy them
-into `lib/`. The standalone demo build may bundle them, in which case their notices
-must accompany that build.
-
-| Component | Version range | License | Included notice |
-| --- | --- | --- | --- |
-| Monaco Editor | `^0.55.1` | MIT | [`LICENSES/Monaco-Editor.txt`](LICENSES/Monaco-Editor.txt) |
-| PDF.js (`pdfjs-dist`) | `^5.4.624` | Apache-2.0 | [`LICENSES/Apache-2.0.txt`](LICENSES/Apache-2.0.txt) |
-| pdf-lib | `^1.17.1` | MIT | [`LICENSES/pdf-lib.txt`](LICENSES/pdf-lib.txt) |
-
-Development-only dependencies are not listed here unless they are copied into a
-distributed artifact. Their own package notices continue to apply.
-
-The npm library build externalizes all three peers. The standalone Vite demo bundles
-Monaco and PDF.js and may bundle pdf-lib when the dynamic optional path is resolved;
-its build plugin therefore copies the complete `LICENSES/` directory and this notice
-into the demo output.
+Monaco Editor, PDF.js, and pdf-lib are dependencies of the LibrePaper editor, not of
+anything built here. Their notices belong with whatever ships them and are no longer
+carried in this repository.

@@ -6,12 +6,12 @@ repository's own MIT license is in [`LICENSE`](../LICENSE).
 
 | File | Applies to |
 | --- | --- |
-| `Apache-2.0.txt` | PDF.js and other Apache-2.0 components when distributed. |
+| `Apache-2.0.txt` | Apache-2.0 components in the Emscripten sysroot (libc++, libc++abi, compiler-rt), used with the LLVM exception. |
 | `BibTeX.txt` | BibTeX 0.99d and the separately identified WasmTex/Web2C port. |
 | `Emscripten-3.1.46.txt` | Emscripten-generated runtime code and Emscripten notices. |
 | `FreeType.txt` | FreeType's alternative FreeType License text. The XeTeX release selects GPL-2.0-only instead because Xpdf fixes that combined unit at GPLv2. |
 | `GPL-2.0.txt` | GPL-2.0 and GPL-2.0-or-later engine components. |
-| `GPL-3.0.txt` | GPL version 3 text, copied byte-for-byte from the pinned Xpdf 4.04 `COPYING3`. |
+| `GPL-3.0.txt` | GPL version 3 text, copied byte-for-byte from the pinned Xpdf 4.06 `COPYING3`. |
 | `Graphite2.txt` | Graphite2's LGPL/MPL/GPL licensing notice. |
 | `HarfBuzz.txt` | HarfBuzz's Old MIT notice. |
 | `ICU-68.2.txt` | ICU 68.2 code, data, and bundled third-party notices. |
@@ -23,15 +23,13 @@ repository's own MIT license is in [`LICENSE`](../LICENSE).
 | `LuaHBTeX-embedded.txt` | Index of retained notices for LuaHBTeX's embedded libraries. |
 | LPPL 1.3c | LaTeX formats and packages that identify LPPL 1.3c as their license. Use the exact package notice; authoritative text: <https://www.latex-project.org/lppl/lppl-1-3c/>. |
 | `MakeIndex.txt` | The makeindex source and WasmTex WebAssembly port. |
-| `Monaco-Editor.txt` | Monaco Editor when bundled by the demo application. |
 | `musl.txt` | musl libc linked from the Emscripten sysroot; the complete component notice is also in corresponding source. |
-| `pdf-lib.txt` | pdf-lib when the optional peer is bundled. |
 | `SyncTeX.txt` | The reference SyncTeX algorithms ported to TypeScript. |
 | `TECkit.txt` | TECkit's CPL/LGPL licensing notice. |
 | `WasmTex.txt` | The MIT-licensed WasmTex build layer this repository was seeded from. See [`../UPSTREAM.md`](../UPSTREAM.md). |
 | `XeTeX.txt` | XeTeX changes and additions. |
-| `Xpdf-4.04-GPL-2.0.txt` | GPL version 2 text copied byte-for-byte from the pinned Xpdf 4.04 `COPYING`. |
-| `Xpdf-4.04-README.txt` | Xpdf 4.04 README and its GPL v2-or-v3 licensing notice, normalized from ISO-8859-1 to UTF-8. |
+| `Xpdf-4.06-GPL-2.0.txt` | GPL version 2 text, copied byte-for-byte from the `COPYING` of the Xpdf 4.06 source the engines link. |
+| `Xpdf-4.06-README.txt` | Xpdf 4.06 README and its GPL v2-or-v3 licensing notice. |
 | `zlib.txt` | The bundled/ported zlib implementation. |
 | `zziplib.txt` | zziplib's LGPL/MPL licensing notice. |
 
