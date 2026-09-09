@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-1ab8617886d2-source.tar.xz",
-  "bytes": 101737456,
-  "sha256": "0d9a2fe1b3321ef7e1bf44d2ce4fd35293d998c3d84cc8cd1a8de2cc6474c918",
-  "repositoryCommit": "1ab8617886d26d1cb140a695b9a4f6275131fc46",
+  "archive": "librepaper-wasm-latex-24fa8e16139a-source.tar.xz",
+  "bytes": 101968628,
+  "sha256": "596a499eef61ed22f35e9b7d980fc8d02c684ca2fe00b14a5ee72d2cfbccedc1",
+  "repositoryCommit": "24fa8e16139a2f4243813b41b0341dc2987717f6",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
@@ -24,9 +24,54 @@
       "sha256": "50f6ef0b0c16473c3dda2c20bb47cd4f2a9003d221b59c3d756226168c5947a3"
     },
     {
+      "name": "wasmtex-bibtex8.js",
+      "bytes": 79476,
+      "sha256": "ffd5029614868f153877117ed3a82d9189844137f06b0180b0135735b3d6edc9"
+    },
+    {
+      "name": "wasmtex-bibtex8.wasm",
+      "bytes": 222168,
+      "sha256": "f2ad8f96a35cd5d0b7fd291cd966f0659664bc60ab1d88594af62569a41f1d6c"
+    },
+    {
+      "name": "wasmtex-bibtex8.worker.js",
+      "bytes": 6343,
+      "sha256": "bd6078adf14c7353de1a8b9c2165d75ead73789859cfd846b132b9eb3db90e3c"
+    },
+    {
+      "name": "wasmtex-dvipdfm.js",
+      "bytes": 86724,
+      "sha256": "d781e79dfc02d40b9a2ce11cfa8178a1376623cafe74c48751f1ab331ced1d65"
+    },
+    {
+      "name": "wasmtex-dvipdfm.wasm",
+      "bytes": 832374,
+      "sha256": "72fce45bf59aa214328a63593647477b5646ae0ff39d18f74dcd8e93dcb959f0"
+    },
+    {
+      "name": "wasmtex-dvipdfm.worker.js",
+      "bytes": 14758,
+      "sha256": "f2e0d9eb3b273cfcbba78e5b0d4ae6768509c818499818229497a01121548548"
+    },
+    {
       "name": "wasmtex-kpse-resolve.js",
-      "bytes": 3223,
-      "sha256": "0303650d65055961498677e0e109357b061873b86a063cb901800a2a84b4859d"
+      "bytes": 14857,
+      "sha256": "f8b93168aa57c42af958a887fc8a8346abe8237c2b1c9a2022b58c99d1912666"
+    },
+    {
+      "name": "wasmtex-makeindex.js",
+      "bytes": 77461,
+      "sha256": "58b2731abcb1419017455ad5b873c61570fe0e139668773aa1cac39d4a304029"
+    },
+    {
+      "name": "wasmtex-makeindex.wasm",
+      "bytes": 128682,
+      "sha256": "a0e199a8ed19c98830be277c2aed5c5a283521c8b96e7f3689107a36f8bb71e7"
+    },
+    {
+      "name": "wasmtex-makeindex.worker.js",
+      "bytes": 6510,
+      "sha256": "ee08cec91e7816e03a8115c2b47d3d762dbfbf23f38e4eb8eaafd235cd9b709c"
     },
     {
       "name": "wasmtex-pdftex-checkpoint.js",
@@ -60,8 +105,28 @@
     },
     {
       "name": "wasmtex-pdftex.worker.js",
-      "bytes": 77849,
-      "sha256": "2bde4060a105d0e739c506a89ecfa765f0b5ffab8ec91a2577bf7e967b09c7fe"
+      "bytes": 89959,
+      "sha256": "740d805bf3bd452830becb8c5597a2ca14a3130d29b45b56683b71794f69ecc1"
+    },
+    {
+      "name": "wasmtex-xetex-resolver-evidence.js",
+      "bytes": 589,
+      "sha256": "f42ab09591de3108ac07635f060cc1fca27571f62a852edf5e6307515b83b728"
+    },
+    {
+      "name": "wasmtex-xetex.js",
+      "bytes": 106975,
+      "sha256": "08abd09c617762cb4eb37922899cda818cf7a93d53801e53d28782070125a913"
+    },
+    {
+      "name": "wasmtex-xetex.wasm",
+      "bytes": 3494334,
+      "sha256": "2f292871dad6d42a1b490758b0f7156acf3a81c5e29f1da95a77f6ed51db99fc"
+    },
+    {
+      "name": "wasmtex-xetex.worker.js",
+      "bytes": 15040,
+      "sha256": "5880ff256b3a05dee9f298e026dd6f94bd9db7ae55573ccede844b33c7aba530"
     }
   ]
 }
