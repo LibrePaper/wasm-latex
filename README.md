@@ -24,11 +24,12 @@ the Dockerfile builds with the image the published manifest claims:
     node tools/check-pins.mjs
 
 **Check it against the published release.** `tools/compare-receipt.mjs` compares
-your build to upstream's pinned receipts byte for byte. It currently matches
-exactly, which is the evidence that the published binary is what its published
-source says — see [`docs/reproduction-2026-pdftex.md`](docs/reproduction-2026-pdftex.md).
+your build to a `BUILD-RECEIPT.json` byte for byte. Against upstream's published
+receipts for `2026-8b7946970153c52e` it matches exactly — the evidence that the
+published binary is what its published source says. The hashes and the method are
+in [`docs/reproduction-2026-pdftex.md`](docs/reproduction-2026-pdftex.md).
 
-    node tools/compare-receipt.mjs pinned/2026-8b7946970153c52e/BUILD-RECEIPT.pdftex.json wasm-build/dist
+    node tools/compare-receipt.mjs <BUILD-RECEIPT.pdftex.json> wasm-build/dist
 
 **Build the format.** `tools/build-format.mjs` dumps `wasmtex-pdftex.fmt` in about
 five seconds from a texmf tree on disk — no browser, no network, deterministic,
@@ -117,7 +118,6 @@ LibrePaper has its own controller. Written since the seed: `tools/`,
 | `wasm-build/` | The build: Dockerfiles, Makefile, worker controllers, C shims, and the from-source orchestration and gates for the engines not built here yet. Outputs to `dist/` (ignored). |
 | `tools/` | Everything that runs here: format builder, link inventory, pin check, release staging and gate. |
 | `receipts/` | Our build evidence — link inventories, format inputs, source-archive hashes. |
-| `pinned/` | Upstream's published receipts for release `2026-8b7946970153c52e`, the thing we compare against. |
 | `vendor/` | The verified TeX Live tree (ignored; 14 GB). |
 | `docs/` | How each part works and what is still missing. |
 | `LICENSES/` | Verbatim third-party notice texts, shipped whole with any release. |

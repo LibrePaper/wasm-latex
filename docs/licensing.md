@@ -33,7 +33,7 @@ is read out of the link maps by `tools/link-inventory.mjs` and recorded in
 satisfies. The linked Xpdf 4.06 is offered under "GPL v2 or v3"; v2 is elected,
 and because v2-only and v3 code cannot be combined, that election fixes the whole
 unit at GPL-2.0-only. This is a choice, recorded in
-`licensing/linked-components.json`, not an inference.
+`linked-components.json`, not an inference.
 
 **Why BibTeX differs.** BibTeX links no Xpdf, libpng or zlib — verified, not
 assumed. Its only copyleft component is kpathsea; the BibTeX and web2c sources
@@ -63,7 +63,7 @@ does; the engines are GPL and are separately delivered.
    directory tells the recipient where it is.
 3. **A working relink path for kpathsea** — LGPL-2.1 §6. kpathsea is the only
    LGPL component in either engine and is linked statically; static linking does
-   not dissolve its terms. `licensing/RELINK.md` is the recipe, and the
+   not dissolve its terms. `RELINK.md` is the recipe, and the
    Dockerfile takes a `texlive-source/` tree from its build context so a modified
    library can actually be built in. A recipe that does not work does not
    discharge the obligation.

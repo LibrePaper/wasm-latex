@@ -72,14 +72,15 @@ Relevant license texts included here are:
 - [`LICENSES/Xpdf-4.06-GPL-2.0.txt`](LICENSES/Xpdf-4.06-GPL-2.0.txt)
 - [`LICENSES/Xpdf-4.06-README.txt`](LICENSES/Xpdf-4.06-README.txt)
 
-The exact archive-to-component mapping is machine-readable in
-[`pinned/2026-8b7946970153c52e/ENGINE-COMPONENTS.json`](pinned/2026-8b7946970153c52e/ENGINE-COMPONENTS.json). The
-inventory is data, not a gate: upstream's `check-license-compliance.mjs` enforced it
-against a repository layout this one does not have, and was removed rather than kept
-as a check that cannot run. Re-enforcing it is open work — see
-[`docs/licensing.md`](docs/licensing.md). It is upstream's own published record, kept
-under `pinned/` verbatim; `LICENSE-MANIFEST.json` beside it names the same mapping
-at the `scripts/` path it had in their tree.
+The exact component-to-license mapping for what our builds actually link is
+machine-readable in [`linked-components.json`](linked-components.json), and
+`tools/link-inventory.mjs` checks a build against it, failing on any component it
+cannot classify. That is a gate, and it runs: see
+[`docs/licensing.md`](docs/licensing.md).
+
+Upstream published its own component inventory with its release. It is theirs to
+distribute and is not carried here; the mapping above is ours, derived from the
+link maps of the binaries this repository produces.
 
 Corresponding source means the pinned TeX Live source plus the WasmTex glue, patches,
 build scripts, Dockerfiles, and any other material needed to rebuild the distributed

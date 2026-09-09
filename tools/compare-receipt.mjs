@@ -4,7 +4,7 @@
 // built beside what upstream published. Exit status is non-zero on any
 // mismatch, so the reproduction is a check and not a report.
 //
-//   node tools/compare-receipt.mjs pinned/<release>/BUILD-RECEIPT.pdftex.json wasm-build/dist
+//   node tools/compare-receipt.mjs <BUILD-RECEIPT.pdftex.json> wasm-build/dist
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
