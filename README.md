@@ -1,196 +1,55 @@
 # librepaper-wasm-latex
 
 TeX engines built to WebAssembly for LibrePaper's in-browser LaTeX compiler:
-pdfTeX, XeTeX, LuaHBTeX, dvipdfm, BibTeX, BibTeX8, makeindex.
+pdfTeX, XeTeX, dvipdfm, BibTeX, BibTeX8 and makeindex, plus the TeX Live
+packages they load, packed for the browser.
 
-The point of owning this layer is that nothing LibrePaper ships has to be taken
-on trust from someone else's CDN. Every engine binary is built here from pinned
-source, and every format file from a TeX Live tree whose signature we checked.
+Nothing LibrePaper ships has to be taken on trust from someone else's CDN.
+Every engine is built here from pinned source, every format and package from
+a TeX Live tree whose signature was checked, and every release carries the
+receipts and notices that let a reader verify that.
 
-## What you can do with it
+## Use it
 
-**Build the engine.** One Docker command compiles TeX Live's sources into
-`wasmtex-pdftex.wasm` and BibTeX, about 15 minutes:
+    make test                    # every check that needs no Docker or network
+    make bundles                 # pack TeX Live into per-package bundles
+    make format                  # dump and smoke the pdfTeX and XeTeX formats
+    make release TAG=<tag>       # publish the source, stage, gate, print the manifest hash
 
-    docker buildx build --platform linux/amd64 --load \
-      --build-arg TEXLIVE_REF=$(cat wasm-build/texlive-source-2026.ref) \
-      -t librepaper-pdftex-wasm wasm-build/
-    docker run --rm --platform linux/amd64 -v $PWD/wasm-build/dist:/dist librepaper-pdftex-wasm
+Engines themselves are built with Docker; see [`docs/release.md`](docs/release.md)
+for the whole path from source to a mirror LibrePaper serves. `make help`
+lists every target.
 
-**Check the pins.** `tools/check-pins.mjs` verifies that the TeX Live commit and
-the Emscripten image digest are pinned and that every place naming them agrees —
-the Dockerfile builds with the image the published manifest claims:
+## Docs
 
-    node tools/check-pins.mjs
-
-**Check it against the published release.** `tools/compare-receipt.mjs` compares
-your build to a `BUILD-RECEIPT.json` byte for byte. Against WasmTex's published
-receipts for `2026-8b7946970153c52e` it matches exactly — the evidence that the
-published binary is what its published source says. The hashes and the method are
-in [`docs/reproduction-2026-pdftex.md`](docs/reproduction-2026-pdftex.md).
-
-    node tools/compare-receipt.mjs <BUILD-RECEIPT.pdftex.json> wasm-build/dist
-
-**Build the format.** `tools/build-format.mjs` dumps `wasmtex-pdftex.fmt` in about
-five seconds from a texmf tree on disk — no browser, no network, deterministic,
-and it hashes every input into a receipt. `--smoke` then compiles a document with
-the result. See [`docs/format-generation.md`](docs/format-generation.md).
-
-    node tools/build-format.mjs \
-      --texmf vendor/texlive-2026/texlive-20260301-texmf/texmf-dist \
-      --texmf vendor/texlive-2026/texmf-var \
-      --out wasm-build/dist/wasmtex-pdftex.fmt \
-      --evidence receipts/FORMAT-RECEIPT.pdftex-2026.json --smoke
-
-The texmf tree comes from the official TeX Live release archive, verified
-against TUG's signed hash: [`docs/texlive-snapshot-2026.md`](docs/texlive-snapshot-2026.md).
-
-**Build the package bundles.** `tools/build-bundles.mjs` packs the same tree
-into one tar per package directory, 5,501 bundles and 3.5 GB for 2026, indexed
-by `bundles.json`, so the browser fetches a package in one request instead of
-one request per file. Deterministic, receipted, and never bundles what a browser
-engine cannot read; a bundle over 20 MiB of tar bytes is split into parts so
-every static asset stays under the platform's 25 MiB limit, and both
-`RECEIPT-FILES.json.gz` and XeTeX's ICU data ship gzipped for the same reason.
-`xetexfontlist.txt`, the by-name font database XeTeX's fontconfig shim reads
-(kpse format 26, no counterpart in TeX Live), is generated with `otfinfo` and
-added to the bundle set as `tex/xetex/fontlist` — see below. See
-[`docs/bundles.md`](docs/bundles.md).
-
-    node tools/build-bundles.mjs \
-      --texmf vendor/texlive-2026/texlive-20260301-texmf/texmf-dist \
-      --texmf vendor/texlive-2026/texmf-var \
-      --out wasm-build/dist/bundles \
-      --evidence receipts/BUNDLE-RECEIPT.texlive-2026.json \
-      --extra tex/xetex/fontlist/xetexfontlist.txt=wasm-build/dist/xetexfontlist.txt
-
-The font list itself comes from `tools/xetex-fontlist.mjs`, the same builder
-`tools/build-format.mjs --engine xetex` uses in-process to answer its own
-format-build request:
-
-    node tools/xetex-fontlist.mjs \
-      --texmf vendor/texlive-2026/texlive-20260301-texmf/texmf-dist \
-      --texmf vendor/texlive-2026/texmf-var \
-      --out wasm-build/dist/xetexfontlist.txt
-
-`tools/build-format.mjs --bundles wasm-build/dist/bundles --expect-inputs
-receipts/FORMAT-RECEIPT.pdftex-2026.json` builds the format through the
-bundles instead of the tree and checks it resolved the same inputs.
-
-`--engine xetex` builds `wasmtex-xetex.fmt` (and a `.fmt.gz` alongside it)
-against the XeTeX engine instead; `--smoke-both` compiles a fontspec smoke
-document both by family name and by file name and feeds the result through
-`wasmtex-dvipdfm` to a PDF. See the XeTeX section of
-[`docs/format-generation.md`](docs/format-generation.md).
-
-**Prepare a distributable release.** The engines are GPL, so publishing them
-carries obligations: notices, complete corresponding source, and a working
-relink path for the LGPL library inside them. The root `Makefile` names every
-step; `make release TAG=<tag>` chains them, publishes the source archive to a
-GitHub Release, stages the payload, runs the gate, and prints the manifest's
-SHA-256, which is what LibrePaper imports against:
-
-    make release TAG=engines-2026.1
-
-The runbook from Docker builds to the Cloudflare push is
-[`docs/release.md`](docs/release.md); the obligations behind each check are in
-[`docs/licensing.md`](docs/licensing.md). The gate fails closed: until the
-source archive is published and named, it refuses the release, which is the
-correct answer for a GPL binary.
-
-**Know what the workers can reach.** The JavaScript we ship alongside the wasm
-contains no dynamic code and no embedded endpoint — every URL it builds comes
-from the host — which is what lets it be published without auditing the host's
-network policy too: [`docs/audit-worker-js.md`](docs/audit-worker-js.md).
-
-## What is not done yet
-
-- pdfTeX, BibTeX, BibTeX8, makeindex, XeTeX and dvipdfm are built here, with
-  ICU data for XeTeX. XeTeX now has a dumped format, compiles a fontspec
-  document (by font name and by file name) through dvipdfm to a PDF, and
-  returns SyncTeX. No document has been compiled by XeTeX in a browser yet,
-  and LibrePaper still needs to wire XeTeX into its own compile path — see the
-  LibrePaper item below. LuaHBTeX has its Dockerfile and gates but has never
-  been run.
-- The engine Dockerfiles still clone TeX Live source from GitHub rather than
-  using a vendored tarball.
-- Compliance is established for every engine built. LuaHBTeX has no link
-  inventory, so no terms are established for it.
-- Nowhere is the source archive published yet, and LibrePaper does not link to
-  it from the page serving the engines. That is a product decision, and until
-  it is made `check-release.mjs` blocks the release.
-- A clean rebuild *from the source archive* is not yet verified to reproduce
-  the distributed bytes.
-- LibrePaper's shipped mirror still points at the pinned WasmTex package
-  snapshot until a release built here, with bundles, is imported. The
-  importer, the controller's bundle mode, and the failure message that names
-  a missing package are in LibrePaper, and its controller sends the bundle
-  index to every engine and hands XeTeX its inflated ICU data. On 2026-09-09
-  LibrePaper's browser check compiled its corpus in headless Chromium against
-  a release staged here: three pdfLaTeX documents with BibTeX and the XeTeX
-  document, all with SyncTeX, XeTeX in 2.7 seconds. The release is not
-  published.
-
-The product plan these serve, and where the browser stops and the paired local
-app begins, is [`SPEC-latex.md`](SPEC-latex.md); the user-facing version is
-[`docs/what-works-in-the-browser.md`](docs/what-works-in-the-browser.md).
-
-## Two upstreams
-
-The word is ambiguous here, so this repository avoids it and names which one it
-means:
-
-- **TeX Live** is upstream of the *source*: the C and Pascal that compile into
-  the engines (`texlive-source`, pinned by commit) and the packages a document
-  loads (`vendor/`, from the signed release archive).
-- **WasmTex** (<https://github.com/corca-ai/wasmtex>) is upstream of the *build
-  layer and the published binaries*: this repository was seeded from it, and it
-  publishes its own compiled engine releases.
-
-So "we reproduced the release byte for byte" means: WasmTex compiled TeX Live's
-source to WebAssembly and published the result; we rebuilt from the same TeX
-Live commit with the same recipe and got identical bytes.
-
-## Provenance
-
-This repository was seeded on 2026-09-08 from the engine build layer of WasmTex,
-<https://github.com/corca-ai/wasmtex> (MIT, see
-[`LICENSES/WasmTex.txt`](LICENSES/WasmTex.txt)), at the snapshot its 2026 engine
-release was built from.
-
-| Input | Identity |
-|---|---|
-| WasmTex build snapshot | `0dddc924cc6e69bd2a4b4630e02efe414f84515e` |
-| WasmTex wrapper revision LibrePaper evaluated | `44c5861fcdf729838205b00b96ac9509bc7fb677` |
-| Engine release reproduced | `2026-8b7946970153c52e` |
-| TeX Live source commit | `fb6158926661cb7a7246b3a94a0cb170a9624d5a` (github.com/TeX-Live/texlive-source) |
-| TeX Live packages, upstream's | `2026-ba38749b8714505a` (their CDN; not used as a build input here) |
-| TeX Live packages, ours | `texlive-20260301-texmf.tar.xz`, signature-verified |
-| Emscripten | 3.1.46, `emscripten/emsdk:3.1.46@sha256:2491bc4bf6caf8c41993660822341bc72759cb577363dfe0781f0a2d05f7d357` |
-| Corresponding-source tarball | `wasmtex-2026-8b7946970153c52e-source.tar.xz`, sha256 `a858abfd2d5b0ad7699ccb6b1dab8b45658c32ecac7a08d68c88bf76847b7cf2` |
-
-Copied verbatim from that snapshot:
-
-- `wasm-build/` — Dockerfiles, Makefile, build scripts, C shims, TeX Live
-  patches, worker controllers. The whole TeX-to-wasm layer.
-- `LICENSES/`, `THIRD_PARTY_NOTICES.md`, `docs/licensing.md` — the obligations
-  the engines carry. They are GPL: a build we publish must publish its source.
-
-WasmTex's editor, runtime library and application code were not copied;
-LibrePaper has its own controller. Written since the seed: `tools/`,
-`receipts/`, and the docs named above.
+- [`SPEC-latex.md`](SPEC-latex.md): the product plan, where the browser
+  stops and the paired local app begins, and what is done and not done.
+- [`docs/what-works-in-the-browser.md`](docs/what-works-in-the-browser.md):
+  the same seam for authors and agents deciding whether to pair.
+- [`docs/release.md`](docs/release.md): the release runbook.
+- [`docs/bundles.md`](docs/bundles.md): how packages reach the browser, and
+  what is and is not bundled.
+- [`docs/format-generation.md`](docs/format-generation.md): how the formats
+  are dumped, and why it takes two texmf trees.
+- [`docs/licensing.md`](docs/licensing.md): the obligations behind each
+  release-gate check.
+- [`docs/audit-worker-js.md`](docs/audit-worker-js.md): the shipped
+  JavaScript has no dynamic code and no embedded endpoint.
+- [`docs/provenance.md`](docs/provenance.md): where this repository came
+  from, the pinned inputs, and what "upstream" means here.
+- [`docs/reproduction-2026-pdftex.md`](docs/reproduction-2026-pdftex.md) and
+  [`docs/texlive-snapshot-2026.md`](docs/texlive-snapshot-2026.md): dated
+  evidence records for the 2026 engines and tree.
 
 ## Layout
 
 | Path | What |
 |---|---|
-| `wasm-build/` | The build: Dockerfiles, Makefile, worker controllers, C shims, and the from-source orchestration and gates for the engines not built here yet. Outputs to `dist/` (ignored). |
-| `tools/` | Everything that runs here: format builder, bundle builder, link inventory, pin check, release staging and gate. |
-| `receipts/` | Our build evidence — link inventories, format inputs, bundle summary, source-archive hashes. |
-| `vendor/` | The verified TeX Live tree (ignored; 14 GB). |
-| `docs/` | How each part works and what is still missing. |
-| `LICENSES/` | Verbatim third-party notice texts, shipped whole with any release. |
-| `linked-components.json`, `RELINK.md` | What is linked and on what terms, and the LGPL relink recipe — at the root because that is where they land in a release, beside `LICENSE` and `THIRD_PARTY_NOTICES.md`. |
+| `wasm-build/` | Dockerfiles, build scripts, C shims and worker controllers. Outputs to `dist/`, ignored. |
+| `tools/` | Everything that runs here: bundle and format builders, link inventory, pin check, staging, the gate, release publishing. |
+| `receipts/` | Build evidence: link inventories, format and bundle inputs, source-archive hashes. |
+| `vendor/` | The verified TeX Live tree, ignored, 14 GB. |
+| `LICENSES/`, `THIRD_PARTY_NOTICES.md`, `linked-components.json`, `RELINK.md` | What is linked, on what terms, the notice texts, and the LGPL relink recipe, at the root because that is where they land in a release. |
 
 This repository's own code is MIT ([`LICENSE`](LICENSE)). It tracks source only:
-no engine binaries, formats, or TeX Live files are committed.
+no engine binaries, formats or TeX Live files are committed.

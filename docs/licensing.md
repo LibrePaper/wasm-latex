@@ -116,7 +116,7 @@ with no notice retained at all.
 
 ## What is still owed
 
-README's "What is not done yet" lists the gaps in the work generally. These are
+SPEC-latex.md's implementation status lists the gaps in the work generally. These are
 the ones specific to the obligations:
 
 - **Terms for LuaHBTeX.** It has no link inventory, and its `pplib` question
