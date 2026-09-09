@@ -16,9 +16,9 @@ document can be compiled without pairing.
   Latin Modern, the AMS fonts, Times, Palatino and the rest of the Type 1 set.
 - **BibTeX** bibliographies with natbib or the standard styles.
 - **BibTeX8** and **makeindex** when their engines are in the release.
-- **biblatex with Biber** through the browser Biber VM, which LibrePaper
-  starts when a document loads biblatex. Slower than the rest on a cold
-  cache, but no pairing.
+- **biblatex with Biber** through the release's Perl/WASM module, loaded
+  when compilation requests Biber. Successful bibliography results are cached;
+  no pairing or Linux VM is required for releases with `engines.biber`.
 - Figures as PDF, PNG or JPEG.
 
 ## Needs the paired app

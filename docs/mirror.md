@@ -57,6 +57,7 @@ server with `--biber-vm <url>#<sha256>`.
         "dvipdfm": { "worker": "dvipdfm.worker.js", "files": [...] },
         "bibtex":  { "worker": "bibtex.worker.js", "files": [...] },
         "bibtex8": { "worker": "bibtex8.worker.js", "files": [...] },
+        "biber": { "worker": "biber.worker.js", "files": ["biber.worker.js", "biber.js", "biber.wasm", "biber.data", "biber.build.json"] },
         "makeindex": { "worker": "makeindex.worker.js", "files": [...] }
       },
       "files": { "<name>": { "url": "engines/<sha256>/<name>", "sha256": "...", "size": 123 } },
@@ -64,7 +65,7 @@ server with `--biber-vm <url>#<sha256>`.
         "bibtex": "0.99e",
         "biblatex": "3.22",
         "control_file": "3.11",
-        "biber": { "compatible": ["2.21"], "incompatible_hint": "..." }
+        "biber": { "version": "2.22", "compatible": ["2.22"], "incompatible_hint": "..." }
       },
       "bundles": { "index": "engines/<sha256>/bundles/bundles.json", "sha256": "...", "snapshot": "texlive-20260301-texmf", "count": 5501, "bytes": 3492000000 },
       "vm": null,

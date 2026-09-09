@@ -11,6 +11,8 @@ const archives = [...new Set([...map.matchAll(/([^\s()]+\.a)\(/g)]
 if (!archives.some(a => a.endsWith('/libperl.a'))) throw new Error('Biber map has no libperl.a');
 const unknown = archives.filter(a => !a.startsWith(`${build}/src/perl/`) && !a.startsWith('/emsdk/upstream/emscripten/cache/sysroot/'));
 if (unknown.length) throw new Error(`Unclassified Biber archives: ${unknown.join(', ')}`);
+const objects = [...new Set([...map.matchAll(/([^\s()]+\.o):/g)].map(m => m[1]))];
+if (objects.some(name => name !== 'perlmain.o')) throw new Error(`Unclassified Biber objects: ${objects.join(', ')}`);
 const notice = 'biber-notices/NOTICE';
 const linked = [];
 function component(name, license, source, selectedAs = []) {
@@ -33,7 +35,10 @@ for (const line of modules) {
 }
 component('Perl 5.38.2, core extensions, Unicode tables and emperl', licenses.perl_5,
   'src/perl', archives.filter(a => a.startsWith(`${build}/src/perl/`) && !linked.some(c => c.selectedAs.includes(a))));
-component('Biber 2.22', 'Artistic-2.0', 'src/biber');
+const config = fs.readFileSync(`${build}/src/biber/lib/Biber/Config.pm`, 'utf8');
+const version = /\$VERSION\s*=\s*'([^']+)'/.exec(config)?.[1];
+if (!version) throw new Error('Biber version not found');
+component(`Biber ${version}`, 'Artistic-2.0', 'src/biber');
 component('libxml2 (merged into XML::LibXML)', 'MIT', 'src/libxml2');
 component('sombok (merged into Unicode::LineBreak)', licenses.perl_5, 'src/Unicode-LineBreak/sombok');
 component('TeXlyre Perl patches and browser pre-run', 'AGPL-3.0-only', 'repo/third-party/texlyre-biber');
@@ -47,10 +52,10 @@ const artifacts = Object.fromEntries(['biber.js', 'biber.wasm', 'biber.data'].ma
 const inventory = {
   schemaVersion: 1, family: 'biber', combinedTerms: 'AGPL-3.0-only AND LicenseRef-Packaged-Perl-notices AND LicenseRef-Emscripten-runtime-notices',
   combinedTermsReason: 'TeXlyre runtime modifications retain AGPL-3.0; Perl-licensed code permits GPLv3. Individual runtime/dependency notices and their preferred source are shipped in full.',
-  modules: [{ name: 'biber', wasm: artifacts['biber.wasm'], archives: archives.length }],
+  modules: [{ name: 'biber', wasm: artifacts['biber.wasm'], archives: archives.length, objects: objects.length }],
   linked, requiredNotices: [notice, 'third-party/texlyre-biber/LICENSE'],
 };
 fs.writeFileSync(path.join(out, 'biber.build.json'), JSON.stringify({
-  schemaVersion: 1, version: '2.22', controlFile, artifacts, linkMap: info('biber.map'),
+  schemaVersion: 1, version, controlFile, artifacts, linkMap: info('biber.map'),
   sourceArchive: info('BIBER-SOURCE.tar.gz'), inventory,
 }, null, 2) + '\n');
