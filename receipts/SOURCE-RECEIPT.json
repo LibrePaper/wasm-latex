@@ -1,14 +1,14 @@
 {
   "biberSource": {
     "name": "BIBER-SOURCE.tar.gz",
-    "sha256": "be3d674311a418367420d704ac8178696af755ae6808dea1fcb7ca4e2388a784",
-    "bytes": 96737921
+    "sha256": "d201c602b949945206808da09ebccb83e3f65ca8403c2e313de1eb62ec85ba1f",
+    "bytes": 96739222
   },
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-a5ecbfdbcad4-source.tar.xz",
-  "bytes": 196823560,
-  "sha256": "61671bbd6b515caadf7fe50536dd80735c539010be4128bc5c12ba1309e9baf4",
-  "repositoryCommit": "a5ecbfdbcad46831af767ef369cdb6c1256b3b77",
+  "archive": "librepaper-wasm-latex-1aeca95be759-source.tar.xz",
+  "bytes": 196833048,
+  "sha256": "257f7a42af7f20292e072d6d6d8c8d8585ce3c0f6c32264d4f5e2ccd67127383",
+  "repositoryCommit": "1aeca95be7595b2ce679cf7dcb582de64058b024",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
@@ -16,7 +16,7 @@
     {
       "name": "biber.build.json",
       "bytes": 14697,
-      "sha256": "0936642f153e53572aad76f0ce4ed993ae7ae30ae13a52f982f15d92c35a13e6"
+      "sha256": "a37e6298604c897163e99b3bd6da289b95f1a04c8084629e2e8936293fa6e0f8"
     },
     {
       "name": "biber.data",
@@ -26,7 +26,7 @@
     {
       "name": "biber.js",
       "bytes": 959313,
-      "sha256": "b779878fa9f17f99501a16f240b6819e0bcb57730c11cbbb659a60c996cf5674"
+      "sha256": "877285f52f641bf7cf5bdfd79a22b3abdbe9ede8a53e35b09cbf2bbea13922c3"
     },
     {
       "name": "biber.wasm",
@@ -35,8 +35,8 @@
     },
     {
       "name": "biber.worker.js",
-      "bytes": 3189,
-      "sha256": "7353f4493a752b0f9eec0d96be2e8edab77b116074828b9f790dd04dc530475e"
+      "bytes": 3237,
+      "sha256": "984d29171ccb15230c9c6e5d817f50ca100b4b3634fbfd5b21cfc87f070ba55e"
     },
     {
       "name": "bibtex.js",
