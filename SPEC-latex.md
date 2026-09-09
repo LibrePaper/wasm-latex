@@ -244,7 +244,7 @@ cached the same way.
 
 ### Hosting
 
-Bundles are Workers static assets under `deploy/latex/`, beside the engines.
+Bundles are Workers static assets in the mirror `make push` deploys, beside the engines.
 Estimated shape, from the vendored tree without `doc/` and `source/`:
 
 | Content | Bundles | Size on disk |
@@ -407,8 +407,8 @@ Done in this repository:
   build and verify the mirror LibrePaper serves (layout and manifest format
   1 in `docs/mirror.md`, ported from LibrePaper's own importer and
   `check-mirror.mjs`, minus the legacy per-file TeX Live snapshot and the
-  bloom filter, since this repository ships bundles only), `deploy/wrangler.toml`
-  and `make mirror`/`make push` deploy it to Cloudflare, and
+  bloom filter, since this repository ships bundles only), `make mirror`
+  builds it and `make push` deploys it to Cloudflare with wrangler's flags, and
   `bibliographyIdentity` reads `biblatex.sty` out of the staged release's own
   bundle instead of fetching it from a CDN at import time. Verified against
   LibrePaper's current `latex/tools/check-mirror.mjs`, which already expects

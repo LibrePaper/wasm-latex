@@ -35,6 +35,11 @@ SOURCE_OUT  ?= dist-source
 IMAGE       ?= librepaper-pdftex-wasm
 FAMILIES    ?= pdftex bibtex bibtex8 makeindex xetex dvipdfm
 MIRROR      ?= mirror
+# The Cloudflare Worker that is nothing but these files. Two settings, so they
+# live here as flags rather than in a wrangler.toml of their own. A deployment
+# reaches it at https://$(WORKER).<account>.workers.dev/.
+WORKER      ?= librepaper-latex
+COMPAT_DATE ?= 2026-09-01
 TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
 
 .PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push
@@ -132,5 +137,5 @@ push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUD
 	  echo "push: neither bunx nor npx found on PATH; trying npx wrangler anyway"; \
 	  RUNNER="npx wrangler"; \
 	fi; \
-	cd deploy && $$RUNNER deploy --assets "$(abspath $(MIRROR))"
+	$RUNNER deploy --name $(WORKER) --compatibility-date $(COMPAT_DATE) --assets "$(abspath $(MIRROR))"
 	@echo "serve with: librepaper serve --latex https://librepaper-latex.<account>.workers.dev/"
