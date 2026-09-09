@@ -281,6 +281,17 @@ Pointing at CTAN or TeX Live's `tlnet` mirrors directly is not an option:
 they send no CORS headers, they serve packages as archives in a different
 layout, and they are volunteer mirrors, not an application CDN.
 
+The mirror LibrePaper serves is built and deployed from this repository, not
+from LibrePaper's. `tools/build-mirror.mjs` turns a staged release plus its
+reviewed manifest hash into `mirror/`, in the layout and manifest shape
+(format 1, bundled releases only, documented in `docs/mirror.md`)
+LibrePaper's browser code already reads; `make mirror` builds and checks it,
+`make push` deploys it as Cloudflare Workers static assets. LibrePaper keeps
+only the URL and a consumer-side check (`latex/tools/check-mirror.mjs`) --
+building, staging, and hosting the mirror are entirely this repository's
+obligation now, matching what section "Engine repository obligations that
+gate all of this" already asked for on the engine side.
+
 ### Numbers to hold the design to
 
 | Document | Per-file requests today | Bundled, cold | Bundled, warm |
@@ -392,6 +403,17 @@ Done in this repository:
   `tex/xetex/fontlist`, so a browser resolver answering format-26 requests
   from the bundle index can serve it like any other file. The XeTeX worker
   reading it, and LibrePaper handing XeTeX its ICU data, remain below.
+- Hosting moved here: `tools/build-mirror.mjs` and `tools/check-mirror.mjs`
+  build and verify the mirror LibrePaper serves (layout and manifest format
+  1 in `docs/mirror.md`, ported from LibrePaper's own importer and
+  `check-mirror.mjs`, minus the legacy per-file TeX Live snapshot and the
+  bloom filter, since this repository ships bundles only), `deploy/wrangler.toml`
+  and `make mirror`/`make push` deploy it to Cloudflare, and
+  `bibliographyIdentity` reads `biblatex.sty` out of the staged release's own
+  bundle instead of fetching it from a CDN at import time. Verified against
+  LibrePaper's current `latex/tools/check-mirror.mjs`, which already expects
+  exactly this contract and passes against a mirror built here from a real
+  staged release (5,501 bundles, 3.49 GB) with a placeholder source URL.
 
 Done in LibrePaper:
 

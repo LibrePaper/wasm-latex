@@ -58,26 +58,35 @@ the published archive is in the history the tag names.
 
 Tags are never moved. A second release gets a new tag and a new archive.
 
-## 5. Import into LibrePaper and push the mirror
+## 5. Build the mirror and push it
 
-In the LibrePaper repository:
+This repository builds and deploys the mirror itself; LibrePaper keeps only
+a URL. In this repository:
 
-    node latex/tools/wasmtex.mjs --release ../wasm-latex/staged --sha256 <manifest hash>
-    node latex/tools/check-mirror.mjs latex/mirror
+    make mirror MANIFEST_SHA256=<manifest hash>
 
-The importer verifies the manifest against the hash and every payload file
-against the manifest, then writes the release under `latex/mirror/`. A
-release with bundles needs no per-file package set; `make latex-mirror` also
-runs the legacy `--scheme` fetch from WasmTex's CDN, which a bundled release
-does not use. Then, with the Cloudflare credentials loaded:
+which runs `tools/build-mirror.mjs` (verifies the manifest against the hash
+and every payload file against the manifest, then writes the release under
+`mirror/wasmtex/<engineRelease>/`) and `tools/check-mirror.mjs` on the
+result. See [`docs/mirror.md`](mirror.md) for the layout and manifest shape
+this writes -- it is the contract LibrePaper's `check-mirror.mjs` and
+`web/src/lib/latex/worker.js` consume. Then, with `CLOUDFLARE_API_TOKEN`
+set:
 
-    make latex-push
+    make push
 
-which runs the mirror check and the browser smoke test first, writes the
-`_headers` that keep `bundles.json` uncached and everything digest-named
-immutable, and deploys the directory as Workers static assets. Every file
-in a staged release is under the 25 MiB per-file limit and the whole set is
-about 5,600 files, under the free plan's 20,000.
+which writes `mirror/_headers` (everything digest-named immutable,
+`manifest.json` never cached, `bundles.json` short-lived) and deploys the
+directory with `wrangler` as Cloudflare Workers static assets. Every file in
+a staged release is under the 25 MiB per-file limit and the whole set is
+under the free plan's 20,000-file cap.
+
+LibrePaper then just points at the deployed URL: `librepaper serve --latex
+https://librepaper-latex.<account>.workers.dev/`, or its own
+`latex/tools/check-mirror.mjs <url>` to verify it first. The one piece
+LibrePaper still builds and registers on its own is the Biber VM
+(`latex/tools/wasmtex.mjs --vm <dir>`), since it is not part of a
+wasm-latex release.
 
 ## What the gate checks
 

@@ -1,0 +1,19 @@
+# The LaTeX mirror on Cloudflare, as a worker that is nothing but files.
+#
+# `make push` deploys this. The assets directory is `mirror/`, built by
+# `make mirror` (`tools/build-mirror.mjs`, then `tools/check-mirror.mjs`).
+# `mirror/_headers`, written by `make push`, gives every digest-named file a
+# cache that never expires and keeps `manifest.json` and `bundles.json`
+# fresh. A deployment reaches this at
+# https://librepaper-latex.<account>.workers.dev/, which is what LibrePaper's
+# `librepaper serve --latex` points at.
+#
+# Ported from LibrePaper's deploy/latex/wrangler.toml: same worker name, same
+# shape, moved here now that this repository builds and deploys the mirror
+# it used to hand LibrePaper's importer.
+name = "librepaper-latex"
+compatibility_date = "2026-09-01"
+workers_dev = true
+
+[assets]
+directory = "../mirror"

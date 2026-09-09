@@ -15,6 +15,8 @@ receipts and notices that let a reader verify that.
     make bundles                 # pack TeX Live into per-package bundles
     make format                  # dump and smoke the pdfTeX and XeTeX formats
     make release TAG=<tag>       # publish the source, stage, gate, print the manifest hash
+    make mirror MANIFEST_SHA256=<hash>  # build the mirror LibrePaper serves
+    make push                    # deploy it to Cloudflare (needs CLOUDFLARE_API_TOKEN)
 
 Engines themselves are built with Docker; see [`docs/release.md`](docs/release.md)
 for the whole path from source to a mirror LibrePaper serves. `make help`
@@ -27,6 +29,9 @@ lists every target.
 - [`docs/what-works-in-the-browser.md`](docs/what-works-in-the-browser.md):
   the same seam for authors and agents deciding whether to pair.
 - [`docs/release.md`](docs/release.md): the release runbook.
+- [`docs/mirror.md`](docs/mirror.md): the mirror LibrePaper serves -- layout,
+  manifest format 1, and the contract `tools/build-mirror.mjs` and
+  `tools/check-mirror.mjs` implement.
 - [`docs/bundles.md`](docs/bundles.md): how packages reach the browser, and
   what is and is not bundled.
 - [`docs/format-generation.md`](docs/format-generation.md): how the formats

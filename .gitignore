@@ -12,5 +12,8 @@ vendor/
 dist-source/
 staged/
 
+# The mirror LibrePaper serves, built by tools/build-mirror.mjs
+mirror/
+
 # Agent worktrees created by the Claude Code harness
 .claude/worktrees/

@@ -15,7 +15,12 @@
 #   make release TAG=engines-2026.1
 #                    test, source, publish-source, stage, and annotate the release
 #                    with the manifest hash — the whole chain, refusing early on a
-#                    dirty tree or an existing tag
+#                    dirty tree or an existing tag; ends by printing the `make
+#                    mirror` and `make push` commands rather than running them
+#   make mirror MANIFEST_SHA256=<staged MANIFEST.json digest>
+#                    build the mirror LibrePaper serves from staged/       -> mirror/
+#   make push        write mirror/_headers and deploy it to Cloudflare (needs
+#                    CLOUDFLARE_API_TOKEN)
 #
 # Engines themselves are built with Docker (see README); this file assumes
 # wasm-build/dist already holds them.
@@ -28,9 +33,10 @@ STAGED      ?= staged
 SOURCE_OUT  ?= dist-source
 IMAGE       ?= librepaper-pdftex-wasm
 FAMILIES    ?= pdftex bibtex bibtex8 makeindex xetex dvipdfm
+MIRROR      ?= mirror
 TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
 
-.PHONY: help test fontlist bundles format inventory source publish-source stage check release clean-staged
+.PHONY: help test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push
 
 help:  ## List targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*## /  /'
@@ -39,6 +45,7 @@ test:  ## Unit tests, pin check, and the resolver test
 	node tools/check-pins.mjs
 	node tools/stage-release.test.mjs
 	node tools/build-bundles.test.mjs
+	node tools/build-mirror.test.mjs
 	node wasm-build/kpse-resolve.test.cjs
 	node wasm-build/bundle-mode.test.cjs
 
@@ -87,6 +94,39 @@ release:  ## The whole chain: test, source, publish, stage, annotate (needs TAG=
 	$(MAKE) publish-source TAG=$(TAG)
 	$(MAKE) stage SOURCE_URL="$$(tools/release.sh source-url "$(TAG)" "$(SOURCE_OUT)")"
 	tools/release.sh annotate "$(TAG)" "$(STAGED)"
+	@# Publishing the mirror is deliberate, not automatic: review the staged
+	@# manifest, then run these yourself.
+	@HASH=$$(sha256sum $(STAGED)/MANIFEST.json | cut -d' ' -f1); \
+	echo ""; \
+	echo "Staged and annotated. Review $(STAGED)/MANIFEST.json, then:"; \
+	echo "  make mirror MANIFEST_SHA256=$$HASH"; \
+	echo "  make push"
 
 clean-staged:  ## Remove the staged directory
 	rm -rf $(STAGED)
+
+mirror:  ## Build the mirror LibrePaper serves from a staged release (needs MANIFEST_SHA256=)
+	@test -n "$(MANIFEST_SHA256)" || { echo "usage: make mirror MANIFEST_SHA256=<staged MANIFEST.json digest>"; exit 2; }
+	node tools/build-mirror.mjs --staged $(STAGED) --sha256 "$(MANIFEST_SHA256)" --out $(MIRROR)
+	node tools/check-mirror.mjs $(MIRROR)
+
+push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUDFLARE_API_TOKEN)
+	@node tools/check-mirror.mjs $(MIRROR)
+	@test -n "$$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not set; export it before make push"; exit 1; }
+	@# Bundle tars and every engine file are digest-named and cached forever;
+	@# manifest.json is the one release-describing file fetched by a bare
+	@# name and must never be stale; bundles.json is the one bundling file
+	@# fetched by a bare name too, and gets a short no-cache instead of
+	@# no-store since it changes far less often than the manifest.
+	@printf '/*\n  Cache-Control: public, max-age=31536000, immutable\n/manifest.json\n  Cache-Control: no-store\n/wasmtex/*/bundles/bundles.json\n  Cache-Control: no-cache\n' > $(MIRROR)/_headers
+	@if command -v bunx >/dev/null 2>&1; then \
+	  RUNNER="bunx wrangler"; \
+	elif command -v npx >/dev/null 2>&1; then \
+	  echo "push: bunx not found on PATH; using npx wrangler instead"; \
+	  RUNNER="npx wrangler"; \
+	else \
+	  echo "push: neither bunx nor npx found on PATH; trying npx wrangler anyway"; \
+	  RUNNER="npx wrangler"; \
+	fi; \
+	cd deploy && $$RUNNER deploy --assets "$(abspath $(MIRROR))"
+	@echo "serve with: librepaper serve --latex https://librepaper-latex.<account>.workers.dev/"
