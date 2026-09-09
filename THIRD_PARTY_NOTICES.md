@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-The MIT license in [`LICENSE`](LICENSE) applies to original WasmTex code and
+The MIT license in [`LICENSE`](LICENSE) applies to this repository's own code and
 documentation unless a file says otherwise. It does not relicense third-party code,
 generated engine artifacts, TeX Live files, fonts, or data. Those materials remain
 under their respective licenses.
@@ -8,6 +8,21 @@ under their respective licenses.
 This notice records the components known to be used by the current source tree. A
 binary or CDN distributor must also retain every notice from the exact source and
 data files included in that release.
+
+## WasmTex
+
+This repository's build layer was seeded from WasmTex
+(<https://github.com/corca-ai/wasmtex>), which is MIT-licensed. Much of
+`wasm-build/`, `scripts/`, and `upstream-ci/` is that code, modified or verbatim,
+and it remains under its own copyright and notice.
+
+- Copyright: 2025-2026 WasmTex contributors
+- License: MIT
+- Notice: [`LICENSES/WasmTex.txt`](LICENSES/WasmTex.txt)
+- Provenance and the exact snapshot seeded: [`UPSTREAM.md`](UPSTREAM.md)
+
+Retaining that notice is a condition of the MIT license and applies to any
+distribution of this repository or a work derived from it.
 
 ## SyncTeX parser
 

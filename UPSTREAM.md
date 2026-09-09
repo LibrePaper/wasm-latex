@@ -3,7 +3,7 @@
 This repository owns the WebAssembly builds of the TeX engines LibrePaper
 compiles LaTeX with in the browser. It was seeded on 2026-09-08 from the
 engine build layer of WasmTex, https://github.com/corca-ai/wasmtex (MIT,
-see LICENSE-wasmtex), at the snapshot its 2026 engine release was built from.
+see [`LICENSES/WasmTex.txt`](LICENSES/WasmTex.txt)), at the snapshot its 2026 engine release was built from.
 
 | Input | Identity |
 |---|---|

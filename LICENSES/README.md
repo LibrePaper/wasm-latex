@@ -1,7 +1,8 @@
 # Included license texts
 
-These files preserve notices for third-party code and data distributed by WasmTex.
-They do not change the license of any component.
+These files preserve notices for third-party code and data this repository builds
+or distributes. They do not change the license of any component. This
+repository's own MIT license is in [`LICENSE`](../LICENSE).
 
 | File | Applies to |
 | --- | --- |
@@ -27,6 +28,7 @@ They do not change the license of any component.
 | `pdf-lib.txt` | pdf-lib when the optional peer is bundled. |
 | `SyncTeX.txt` | The reference SyncTeX algorithms ported to TypeScript. |
 | `TECkit.txt` | TECkit's CPL/LGPL licensing notice. |
+| `WasmTex.txt` | The MIT-licensed WasmTex build layer this repository was seeded from. See [`../UPSTREAM.md`](../UPSTREAM.md). |
 | `XeTeX.txt` | XeTeX changes and additions. |
 | `Xpdf-4.04-GPL-2.0.txt` | GPL version 2 text copied byte-for-byte from the pinned Xpdf 4.04 `COPYING`. |
 | `Xpdf-4.04-README.txt` | Xpdf 4.04 README and its GPL v2-or-v3 licensing notice, normalized from ISO-8859-1 to UTF-8. |
