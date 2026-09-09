@@ -31,6 +31,11 @@ const TEXMFROOT = '/texmf' // bundle members unpack here; see loadbundleindex
 // biome-ignore lint: emscripten populates Module
 var Module = self.Module = {}
 if (self.__librepaperEngineBinary) Module.wasmBinary = self.__librepaperEngineBinary
+// The emcc glue still asks for its .wasm by the basename it was built with
+// (wasmtex-<engine>.wasm); the file beside it is <engine>.wasm now. Map the
+// name here until the engines are rebuilt. A host that hands over the bytes
+// through __librepaperEngineBinary never triggers this.
+Module["locateFile"] = function(path, prefix) { return (prefix || "") + path.replace(/^wasmtex-/, "") }
 self.memlog = ''
 self.initmem = undefined
 self.mainfile = 'main.tex'
