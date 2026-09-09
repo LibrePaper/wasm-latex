@@ -37,9 +37,8 @@ lists every target.
   JavaScript has no dynamic code and no embedded endpoint.
 - [`docs/provenance.md`](docs/provenance.md): where this repository came
   from, the pinned inputs, and what "upstream" means here.
-- [`docs/reproduction-2026-pdftex.md`](docs/reproduction-2026-pdftex.md) and
-  [`docs/texlive-snapshot-2026.md`](docs/texlive-snapshot-2026.md): dated
-  evidence records for the 2026 engines and tree.
+- [`docs/texlive-snapshot-2026.md`](docs/texlive-snapshot-2026.md): the
+  dated record of how the 2026 tree was fetched and verified.
 
 ## Layout
 

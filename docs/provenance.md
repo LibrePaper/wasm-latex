@@ -39,6 +39,16 @@ means:
   layer and the published binaries*: this repository was seeded from it, and it
   publishes its own compiled engine releases.
 
-So "we reproduced the release byte for byte" means: WasmTex compiled TeX Live's
-source to WebAssembly and published the result; we rebuilt from the same TeX
-Live commit with the same recipe and got identical bytes.
+## The seed was checked once
+
+On 2026-09-08, before anything here was changed, the seed's recipe was run
+from the pinned TeX Live commit and compared with the receipts of WasmTex's
+published `2026-8b7946970153c52e` release. Every compiled file matched byte
+for byte: `wasmtex-pdftex.wasm` (1,672,898 bytes, sha256
+`bf0b9fd1772fc78b02ad19eff39f7e03a73d7eefc1c1d05b15387768e57d013d`) and
+`wasmtex-bibtex.wasm` (205,813 bytes, sha256
+`7ee47f5959d9f2a0d4cbde264be97472b6c1b7a1da2ca58b67baea759b03c3d6`) among
+them. That established that the layer we started from was what its source
+said. It is history, not process: nothing here compares against WasmTex any
+more, and the reproduction evidence this repository owes is its own, a
+rebuild from its published source archive matching its staged manifest.

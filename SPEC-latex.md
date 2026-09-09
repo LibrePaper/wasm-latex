@@ -419,5 +419,6 @@ Not done:
 - The engine Dockerfiles still clone TeX Live source from GitHub rather than
   copying in a vendored tarball.
 - A clean rebuild from the source archive has not been shown to reproduce
-  the distributed bytes; the only reproduction evidence is pdfTeX against
-  WasmTex's receipts.
+  the distributed bytes. There is no reproduction evidence of our own yet; a
+  `make reproduce` that unpacks `dist-source/`, builds in Docker and
+  compares every artifact to the staged manifest is the missing target.
