@@ -120,7 +120,7 @@ Upstream reported that its WTPDF/Xpdf XeTeX and LuaHBTeX candidates no longer co
 this dependency, in build-evidence documents (`xetex-wtpdf-23f2ce1.md`,
 `luahbtex-wtpdf-666663b.md`) that were not seeded into this repository. Neither engine
 has been built here yet. Treat the blocker as standing for anything built here until
-a link audit of our own XeTeX and LuaHBTeX artifacts is recorded — an upstream claim
+a link audit of our own XeTeX and LuaHBTeX artifacts is recorded — a WasmTex claim
 whose evidence we do not hold is not our evidence. Linked
 component notices, license selections, and the relink method are now recorded in the
 machine-readable inventory; the corresponding-source, security, compatibility, and
@@ -154,7 +154,7 @@ build actually compiles: `libs/xpdf/xpdf-src` reports `xpdfVersion "4.06"`, and 
 `COPYING`, `COPYING3`, and `README` are byte-identical to
 `LICENSES/Xpdf-4.06-GPL-2.0.txt`, `LICENSES/GPL-3.0.txt`, and
 `LICENSES/Xpdf-4.06-README.txt`. The 4.04 texts have been removed;
-upstream's `ENGINE-COMPONENTS.json` already recorded 4.06. The alternative
+WasmTex's `ENGINE-COMPONENTS.json` already recorded 4.06. The alternative
 FreeType License is retained for provenance in
 [`LICENSES/FreeType.txt`](LICENSES/FreeType.txt), but is not the selected license for
 that combined binary.

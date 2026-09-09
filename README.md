@@ -24,7 +24,7 @@ the Dockerfile builds with the image the published manifest claims:
     node tools/check-pins.mjs
 
 **Check it against the published release.** `tools/compare-receipt.mjs` compares
-your build to a `BUILD-RECEIPT.json` byte for byte. Against upstream's published
+your build to a `BUILD-RECEIPT.json` byte for byte. Against WasmTex's published
 receipts for `2026-8b7946970153c52e` it matches exactly — the evidence that the
 published binary is what its published source says. The hashes and the method are
 in [`docs/reproduction-2026-pdftex.md`](docs/reproduction-2026-pdftex.md).
@@ -82,6 +82,22 @@ network policy too: [`docs/audit-worker-js.md`](docs/audit-worker-js.md).
   compile time. This repository makes the engine ours; the package mirror is
   the next job.
 
+## Two upstreams
+
+The word is ambiguous here, so this repository avoids it and names which one it
+means:
+
+- **TeX Live** is upstream of the *source*: the C and Pascal that compile into
+  the engines (`texlive-source`, pinned by commit) and the packages a document
+  loads (`vendor/`, from the signed release archive).
+- **WasmTex** (<https://github.com/corca-ai/wasmtex>) is upstream of the *build
+  layer and the published binaries*: this repository was seeded from it, and it
+  publishes its own compiled engine releases.
+
+So "we reproduced the release byte for byte" means: WasmTex compiled TeX Live's
+source to WebAssembly and published the result; we rebuilt from the same TeX
+Live commit with the same recipe and got identical bytes.
+
 ## Provenance
 
 This repository was seeded on 2026-09-08 from the engine build layer of WasmTex,
@@ -107,7 +123,7 @@ Copied verbatim from that snapshot:
 - `LICENSES/`, `THIRD_PARTY_NOTICES.md`, `docs/licensing.md` — the obligations
   the engines carry. They are GPL: a build we publish must publish its source.
 
-The upstream editor, runtime library and application code were not copied;
+WasmTex's editor, runtime library and application code were not copied;
 LibrePaper has its own controller. Written since the seed: `tools/`,
 `receipts/`, and the docs named above.
 

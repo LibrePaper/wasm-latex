@@ -2,7 +2,7 @@
 
 What this repository may distribute, on what terms, and what has to be true
 before it does. Scoped to what it actually builds: **pdfTeX and BibTeX**. The
-policy for engines not built here is in git history (upstream's version of this
+policy for engines not built here is in git history (WasmTex's version of this
 document) and should be reinstated per engine, from its own link inventory, when
 that engine is first built.
 
@@ -83,7 +83,8 @@ does; the engines are GPL and are separately delivered.
 Taking the tree out of the image, rather than re-cloning it, removes a step
 where the archive could quietly diverge from the binary: a re-clone can differ
 if the pin is wrong, if a tag moved, or if the fetch was patched. The manifest
-still records the commit, so the archive can be checked against upstream.
+still records the commit, so the archive can be checked against the TeX Live
+repository it came from.
 
 The Emscripten runtime pieces linked into the binaries (musl libc, libc++,
 libc++abi, compiler-rt, dlmalloc) come from the digest-pinned `emscripten/emsdk`
@@ -120,7 +121,7 @@ the ones specific to the obligations:
   makeindex have no link inventory, so no terms are established for them.
   makeindex additionally needs its conspicuous modified-source statement, and
   XeTeX and LuaHBTeX need the `pplib` question settled against artifacts we
-  built — upstream's evidence for that was never seeded here (see
+  built — WasmTex's evidence for that was never seeded here (see
   `THIRD_PARTY_NOTICES.md`).
 - **An SBOM**, if downstream consumers want one. The link inventory has the
   information; nothing emits SPDX.

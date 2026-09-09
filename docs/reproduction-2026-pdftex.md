@@ -3,7 +3,7 @@
 Date: 2026-09-08. Machine: 16 cores, Docker 29.7, x86_64.
 
 Built from this repository's `wasm-build/` at the seed commit, which is the
-upstream snapshot `0dddc924` the release receipts name, with the recipe as it
+WasmTex snapshot `0dddc924` the release receipts name, with the recipe as it
 stood at that commit:
 
     docker buildx build --platform linux/amd64 --load \
@@ -16,14 +16,14 @@ Timings: image (native TeX Live build) 12m53s; wasm phase 2m33s.
 ## Result: every compiled file matched, byte for byte
 
 Compared with `tools/compare-receipt.mjs` against the `BUILD-RECEIPT.*.json`
-files published with upstream's release `2026-8b7946970153c52e`. Those receipts
-are no longer vendored here — they are upstream's to publish — so the hashes
+files WasmTex published with its engine release `2026-8b7946970153c52e`. Those
+receipts are no longer vendored here — they are WasmTex's to publish — so the hashes
 they assert are reproduced below. Anyone can rebuild and check against this
-table, or fetch the receipts from upstream and run:
+table, or fetch the receipts from WasmTex and run:
 
     node tools/compare-receipt.mjs <their BUILD-RECEIPT.pdftex.json> wasm-build/dist
 
-| Artifact | Bytes | SHA-256 asserted by upstream, and produced by our build |
+| Artifact | Bytes | SHA-256 WasmTex asserts, and our build produced |
 |---|---|---|
 | `wasmtex-kpse-resolve.js` | 3223 | `0303650d65055961498677e0e109357b061873b86a063cb901800a2a84b4859d` |
 | `wasmtex-pdftex-checkpoint.js` | 111651 | `7b234c8ef04fb59716487ef7f1fd56f0155488aff4d328a3b26e5f8de9decdef` |
@@ -50,7 +50,7 @@ are what the published source says they are.
 - `wasmtex-pdftex.fmt`: not attempted, and no longer a goal. The format is
   now built offline from a local texmf tree by `tools/build-format.mjs` (see
   format-generation.md), from inputs we hash ourselves rather than from
-  upstream's CDN, so its bytes are ours and are not expected to match the
+  WasmTex's CDN, so its bytes are ours and are not expected to match the
   pinned receipt.
 
 ## Notes on the recipe
