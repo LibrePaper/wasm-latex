@@ -20,3 +20,6 @@ mirror/
 
 # Engines built but not shipped: no link inventory yet
 wasm-build/dist-unshipped/
+
+# wrangler state from make push
+.wrangler/
