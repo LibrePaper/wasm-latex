@@ -36,24 +36,27 @@ try {
  const input={tex:fs.readFileSync(path.join(root,'wasm-build/biber-fixture/main.tex'),'utf8'),bib:fs.readFileSync(path.join(root,'wasm-build/biber-fixture/refs.bib'),'utf8')};
  const run=async input=>{
   const latex=await import('/app/src/lib/latex.js');
+  const status=await import('/app/src/lib/latex/status.js');
+  const compile = tree => Promise.race([latex.compile(tree), new Promise((_,reject)=>setTimeout(()=>reject(Error('Compile timeout: '+JSON.stringify(status.get()))),45000))]);
   latex.at(location.origin+'/mirror/');
   latex.configure({project:'biber-browser-integration',settings:{engine:'pdflatex'}});
   const tree={main:'main.tex',texts:{'main.tex':input.tex,'refs.bib':input.bib},assets:{}};
-  const first=await latex.compile(tree);
+  const first=await compile(tree);
   if (!first.ok) throw Error(JSON.stringify(first));
-  const second=await latex.compile({...tree,texts:{...tree.texts,'main.tex':input.tex.replace('Unicode bibliography:','Edited prose:')}});
+  const second=await compile({...tree,texts:{...tree.texts,'main.tex':input.tex.replace('Unicode bibliography:','Edited prose:')}});
   // Nested project paths must not be flattened when sent to Biber.
   latex.configure({project:'biber-nested-integration',settings:{engine:'pdflatex'}});
-  const nested=await latex.compile({main:'chapters/main.tex',texts:{'chapters/main.tex':input.tex,'chapters/refs.bib':input.bib},assets:{}});
+  const nested=await compile({main:'chapters/main.tex',texts:{'chapters/main.tex':input.tex,'chapters/refs.bib':input.bib},assets:{}});
   // A changed bibliography must invalidate the cached BBL.
-  const changed=await latex.compile({main:'chapters/main.tex',texts:{'chapters/main.tex':input.tex,'chapters/refs.bib':input.bib.replace('1974','1975')},assets:{}});
+  const changed=await compile({main:'chapters/main.tex',texts:{'chapters/main.tex':input.tex,'chapters/refs.bib':input.bib.replace('1974','1975')},assets:{}});
   return {first:{...first,pdf:Array.from(first.pdf||[])},second:{...second,pdf:null},nested:{...nested,pdf:Array.from(nested.pdf||[])},changed:{...changed,pdf:Array.from(changed.pdf||[])}};
  };
  const result=await driver.evaluate(`(${run.toString()})(${JSON.stringify(input)})`);
+ fs.writeFileSync(path.join(out,'debug.json'),JSON.stringify(result,null,2));
  for(const name of ['first','second','nested','changed']){
   const r=result[name];
   assert.equal(r.ok,true,`${name}: ${JSON.stringify(r.failure)} ${r.log}`);
-  assert.equal(r.provenance.bibliography,'browser-biber',JSON.stringify(r.provenance));
+  assert.equal(r.provenance.bibliography,'browser-biber',name+': '+JSON.stringify(r.provenance));
   assert.ok(!r.failure,`${name}: unexpected failure ${JSON.stringify(r.failure)}`);
   if(name!=='second'){
    fs.writeFileSync(path.join(out,name+'.pdf'),Buffer.from(r.pdf));

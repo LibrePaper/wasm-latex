@@ -10,7 +10,8 @@
         "bytes": 9644474,
         "sha256": "106bf9221aa6f6337407711943bc5718bb138a20d0e22b17e9b54c13f37648b5"
       },
-      "archives": 64
+      "archives": 64,
+      "objects": 1
     }
   ],
   "linked": [
