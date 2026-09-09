@@ -379,6 +379,12 @@ Done in this repository:
   the corresponding-source archive to a GitHub Release and annotates it with
   the staged manifest hash.
 - `docs/bundles.md` and `docs/what-works-in-the-browser.md`.
+- The browser run. On 2026-09-09 LibrePaper's `latex-wasmtex-browser` check
+  compiled the corpus in headless Chromium against a release staged here
+  and imported into a local mirror: article, paper and packages with
+  pdfLaTeX and BibTeX, and the XeTeX document with XeLaTeX, every one with
+  the expected page count and SyncTeX, XeTeX in 2.7 s. A prose edit
+  recompiled with zero new bytes from the mirror.
 - OpenType font lookup by name, as far as this repository ships it:
   `tools/xetex-fontlist.mjs` (extracted from `tools/build-format.mjs`, which
   now imports it) builds `xetexfontlist.txt` with `otfinfo`, and
@@ -398,11 +404,6 @@ Done in LibrePaper:
 
 Not done:
 
-- XeLaTeX in a browser against a bundled release. Everything it needs is in
-  place: the font list ships in `tex/xetex/fontlist` and the worker asks for
-  it by name through the index, and LibrePaper sends every engine the bundle
-  index and hands XeTeX its inflated ICU data. What has not happened is a
-  real browser run; the harness has only exercised XeTeX per file.
 - LuaTeX's timeout; its engine is still unbuilt.
 - The local tier: platform confinement, the shell-escape policy, stored
   renderings, and doctor output for agents. All of it is Rust in LibrePaper
