@@ -1,0 +1,1963 @@
+{
+  "procedure": "node tools/build-format.mjs",
+  "engine": "pdftex",
+  "texmf": [
+    "texlive-20260301-texmf/texmf-dist",
+    "texmf-var"
+  ],
+  "sourceDateEpoch": 1772323200,
+  "format": {
+    "name": "wasmtex-pdftex.fmt",
+    "bytes": 3633351,
+    "sha256": "f63bc17a1d809184ebfa880a1a78dd81f5351a8934e8618905ff726d0054c962"
+  },
+  "inputs": [
+    {
+      "format": 3,
+      "name": "cmex10.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmex10.tfm",
+      "bytes": 992,
+      "sha256": "0890bccea1dd4d27f001ac30e86c63af35bc803e0557c35aafb1903c8d208e92"
+    },
+    {
+      "format": 3,
+      "name": "cmmi10.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmmi10.tfm",
+      "bytes": 1528,
+      "sha256": "e442c5487f84df70218ff37f775c87060856f5b6e04c011b6cadbbadfcf46645"
+    },
+    {
+      "format": 3,
+      "name": "cmmi5.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmmi5.tfm",
+      "bytes": 1508,
+      "sha256": "8839e40838381a0a3c976bdd5becf72afd60bde5a965c3d9b985c3479c6cf75e"
+    },
+    {
+      "format": 3,
+      "name": "cmmi7.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmmi7.tfm",
+      "bytes": 1528,
+      "sha256": "ce55681703aae565f17286d800ea9780223132589bdbaeda1751b869aba26a38"
+    },
+    {
+      "format": 3,
+      "name": "cmr10.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmr10.tfm",
+      "bytes": 1296,
+      "sha256": "87f2d8981927644cbecaf3d639e96e348ea4e7be49d8804468bd8ba9ff3f5244"
+    },
+    {
+      "format": 3,
+      "name": "cmr5.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmr5.tfm",
+      "bytes": 1220,
+      "sha256": "581be818f67bd11a1792d05e129abe3ea30c5cbdfce3bed8da7c5fb50f5ba95b"
+    },
+    {
+      "format": 3,
+      "name": "cmr7.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmr7.tfm",
+      "bytes": 1300,
+      "sha256": "28f9f4d237bdae4babef4a59d90f17686a09d6f9df0b2c3c23b2ba15f20eee82"
+    },
+    {
+      "format": 3,
+      "name": "cmsy10.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm",
+      "bytes": 1124,
+      "sha256": "0ca13d421ac7133271aed7c935099ecf3d1d08ac9e15f81acb34a16564ab8a46"
+    },
+    {
+      "format": 3,
+      "name": "cmsy5.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmsy5.tfm",
+      "bytes": 1112,
+      "sha256": "6b7dc18cba9ca8996d7b146f1ed78d9227577b26248083310fec227692198ca5"
+    },
+    {
+      "format": 3,
+      "name": "cmsy7.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/cm/cmsy7.tfm",
+      "bytes": 1120,
+      "sha256": "4f59bbf683e947c807158641621982dc83f55fec042fea7963d8ce9f9da98256"
+    },
+    {
+      "format": 3,
+      "name": "lcircle10.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/latex-fonts/lcircle10.tfm",
+      "bytes": 820,
+      "sha256": "f5aaff47e226ff644ae94765b8d6012e0ffb6d62956993acac2f2dd4ad589929"
+    },
+    {
+      "format": 3,
+      "name": "lcirclew10.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/latex-fonts/lcirclew10.tfm",
+      "bytes": 820,
+      "sha256": "7906e4c5d770db4002740cba4d8194281b06d6fe7edd9d9949b60a291b753646"
+    },
+    {
+      "format": 3,
+      "name": "line10.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/latex-fonts/line10.tfm",
+      "bytes": 748,
+      "sha256": "250200d9efa885fecff118d72e5239adacd0783ccb00c4fb96fa677708ce5217"
+    },
+    {
+      "format": 3,
+      "name": "linew10.tfm",
+      "path": "texlive-20260301-texmf/texmf-dist/fonts/tfm/public/latex-fonts/linew10.tfm",
+      "bytes": 748,
+      "sha256": "925de632e8afb641692c58bf6c464fb1aa79782212523532590dd6b91b78c40f"
+    },
+    {
+      "format": 26,
+      "name": "atbegshi.sty",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/atbegshi/atbegshi.sty",
+      "bytes": 24708,
+      "sha256": "a73003b4bb2dc8a814533ddbd31600e6626827799c2a465d03ef42e7a33fa71b"
+    },
+    {
+      "format": 26,
+      "name": "hyphen.cfg",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/babel/hyphen.cfg",
+      "bytes": 6443,
+      "sha256": "0d9fb6f76b78b80a13c8b07e07be419c9a4b04fc0c2f140119145e42e2014b00"
+    },
+    {
+      "format": 26,
+      "name": "language.dat",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/config/language.dat",
+      "bytes": 6881,
+      "sha256": "16f004f6c0683b502062b971af12b248643c83c8fb7aa44d6a2d5be5fb81c414"
+    },
+    {
+      "format": 26,
+      "name": "dehyphn-x-2024-02-28.pat",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/dehyph-exptl/dehyphn-x-2024-02-28.pat",
+      "bytes": 274301,
+      "sha256": "e6cdda0e47efa1daf1673ed4737e75c826f6c0c2a074f021a28c2fb076ad64d6"
+    },
+    {
+      "format": 26,
+      "name": "dehyphn-x-2024-02-28.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/dehyph-exptl/dehyphn-x-2024-02-28.tex",
+      "bytes": 4964,
+      "sha256": "d41721236b336305d7c98723e558a0b2023704eed058f3d8ef1d1e0eb9ae8967"
+    },
+    {
+      "format": 26,
+      "name": "dehypht-x-2024-02-28.pat",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/dehyph-exptl/dehypht-x-2024-02-28.pat",
+      "bytes": 272321,
+      "sha256": "6c53f8633494c4e4e3252c5964255810127c5a29577356c204421280cb5bcb17"
+    },
+    {
+      "format": 26,
+      "name": "dehypht-x-2024-02-28.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/dehyph-exptl/dehypht-x-2024-02-28.tex",
+      "bytes": 4964,
+      "sha256": "a07851ed6d7b541172680eeaa3856a6b08afdd852c5e0e04726a9f5d82b117ff"
+    },
+    {
+      "format": 26,
+      "name": "dehyphn.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/dehyph/dehyphn.tex",
+      "bytes": 51634,
+      "sha256": "0bf281fd020e40ec2ae81a6bf819f2451e8cfd027e04f99c101c3da5c97b9300"
+    },
+    {
+      "format": 26,
+      "name": "dehypht.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/dehyph/dehypht.tex",
+      "bytes": 51345,
+      "sha256": "bd6688ba89320114843ffa98d09b70cf3b7e3d5becec415f455535b579dd11ce"
+    },
+    {
+      "format": 26,
+      "name": "conv-utf8-ec.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/conversions/conv-utf8-ec.tex",
+      "bytes": 6553,
+      "sha256": "30ca4dc24a6fd70ce2d64ff6ce021be6fd39825b2abf60c66ee5ad520005bed6"
+    },
+    {
+      "format": 26,
+      "name": "conv-utf8-il3.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/conversions/conv-utf8-il3.tex",
+      "bytes": 1232,
+      "sha256": "9d1b4fec996e8b0c7ade113ab118de4358f60a0d7e53c0302c1067781450bbd8"
+    },
+    {
+      "format": 26,
+      "name": "conv-utf8-l7x.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/conversions/conv-utf8-l7x.tex",
+      "bytes": 4157,
+      "sha256": "70aa9231ef54dd9b700007c86996ca436713cd324b51f12addd0c7ce16be4d67"
+    },
+    {
+      "format": 26,
+      "name": "conv-utf8-lmc.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/conversions/conv-utf8-lmc.tex",
+      "bytes": 3896,
+      "sha256": "71b95d9f05e3ec485d99cb50a05ddcb1c879e1a40471b6c8aece8c04ee75f33e"
+    },
+    {
+      "format": 26,
+      "name": "conv-utf8-lth.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/conversions/conv-utf8-lth.tex",
+      "bytes": 4297,
+      "sha256": "77cf67f0150b84faa7c91eb32d2273f267c0500f846f14949cbd1a4697791cdc"
+    },
+    {
+      "format": 26,
+      "name": "conv-utf8-qx.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/conversions/conv-utf8-qx.tex",
+      "bytes": 5258,
+      "sha256": "f4757d52b8108a916cf8d6f78b1cefe623ea4bd264a82c52e6d3bb146ad0784e"
+    },
+    {
+      "format": 26,
+      "name": "conv-utf8-t2a.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/conversions/conv-utf8-t2a.tex",
+      "bytes": 6391,
+      "sha256": "7b98e9a3c12c04f3fff3501152cfc5b2b3b36afd461d81f3303b1c837e903033"
+    },
+    {
+      "format": 26,
+      "name": "conv-utf8-t8m.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/conversions/conv-utf8-t8m.tex",
+      "bytes": 3235,
+      "sha256": "b94ab26d82c036f7c7b31aa11a9a7dce6eb01f3fc68876c565b4eb7495598320"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-af.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-af.tex",
+      "bytes": 1231,
+      "sha256": "cdd380203d96166b0a3a0084ffd06a6ac7fc3b131d38b0a9030268a3ec595940"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-as.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-as.tex",
+      "bytes": 1227,
+      "sha256": "d47d4c5e427e0eca2067ddb32477467378e68f045d909e14e524390e2f3ea000"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-be.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-be.tex",
+      "bytes": 1239,
+      "sha256": "94f54d030937e8d698a3b2d3d39975e44b3e2fdbb5871e60322f21b69b1da6fc"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-bg.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-bg.tex",
+      "bytes": 1176,
+      "sha256": "a9b3f58116a9085bd07bc9475a2ebbbde80b9c89eb25b716703fe9051d5c29a8"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-bn.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-bn.tex",
+      "bytes": 1223,
+      "sha256": "343b9b11b5f2d80965dba5ecd720b4545dd32a4792e46c9c69d4b8888a27df67"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-ca.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-ca.tex",
+      "bytes": 1164,
+      "sha256": "d1541367f74436603532e16709bcb7fffb266a9742b1baebf8518836018e687b"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-cop.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-cop.tex",
+      "bytes": 1217,
+      "sha256": "8a099a048083fa0ded2ec996357bb0fd88fc328420814383f844dd0f535aa20e"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-cs.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-cs.tex",
+      "bytes": 1156,
+      "sha256": "c30023190abfe53eab917e8e6775a9c0246270edf4100e2719c02788b243aac5"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-cu.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-cu.tex",
+      "bytes": 1509,
+      "sha256": "8e0791a073d019a9058f150147e8d7514e54086fcd0f95a16003f7331b835d23"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-cy.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-cy.tex",
+      "bytes": 1156,
+      "sha256": "7c248550d83cc1e295ef3d5aaec831f1e5326236b8ab31fb1f2a1cfb6d8e6420"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-da.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-da.tex",
+      "bytes": 1160,
+      "sha256": "4a9a345a1e76506cc6580ba70dd3b509871eb437debc72b05b18d054b43e89f3"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-de-1901.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-de-1901.tex",
+      "bytes": 1327,
+      "sha256": "c11a5ee0225d15a7c426e20c37e7b2f4f0787571225fdce789c49bb4a66ab585"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-de-1996.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-de-1996.tex",
+      "bytes": 1319,
+      "sha256": "30fbe4f95f85ba5ae1adf80d3280e9e9bd53d8f2a56e157251c42f2e9632e188"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-de-ch-1901.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-de-ch-1901.tex",
+      "bytes": 1293,
+      "sha256": "7b35cc83fb56a2c2dac62fd36debce48a36bf3c6769226c25bf44c7990c74c92"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-el-monoton.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-el-monoton.tex",
+      "bytes": 1479,
+      "sha256": "b82464512dbbc228218ef23a7a8aede965976ee39c26d043eb5e009d87a0e7e4"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-el-polyton.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-el-polyton.tex",
+      "bytes": 1481,
+      "sha256": "700832f207c6907953a1ffbd413683c6651f28ce526ec777086e77cb43887d42"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-en-gb.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-en-gb.tex",
+      "bytes": 632,
+      "sha256": "fa15619f1b05c09aae62efa6d5cf8d2309ddf6b2e991a728350a0370558b4261"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-en-us.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-en-us.tex",
+      "bytes": 636,
+      "sha256": "0930a68b3c94b2ee48637b09ffd9fdee9f7a36399a1811a181cf015e06850de8"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-eo.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-eo.tex",
+      "bytes": 1176,
+      "sha256": "dd2804bfe0cf188a3fe2fa3a9e99a6bcfc5c7edba655bd5407510a6361167e2d"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-es.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-es.tex",
+      "bytes": 1164,
+      "sha256": "6d6bfa74e8896320cea3cfc9360b33c1a02d4266ee111d674a511532e8490556"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-et.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-et.tex",
+      "bytes": 1168,
+      "sha256": "cb7bde9154313bbea849fd2541a29f001a756cd2728e01ca10320f3bf79d4551"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-eu.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-eu.tex",
+      "bytes": 1160,
+      "sha256": "267acac815763d17d7599b835df55e863e431597900af4c2629d53100eecf146"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-fi-x-school.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-fi-x-school.tex",
+      "bytes": 1239,
+      "sha256": "1c497e6aa4f35e092cf8d2703d6c32262a0dac51ea1ea00c9ed120189ac95bbb"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-fi.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-fi.tex",
+      "bytes": 1164,
+      "sha256": "afa5546e295bcbee49ce9af494c06a6cbb5da4f20aaea1c9023f36ca377961a3"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-fr.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-fr.tex",
+      "bytes": 1204,
+      "sha256": "42a59379a68359fb243cfc428bbc4347b1fb9832f82b9a29a62f79927ac2f95e"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-fur.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-fur.tex",
+      "bytes": 1213,
+      "sha256": "80ef7dcb218094c087f2e8245c681c7bc12c24cdf36f90f68c7fd93273ea9484"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-ga.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-ga.tex",
+      "bytes": 1156,
+      "sha256": "53cf11498d6bd2aa6863ddc58e0341d145f5f351b64bdadfe5fab60ca871a3cd"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-gl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-gl.tex",
+      "bytes": 1168,
+      "sha256": "c40dcf0f187086688bd3e458184547f880cf60d86d17965502d981b0c7b79754"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-grc.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-grc.tex",
+      "bytes": 1402,
+      "sha256": "3d94b1061a002afb57a3e9525d745f0ef49b7d3f29e41c3186ea72a689ba1e81"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-gu.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-gu.tex",
+      "bytes": 1227,
+      "sha256": "cd2dcef8c1e82248c9033b6c08387d3a7b363844a34b897ffbe81df5da6ffd2a"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-hi.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-hi.tex",
+      "bytes": 1215,
+      "sha256": "8762302b9ad69e7b5bb79fd1441932b86229a6ee98d76ff2511bf74d65c82b02"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-hr.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-hr.tex",
+      "bytes": 1168,
+      "sha256": "2ec5fa243654748ffc48ab2b29df3affebda84472fef45f1bdd44dc464ce9077"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-hsb.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-hsb.tex",
+      "bytes": 1191,
+      "sha256": "ad2e9e74c846d42c218e8bcdb2f8ad9b6f040b779890eb11c8605c86ab57a6b9"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-hu.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-hu.tex",
+      "bytes": 1172,
+      "sha256": "3ca62e6f1656c745534de81931b74073f5bcb5418cc32b69367d7081094fd213"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-hy.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-hy.tex",
+      "bytes": 1227,
+      "sha256": "c5a5f00a558486199f74ee784ed5de6279035e0547e36c9489e1d3be670bde12"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-ia.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-ia.tex",
+      "bytes": 624,
+      "sha256": "bd18be8ebc26dea5780b1a5d8d81bc57ddd664375dfc7f1901c847e8a39ee6c9"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-id.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-id.tex",
+      "bytes": 618,
+      "sha256": "90990a117d2105f5f07cee88f56bdd16c96994e003f7f62efc8f2f9048218fb3"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-is.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-is.tex",
+      "bytes": 1172,
+      "sha256": "bd552dc1602d85d026dbf3555085cf403acfc02187c2ad4ba2239285814bacdc"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-it.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-it.tex",
+      "bytes": 1183,
+      "sha256": "558b1e51cddc0de5f49b23f585dcc404939d918f7d7703392ea45a71b5628461"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-ka.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-ka.tex",
+      "bytes": 1172,
+      "sha256": "c1408be45a636f844d8e673bb61c65157d4b77b0ae14f736ea26db94e0cb5246"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-kk.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-kk.tex",
+      "bytes": 1182,
+      "sha256": "3fc1f7bb0124fb3ae7513e26f7c60b2cfbd56b2185f0cc53587b117e96166eac"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-kmr.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-kmr.tex",
+      "bytes": 1172,
+      "sha256": "649b8b458d3a94669ad48a357733c50a9d2a3fb26e6a6347a277048cbe1ece90"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-kn.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-kn.tex",
+      "bytes": 1223,
+      "sha256": "f6f848d1bb4e3d2bf3b71d49473c4cd5a227b40fc2af4d223ed45a7ded373ea2"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-la-x-classic.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-la-x-classic.tex",
+      "bytes": 1318,
+      "sha256": "2de86031c37326bde3fd861567d9e8138632b4df4f2c606e269aafebf728d9a0"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-la-x-liturgic.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-la-x-liturgic.tex",
+      "bytes": 1218,
+      "sha256": "20582e9007cfec5df6f4fe19a710d6b59aa0f0522f4791853f192400bf8ecdb3"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-la.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-la.tex",
+      "bytes": 1156,
+      "sha256": "0df8b72c573b48b05db7a011e14839f9a9de2ce6018bbcc22cd62a43e4ac8458"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-lt.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-lt.tex",
+      "bytes": 1180,
+      "sha256": "c9f8e26d214671c84a98b964903cf9bea1106f92599cc2f73f0511cab5934aa7"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-lv.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-lv.tex",
+      "bytes": 1168,
+      "sha256": "a864c638ae71ca0bb6ca346309076399daeaa00dde070bda4d07f48034727f87"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-mk.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-mk.tex",
+      "bytes": 1239,
+      "sha256": "b7416ac1a72edc32ca1f9caea6eb61149a6d393b8546cfe22af1c363d392043a"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-ml.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-ml.tex",
+      "bytes": 1231,
+      "sha256": "39f81c7fee8e5c53248726cbea69cd73dc3cf89af0b2224cdf517b17d516ba0c"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-mn-cyrl-x-lmc.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-mn-cyrl-x-lmc.tex",
+      "bytes": 1223,
+      "sha256": "f77231ec1eae754ac87912617df20b78a114fe7ff3ca57dc8395fe7c0862fe7a"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-mn-cyrl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-mn-cyrl.tex",
+      "bytes": 1214,
+      "sha256": "3520b4621244ac3e750e2b1a0081b4a047a044a028b562f8c3586cfca91a6d5c"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-mr.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-mr.tex",
+      "bytes": 1223,
+      "sha256": "eebf5617b2cbe5eeb9dac91914a77f938ab25bf7c028b7ed1b754531224869a7"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-mul-ethi.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-mul-ethi.tex",
+      "bytes": 1259,
+      "sha256": "8fa01b666f45bb73f6921b174bbd49373a06a2959b6b0ea4a51da2f84f1eb6f0"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-nb.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-nb.tex",
+      "bytes": 1190,
+      "sha256": "2d2b2c6e9341c0eca5ca2eb1030c18ca97f3106071f572f353bd1abc729ccb3a"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-nl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-nl.tex",
+      "bytes": 1156,
+      "sha256": "0a1c94d3c25dcd0c21c9d63ec3dbe878a81534ac4df2c280fffd7705f74a0c70"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-nn.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-nn.tex",
+      "bytes": 1194,
+      "sha256": "1d09417b413d1fa51aa0533a5e4f7319e4364f88d32fe967262319c9c2729b1f"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-oc.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-oc.tex",
+      "bytes": 1208,
+      "sha256": "1d9a2edbe47b8d05a598c4b20faaaf7dd180c7e3cded5cf60007b660ea4d9351"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-or.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-or.tex",
+      "bytes": 1215,
+      "sha256": "789170d9611f01468633a794d8dca6e487805ed97093dfc2998ca0471d845bd0"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-pa.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-pa.tex",
+      "bytes": 1223,
+      "sha256": "fd6dd9ee2ef6fd0dca47efad1d6ffdcbb5346333df6daeef6155d86648ebc25a"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-pi.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-pi.tex",
+      "bytes": 1211,
+      "sha256": "35ceccb5808ed16d56258bff591c501603d77028d2ee269da0c371368a60503c"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-pl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-pl.tex",
+      "bytes": 1160,
+      "sha256": "7e11ba2260a08494f9a058fabffaed67d48cd787998e78a8e29be412b11aea51"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-pms.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-pms.tex",
+      "bytes": 1204,
+      "sha256": "a1670982add4cbf1743509d23a5ae9966853cb73a53fc63b4a6663f31b0199a9"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-pt.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-pt.tex",
+      "bytes": 1191,
+      "sha256": "f0d67946c2a567c51bed65d5370a018dc4600100ff215c65d1c8b4ee9575cc89"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-rm.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-rm.tex",
+      "bytes": 1164,
+      "sha256": "81ebf6729b5e505eeaa2221a9dcada4904c63f9fff9ad6e448097e2ca3f811df"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-ro.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-ro.tex",
+      "bytes": 1168,
+      "sha256": "7c466312668a684ff98c2cf82eb116b167e44a783b1b1e79b86b9d38208a69c5"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-ru.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-ru.tex",
+      "bytes": 1324,
+      "sha256": "1842d24208200f3834f9a5da0a6db224d2c8eda046bf7e5220686988a4e9c7fc"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-sa.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-sa.tex",
+      "bytes": 1349,
+      "sha256": "53dccd22ba3d5a169d9bf7df9b732998838aeeadd4502a964e3e3542c417ea6d"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-sk.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-sk.tex",
+      "bytes": 1160,
+      "sha256": "c2decb455e6dd97f779f0a0d422d150bcf9fa003c2e3374f6826e6498b068726"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-sl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-sl.tex",
+      "bytes": 1172,
+      "sha256": "b0c9b87a3b5b215c683db722489ba785a87d1832c34670820dcb9b4a3a73a2a4"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-sq.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-sq.tex",
+      "bytes": 1212,
+      "sha256": "06965b241e81b2eea7002eccd589791532daacda9751d054b1914af52c00b03a"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-sr-cyrl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-sr-cyrl.tex",
+      "bytes": 1317,
+      "sha256": "a9abd74f295555df792e3d1bdccc16c7d52d76c0fb384e82f5d6fae82644c996"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-sr-latn.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-sr-latn.tex",
+      "bytes": 1306,
+      "sha256": "e1ecde3872738e781f30ead0c687ba75d9095aefab75f7873691a359b1457b52"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-sv.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-sv.tex",
+      "bytes": 1164,
+      "sha256": "a6c5fa667135cd6b1469d434ccd26fa96e3fd3859a5c9309e0d7e9c32465e9d0"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-ta.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-ta.tex",
+      "bytes": 1215,
+      "sha256": "d17e1c323f8d81fdfe48854e2a865f1bcafacfda119c9362710d31783475c886"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-te.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-te.tex",
+      "bytes": 1219,
+      "sha256": "1fc76ee9e446fa9e1083b32f837fb7c40d1c408620e16b628d604f9aaa678090"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-th.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-th.tex",
+      "bytes": 1156,
+      "sha256": "0776f3b6f05740c43dd8b8a79bc25e9783027dac0b147aff0b0ce3a0b975169c"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-tk.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-tk.tex",
+      "bytes": 1179,
+      "sha256": "b625d99e7b1e8896cfb244bde2a97200d89408a54c6607d0f701c87395c4dfe2"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-tr.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-tr.tex",
+      "bytes": 1164,
+      "sha256": "8eb10e3c3911d8d759584f997003f67472a76aab28b4af93df38b3133fc72962"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-uk.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-uk.tex",
+      "bytes": 1375,
+      "sha256": "ca8e1c5dc10af1c26e99ce06851e8ca3ab165a7cfb988e59ab258eba3cf932f3"
+    },
+    {
+      "format": 26,
+      "name": "loadhyph-zh-latn-pinyin.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/loadhyph/loadhyph-zh-latn-pinyin.tex",
+      "bytes": 1359,
+      "sha256": "bb61fd2633ea862d92caa97d5d1893dde66e957130aa3dbe2359da875d3c11fb"
+    },
+    {
+      "format": 26,
+      "name": "hyph-la-x-liturgic.ec.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/ptex/hyph-la-x-liturgic.ec.tex",
+      "bytes": 19390,
+      "sha256": "90c1430670b654a631890ed47f07fe57a60ea39551a2d114449689e15914a3fb"
+    },
+    {
+      "format": 26,
+      "name": "copthyph.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex-8bit/copthyph.tex",
+      "bytes": 7171,
+      "sha256": "d59bb9fa0a002a287662eeea702dac0b3012c8ce5c1c9fb336363529c72ebec3"
+    },
+    {
+      "format": 26,
+      "name": "hyph-la-x-classic.ec.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex-8bit/hyph-la-x-classic.ec.tex",
+      "bytes": 104241,
+      "sha256": "e6dce86fbce5bdce078bbd0dd9713ef352d90df6028f1ef82ac1f224c3eca6e4"
+    },
+    {
+      "format": 26,
+      "name": "hyph-mk.macedonian.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex-8bit/hyph-mk.macedonian.tex",
+      "bytes": 12705,
+      "sha256": "382aa510f16647f020dcb30e57bdb22510a04e7acb0ec11ea46074006dd8654c"
+    },
+    {
+      "format": 26,
+      "name": "hyph-zh-latn-pinyin.ec.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex-8bit/hyph-zh-latn-pinyin.ec.tex",
+      "bytes": 2987,
+      "sha256": "7b5d06927bdd4e02312fec24ac6cd479a70b9ab0db4ad4ecc9e2724602ca6d96"
+    },
+    {
+      "format": 26,
+      "name": "hyph-af.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-af.tex",
+      "bytes": 81894,
+      "sha256": "a5de62ec8e5fd38251de838d8ebbdc44b21c76d30e9b486005fbfa641a93abe6"
+    },
+    {
+      "format": 26,
+      "name": "hyph-ar.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-ar.tex",
+      "bytes": 595,
+      "sha256": "42a876e2c31dc7e98df30850ee994fbe1242f5e49ccee8399c2ccf7793c537e7"
+    },
+    {
+      "format": 26,
+      "name": "hyph-be.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-be.tex",
+      "bytes": 36788,
+      "sha256": "ce0c69d86e03c40bdd0ab9f4535cee2503fe2894590380e45a99974f029cea6f"
+    },
+    {
+      "format": 26,
+      "name": "hyph-bg.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-bg.tex",
+      "bytes": 106100,
+      "sha256": "d37886f8cecea60bf829e4dd9dc1107aea8e8ee3eb92425423534bafac5f59b0"
+    },
+    {
+      "format": 26,
+      "name": "hyph-ca.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-ca.tex",
+      "bytes": 8076,
+      "sha256": "153b51e2a9f8afdd87a8848f73f4462a902c58d597aa55c66506af65c5596e7a"
+    },
+    {
+      "format": 26,
+      "name": "hyph-cs.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-cs.tex",
+      "bytes": 22983,
+      "sha256": "37b16173109c9c1a34d04c87eeb4ea8206d55e636c380dbcd72e912b4ca5033a"
+    },
+    {
+      "format": 26,
+      "name": "hyph-cy.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-cy.tex",
+      "bytes": 45634,
+      "sha256": "22c4d441e790c035bd208c4cccbe9a8254ab81c3da0ca0a8b062f8ed34f3e14c"
+    },
+    {
+      "format": 26,
+      "name": "hyph-da.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-da.tex",
+      "bytes": 8454,
+      "sha256": "23e0a50f0c20d632be06f973e700323463961eac737bb14f6c3787675a4f5575"
+    },
+    {
+      "format": 26,
+      "name": "hyph-de-ch-1901.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-de-ch-1901.tex",
+      "bytes": 268337,
+      "sha256": "5a72deec0543bf428d073a40f9abf626baaab5f58b75e620b9504309f1980bf3"
+    },
+    {
+      "format": 26,
+      "name": "hyph-en-gb.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-en-gb.tex",
+      "bytes": 58474,
+      "sha256": "e95bb4ab350f620c41c231c4785d7bdb4f91949d3e631b30e08b3ead3c340a52"
+    },
+    {
+      "format": 26,
+      "name": "hyph-en-us.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-en-us.tex",
+      "bytes": 34128,
+      "sha256": "f4ffcd96c5cbc886bdad23f95dcae8edc3cd3620eae62f7946eceda97c4e68f8"
+    },
+    {
+      "format": 26,
+      "name": "hyph-eo.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-eo.tex",
+      "bytes": 17045,
+      "sha256": "6892e3758fd35a1cb509556bb06fcb008eda3e975a867ee87eb828f204460d18"
+    },
+    {
+      "format": 26,
+      "name": "hyph-es.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-es.tex",
+      "bytes": 42602,
+      "sha256": "6a2e5f39a991a23d1cd8a23dbd0f6fe96a9f07561a6695f4f3320f47030e236c"
+    },
+    {
+      "format": 26,
+      "name": "hyph-et.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-et.tex",
+      "bytes": 25785,
+      "sha256": "617abc528446e33c1690a3d13ae7629292d2f00557b1b4ec96cb2a1d790ac090"
+    },
+    {
+      "format": 26,
+      "name": "hyph-eu.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-eu.tex",
+      "bytes": 4646,
+      "sha256": "e080a1e42ac443d8451df46d9d6628e64e8317aa53d826f99099652aaba613d0"
+    },
+    {
+      "format": 26,
+      "name": "hyph-fa.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-fa.tex",
+      "bytes": 632,
+      "sha256": "f7da7025e409878044237aee80cf7287d66d01ac37bacb6c2f71a35c785dc449"
+    },
+    {
+      "format": 26,
+      "name": "hyph-fi-x-school.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-fi-x-school.tex",
+      "bytes": 2456,
+      "sha256": "264a2ba2ab5237246f0bd902c7b3f111b03662ddd55c4dab03a9897e47e5491c"
+    },
+    {
+      "format": 26,
+      "name": "hyph-fi.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-fi.tex",
+      "bytes": 4820,
+      "sha256": "cf68be5eb003d299f85f2b7185f31d8ff5799c19dfad3f0300eaf9843e9cc8d3"
+    },
+    {
+      "format": 26,
+      "name": "hyph-fr.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-fr.tex",
+      "bytes": 30353,
+      "sha256": "526cad6fe8f52fcd3caa3fcaf667cb1740cfc14bca198680e00dc343a84594de"
+    },
+    {
+      "format": 26,
+      "name": "hyph-fur.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-fur.tex",
+      "bytes": 5290,
+      "sha256": "1987a744179d443677258f9ac0ef941fd2673e235aa576c20da64e352c95f6aa"
+    },
+    {
+      "format": 26,
+      "name": "hyph-ga.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-ga.tex",
+      "bytes": 46868,
+      "sha256": "7856cb341fd978b910c3807aa6918b39791e2f507d803253daccb5c71bbc02c6"
+    },
+    {
+      "format": 26,
+      "name": "hyph-gl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-gl.tex",
+      "bytes": 22648,
+      "sha256": "a7dbf7fd11c646921a40be561fb1ba362cd79ce93d0099dec9f86676abb5273a"
+    },
+    {
+      "format": 26,
+      "name": "hyph-he.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-he.tex",
+      "bytes": 599,
+      "sha256": "9927480f413dbda46739eb956ce115fd90c1bec5cfa876b8646611a3a2b9a3f6"
+    },
+    {
+      "format": 26,
+      "name": "hyph-hr.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-hr.tex",
+      "bytes": 10761,
+      "sha256": "69d684289c626c2576678112699c960d5821b52e7addbd473c0e8d0ef0c1694e"
+    },
+    {
+      "format": 26,
+      "name": "hyph-hsb.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-hsb.tex",
+      "bytes": 11583,
+      "sha256": "0b961d89317523960f41b2f32742abf807a253717200d9756b8d69c12f895fcf"
+    },
+    {
+      "format": 26,
+      "name": "hyph-hu.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-hu.tex",
+      "bytes": 529279,
+      "sha256": "c6f02d2b6f49d5068035f7bbc91aaeefd0b691ff806c17539a033a716c374692"
+    },
+    {
+      "format": 26,
+      "name": "hyph-ia.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-ia.tex",
+      "bytes": 4412,
+      "sha256": "c2e570831d02831f2c2c26e17ebe68d81c02a1c2cfbf4ac9d182610d6a0c6e3d"
+    },
+    {
+      "format": 26,
+      "name": "hyph-id.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-id.tex",
+      "bytes": 3389,
+      "sha256": "95bb9f56044f5f4bcceb838224a13d560df0188f0d91543c8d3b4c9a2abfc032"
+    },
+    {
+      "format": 26,
+      "name": "hyph-is.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-is.tex",
+      "bytes": 27097,
+      "sha256": "2707969ebe34a9ddfd861aaef40619e75ac78453718a56401aed91c5cbdcfcec"
+    },
+    {
+      "format": 26,
+      "name": "hyph-it.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-it.tex",
+      "bytes": 5011,
+      "sha256": "6ce56ed6ed2ca7c0688838e366e6595e0429f984f4fc6e96ec045cebb1e76a47"
+    },
+    {
+      "format": 26,
+      "name": "hyph-ka.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-ka.tex",
+      "bytes": 26820,
+      "sha256": "909f290e3a018e6b28692606ed2c1cf26d64f2d8bb1ec43e6133aba6d4704759"
+    },
+    {
+      "format": 26,
+      "name": "hyph-kk.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-kk.tex",
+      "bytes": 45716,
+      "sha256": "76a394f5b13f60862a9842bd399643af37d386a1737bc42a09439b090a623e19"
+    },
+    {
+      "format": 26,
+      "name": "hyph-kmr.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-kmr.tex",
+      "bytes": 2635,
+      "sha256": "2299d69ff2e093291338275b20fa85a35c62abc156835647d5d91a9dfad476eb"
+    },
+    {
+      "format": 26,
+      "name": "hyph-la.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-la.tex",
+      "bytes": 9443,
+      "sha256": "84e0be1877beaf6d1d7a83d5639fb65a0e0645cd2447b0dbccfa5e63565abdfd"
+    },
+    {
+      "format": 26,
+      "name": "hyph-lt.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-lt.tex",
+      "bytes": 11601,
+      "sha256": "6162b566620367abb827ba1457567e7a79680596919886a7138e48b346e983d1"
+    },
+    {
+      "format": 26,
+      "name": "hyph-lv.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-lv.tex",
+      "bytes": 85396,
+      "sha256": "209e0a5b09aaf68517724a2cecc7b7bbd278355ffdd918051ce23110687e3d3c"
+    },
+    {
+      "format": 26,
+      "name": "hyph-mn-cyrl-x-lmc.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-mn-cyrl-x-lmc.tex",
+      "bytes": 5528,
+      "sha256": "192fa0887ca631595c38cac1b30025badb3d86a82359e68c97efd825a8d15143"
+    },
+    {
+      "format": 26,
+      "name": "hyph-mn-cyrl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-mn-cyrl.tex",
+      "bytes": 16059,
+      "sha256": "22903e12e25e5348d7c2285f8d3173215540296e1b47f38515936618993988fa"
+    },
+    {
+      "format": 26,
+      "name": "hyph-nb.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-nb.tex",
+      "bytes": 1664,
+      "sha256": "b111264f46d59089d4cf96691c66b637166f5aae5b86719a5b9fe32737cc0169"
+    },
+    {
+      "format": 26,
+      "name": "hyph-nl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-nl.tex",
+      "bytes": 87511,
+      "sha256": "d21499bfbee53e4d50e867ef92a41fd28b65725d7c91c980e4f8f02889bf6b2a"
+    },
+    {
+      "format": 26,
+      "name": "hyph-nn.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-nn.tex",
+      "bytes": 1547,
+      "sha256": "f217dca0e815443bc9feac27d9eb48cf795b3f4f222afacf7f87fb6c2b0e196e"
+    },
+    {
+      "format": 26,
+      "name": "hyph-no.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-no.tex",
+      "bytes": 196495,
+      "sha256": "05a2ac5fbf88bdc78c580e5cb8a158e6aa760d13756604f9523aa99feec3ec65"
+    },
+    {
+      "format": 26,
+      "name": "hyph-oc.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-oc.tex",
+      "bytes": 4216,
+      "sha256": "0a968a3588697da7c0ef13f219f45973fc75c08e8ee9253ff1a4bf567167c8fb"
+    },
+    {
+      "format": 26,
+      "name": "hyph-pl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-pl.tex",
+      "bytes": 34118,
+      "sha256": "83ddbbd21bc06a44bc4f4a4c49c38782e809cff5f026b764c044daa29e818843"
+    },
+    {
+      "format": 26,
+      "name": "hyph-pms.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-pms.tex",
+      "bytes": 4794,
+      "sha256": "a5af2db65a7bc27318c3d0300d1a3ef332997a6d447a572aa728e0710ac3243e"
+    },
+    {
+      "format": 26,
+      "name": "hyph-pt.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-pt.tex",
+      "bytes": 5487,
+      "sha256": "c110a39e501db372d1d755e1c64464321a2efa7d8e9617f66001000389b941f2"
+    },
+    {
+      "format": 26,
+      "name": "hyph-rm.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-rm.tex",
+      "bytes": 6391,
+      "sha256": "e79c432ffdf1611a23ed9368ee25612a8e7bde78f6cff24a8f6a36abd02440c9"
+    },
+    {
+      "format": 26,
+      "name": "hyph-ro.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-ro.tex",
+      "bytes": 4958,
+      "sha256": "6f09c53cc65cb6fcf4435396371c49bf50aaa88e40af7931a9e6bccc405f1fab"
+    },
+    {
+      "format": 26,
+      "name": "hyph-sh-cyrl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-sh-cyrl.tex",
+      "bytes": 32824,
+      "sha256": "9b0f8f489868d3f98d4dec8a5d71f465ad5a70afde6857c6c2d79ec0344618fc"
+    },
+    {
+      "format": 26,
+      "name": "hyph-sh-latn.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-sh-latn.tex",
+      "bytes": 23036,
+      "sha256": "5aea49c845df3c21b95e417abfc28349909a4c9565523702055a122153486a4a"
+    },
+    {
+      "format": 26,
+      "name": "hyph-sk.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-sk.tex",
+      "bytes": 20883,
+      "sha256": "55b51962da5ad3f48ff62007006ecb7768bf2665e407c920e968d08b10b40369"
+    },
+    {
+      "format": 26,
+      "name": "hyph-sl.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-sl.tex",
+      "bytes": 9070,
+      "sha256": "27da982d03b881fe84f1c4fb42ba0948f33e01a3a44eaa5ebd07e01d20c72691"
+    },
+    {
+      "format": 26,
+      "name": "hyph-sq.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-sq.tex",
+      "bytes": 3939,
+      "sha256": "632e3c5c02d0f2260b4195e7b6e9f6e348c2deb57c61d2a0dc832209a332ee9f"
+    },
+    {
+      "format": 26,
+      "name": "hyph-sv.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-sv.tex",
+      "bytes": 31706,
+      "sha256": "102253382bd91cdb7535de5c20744254c9ac9aaa4ca12ed420eb835e5004c0b3"
+    },
+    {
+      "format": 26,
+      "name": "hyph-th.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-th.tex",
+      "bytes": 86109,
+      "sha256": "2d59071f549c68419362e9489044f67cc94bd395c004479afce9dc37338fc0c5"
+    },
+    {
+      "format": 26,
+      "name": "hyph-tk.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-tk.tex",
+      "bytes": 15831,
+      "sha256": "801ef59c14dab4fec0a9ae178632e63b8ef9f0362dcea74f4a3689a4a7908690"
+    },
+    {
+      "format": 26,
+      "name": "hyph-tr.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-tr.tex",
+      "bytes": 5744,
+      "sha256": "9243b6fc1426b07dae71c6136bd7d4a907e01a36ab6326f349ee6c310e6bb2b5"
+    },
+    {
+      "format": 26,
+      "name": "hyph-vi.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyph-utf8/patterns/tex/hyph-vi.tex",
+      "bytes": 615,
+      "sha256": "60d6b75e15395bbbb6474d2712f650de23ab432b56315476e074a6b0a5fea378"
+    },
+    {
+      "format": 26,
+      "name": "dumyhyph.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyphen/dumyhyph.tex",
+      "bytes": 419,
+      "sha256": "99d210320228a242478c36c0dfde48c7513e4495d4feea7fe3997aab27582dfc"
+    },
+    {
+      "format": 26,
+      "name": "grahyph5.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyphen/grahyph5.tex",
+      "bytes": 36706,
+      "sha256": "eeb7329e7dd94b87c421bfde25f27625423920d2ad1fa2fc23088aad0a74d267"
+    },
+    {
+      "format": 26,
+      "name": "grmhyph5.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyphen/grmhyph5.tex",
+      "bytes": 5902,
+      "sha256": "becdf19387bc265d45c0d2dcfbd9a676791c11400fb1edae8143867ab3dc1ab1"
+    },
+    {
+      "format": 26,
+      "name": "grphyph5.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyphen/grphyph5.tex",
+      "bytes": 13326,
+      "sha256": "1bfe51dcff12f444518d4c2ede98b152afb46c51ade62b694385061c528a3b8a"
+    },
+    {
+      "format": 26,
+      "name": "hyphen.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyphen/hyphen.tex",
+      "bytes": 27860,
+      "sha256": "2c18acdc04c1a066aeb1759905e7ca449f0616c314b5ed6aebe55b9d4a89b8d4"
+    },
+    {
+      "format": 26,
+      "name": "ibyhyph.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyphen/ibyhyph.tex",
+      "bytes": 28651,
+      "sha256": "b12db81b0c101b38b5570c21a560e71236dc16ea5540012394a6f700f9b9d59d"
+    },
+    {
+      "format": 26,
+      "name": "zerohyph.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/hyphen/zerohyph.tex",
+      "bytes": 402,
+      "sha256": "80b6e5b7ff3bcd2ff1d32599f9fcd7d3aa40a4c67aa06f72527dd6eb741b551c"
+    },
+    {
+      "format": 26,
+      "name": "null.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/knuth-lib/null.tex",
+      "bytes": 212,
+      "sha256": "f97bbac8e7e0f3ff0cd1b9ac9cb42894ffe58464c6e05d0f566455a94d15d6f0"
+    },
+    {
+      "format": 26,
+      "name": "glyphtounicode.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/pdftex/glyphtounicode.tex",
+      "bytes": 216747,
+      "sha256": "395e568c1f4db5e89013e6aa4aac22a668b543256a20b4349436070356870851"
+    },
+    {
+      "format": 26,
+      "name": "catkoi.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ruhyphen/catkoi.tex",
+      "bytes": 1048,
+      "sha256": "eb5e47f223ae30c0fdd2090490d955a0b5a9de7fb65c08f5e1fb6698c2499ce0"
+    },
+    {
+      "format": 26,
+      "name": "cyryoal.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ruhyphen/cyryoal.tex",
+      "bytes": 1819,
+      "sha256": "e00bd3d31af2bb91473aea40c4e66eafcf595ccad752cc5179c989463451222d"
+    },
+    {
+      "format": 26,
+      "name": "hypht2.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ruhyphen/hypht2.tex",
+      "bytes": 541,
+      "sha256": "e8c4eeb5c84ef29711cf2ffc9d0d98127d5336fa0dcb1e466ee289903a7b789f"
+    },
+    {
+      "format": 26,
+      "name": "koi2t2a.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ruhyphen/koi2t2a.tex",
+      "bytes": 1055,
+      "sha256": "2196a6dfe639f200ca44e4b6d39bd76d94c99886499a468496cb58b615fd91b6"
+    },
+    {
+      "format": 26,
+      "name": "ruhyphal.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ruhyphen/ruhyphal.tex",
+      "bytes": 29012,
+      "sha256": "348e778b9f887a77cb72a60c85027a31979d8076eaad983f8db8720f277adf3c"
+    },
+    {
+      "format": 26,
+      "name": "ruhyphen.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ruhyphen/ruhyphen.tex",
+      "bytes": 1633,
+      "sha256": "9501414b2b32c2780068268e905a44f7dcd7b009af0bd1b97ad044674614c567"
+    },
+    {
+      "format": 26,
+      "name": "pdftexconfig.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/tex-ini-files/pdftexconfig.tex",
+      "bytes": 549,
+      "sha256": "87102cd6fa7307afb808406b50201758809fd0b0b98d4fcd01ccfd540812336f"
+    },
+    {
+      "format": 26,
+      "name": "catlcy.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ukrhyph/catlcy.tex",
+      "bytes": 1327,
+      "sha256": "9f13591f87a891c5415f0e27b83b1f20dfc66d34f52809c35ee0a43dab84411f"
+    },
+    {
+      "format": 26,
+      "name": "lcy2t2a.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ukrhyph/lcy2t2a.tex",
+      "bytes": 1003,
+      "sha256": "dd84524d6127d20918cbd09a0e8de10669657164352d81678287a8d6b0fc6e78"
+    },
+    {
+      "format": 26,
+      "name": "ukrhyph.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ukrhyph/ukrhyph.tex",
+      "bytes": 2132,
+      "sha256": "4585623ae28ed2e0419be2c3270a52fb36ba9428cfe591f6914f2cce90e7e8ba"
+    },
+    {
+      "format": 26,
+      "name": "ukrhypmp.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/ukrhyph/ukrhypmp.tex",
+      "bytes": 16075,
+      "sha256": "fc6e1c2b18a7f6af455d18586be2b7db1c8b89060f18beaa735e713694e92806"
+    },
+    {
+      "format": 26,
+      "name": "CaseFolding.txt",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/unicode-data/CaseFolding.txt",
+      "bytes": 87539,
+      "sha256": "ff8d8fefbf123574205085d6714c36149eb946d717a0c585c27f0f4ef58c4183"
+    },
+    {
+      "format": 26,
+      "name": "GraphemeBreakProperty.txt",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/unicode-data/GraphemeBreakProperty.txt",
+      "bytes": 99377,
+      "sha256": "d6b51d1d2ae5c33b451b7ed994b48f1f4dc62b2272a5831e7fd418514a6bae89"
+    },
+    {
+      "format": 26,
+      "name": "SpecialCasing.txt",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/unicode-data/SpecialCasing.txt",
+      "bytes": 17049,
+      "sha256": "efc25faf19de21b92c1194c111c932e03d2a5eaf18194e33f1156e96de4c9588"
+    },
+    {
+      "format": 26,
+      "name": "UnicodeData.txt",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/unicode-data/UnicodeData.txt",
+      "bytes": 2198209,
+      "sha256": "2e1efc1dcb59c575eedf5ccae60f95229f706ee6d031835247d843c11d96470c"
+    },
+    {
+      "format": 26,
+      "name": "WordBreakProperty.txt",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/generic/unicode-data/WordBreakProperty.txt",
+      "bytes": 114445,
+      "sha256": "72274cac1e6b919507db35655c3e175aa27274668a1ece95c28d2069f2ad9852"
+    },
+    {
+      "format": 26,
+      "name": "atveryend.sty",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/atveryend/atveryend.sty",
+      "bytes": 1695,
+      "sha256": "2e84f857c2b0aa670d1d11588b14740bfed4a9f3dd816997e5da3372874e9eaa"
+    },
+    {
+      "format": 26,
+      "name": "atbegshi-ltx.sty",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/atbegshi-ltx.sty",
+      "bytes": 2963,
+      "sha256": "27c4c97014158dbab3e6c5ddbdae9953ead40da7158e83a6d9aff571a6391577"
+    },
+    {
+      "format": 26,
+      "name": "atveryend-ltx.sty",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/atveryend-ltx.sty",
+      "bytes": 2378,
+      "sha256": "848443ae8cd053c59629e5869d39edad1957ffa6ebc7901b4d3cccb3b7f7de6a"
+    },
+    {
+      "format": 26,
+      "name": "fontmath.cfg",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/fontmath.cfg",
+      "bytes": 1978,
+      "sha256": "453562f623cd0bbf738f0811e3432f02aff2d39ef1fb3d2d979bdf356fe1ba25"
+    },
+    {
+      "format": 26,
+      "name": "fontmath.ltx",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/fontmath.ltx",
+      "bytes": 24944,
+      "sha256": "9fd31d60ad1ecf79be9a44693eaba6c20bf1a780e41efbe9ace8bc0417c3737a"
+    },
+    {
+      "format": 26,
+      "name": "fonttext.cfg",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/fonttext.cfg",
+      "bytes": 1978,
+      "sha256": "06a5278ca8b02a4b1660011a2745060ef53045f2224c8e006ab7ef5b291d9c39"
+    },
+    {
+      "format": 26,
+      "name": "fonttext.ltx",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/fonttext.ltx",
+      "bytes": 3317,
+      "sha256": "d0eae62e8fb5164f93c14cfe61b09545d59e56317bf37d23ac7952c07b802d91"
+    },
+    {
+      "format": 26,
+      "name": "latex.ltx",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/latex.ltx",
+      "bytes": 765547,
+      "sha256": "95c2ef02c2d92aa29e4a77a5e5a7d9f25b5589143d1e879fb80ffa0b20be1e6d"
+    },
+    {
+      "format": 26,
+      "name": "omlcmm.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/omlcmm.fd",
+      "bytes": 2332,
+      "sha256": "e0681a94d7d050054e80fb9f2d488e8c8cd05bcddda8a24abd85e48f6462ac11"
+    },
+    {
+      "format": 26,
+      "name": "omlenc.def",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/omlenc.def",
+      "bytes": 1947,
+      "sha256": "9fbe93cc1bd098b73a2b9baeb18fcda1daeb05629b86150e29974a6b02b3253b"
+    },
+    {
+      "format": 26,
+      "name": "omscmsy.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/omscmsy.fd",
+      "bytes": 2262,
+      "sha256": "29486e41444fffb963d8454a220aa80b507d2e798867aea7a4e50c7d40810293"
+    },
+    {
+      "format": 26,
+      "name": "omsenc.def",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/omsenc.def",
+      "bytes": 2739,
+      "sha256": "bc16b36cf9589d086d67d8dfe68779e4ee2e3e38cc198e6e9f8855d4356850e7"
+    },
+    {
+      "format": 26,
+      "name": "omsenc.dfu",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/omsenc.dfu",
+      "bytes": 1990,
+      "sha256": "c2e604b1808969aa2d2ec2217105e8c4d55f5563541583798e858eca6cea7c71"
+    },
+    {
+      "format": 26,
+      "name": "omxcmex.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/omxcmex.fd",
+      "bytes": 2040,
+      "sha256": "4794f162c9f328ae01a85d632da18bf5149f915958f677bbc5ff8c6a298d8331"
+    },
+    {
+      "format": 26,
+      "name": "ot1cmr.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ot1cmr.fd",
+      "bytes": 3705,
+      "sha256": "c0519dd4765bbd696713d4825cb13bc7e96a96fdc9ee2079501cba00e232b0ec"
+    },
+    {
+      "format": 26,
+      "name": "ot1cmss.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ot1cmss.fd",
+      "bytes": 3152,
+      "sha256": "496718763c3728117d19be4ea5a28f60cbe3e36bf59c101411774923c6655fa9"
+    },
+    {
+      "format": 26,
+      "name": "ot1cmtt.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ot1cmtt.fd",
+      "bytes": 2909,
+      "sha256": "614deabbbd3914169a17c9b0ad8d0885fef679db0d7ffe0ebb0ff2d30798cca4"
+    },
+    {
+      "format": 26,
+      "name": "ot1enc.def",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ot1enc.def",
+      "bytes": 4781,
+      "sha256": "aae56e6438e717dfea948a3d92210fa1feac4c4e8e54ff8dcbf4bd863977879e"
+    },
+    {
+      "format": 26,
+      "name": "ot1enc.dfu",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ot1enc.dfu",
+      "bytes": 3534,
+      "sha256": "49546a5c2b9dac9b6fd1b88f77a17bf047268143774e59f26728068c6c0062bc"
+    },
+    {
+      "format": 26,
+      "name": "preload.cfg",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/preload.cfg",
+      "bytes": 1977,
+      "sha256": "6d041ac05f2357153f291a90b725ab674fa9d721408ec10e6113261bbbdbe121"
+    },
+    {
+      "format": 26,
+      "name": "preload.ltx",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/preload.ltx",
+      "bytes": 2024,
+      "sha256": "1f54b83e5ce511e375ac04399e8e4a5a79c897813ad47f25d317060de62cb96d"
+    },
+    {
+      "format": 26,
+      "name": "t1cmr.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/t1cmr.fd",
+      "bytes": 2569,
+      "sha256": "7e50fbc42f64da3194e17dafefa2f7f7166fd4fed1c44eedfc2e1a5357e7e612"
+    },
+    {
+      "format": 26,
+      "name": "t1cmss.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/t1cmss.fd",
+      "bytes": 2641,
+      "sha256": "7baf2a0df1f3e7ff3f286c117a0f2b5519494f681b25dc536adf5f7336196fd6"
+    },
+    {
+      "format": 26,
+      "name": "t1cmtt.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/t1cmtt.fd",
+      "bytes": 2443,
+      "sha256": "e673449acc838b508ec83ad8ac213c70beaeeb0374daa4226ec28cebd79f7516"
+    },
+    {
+      "format": 26,
+      "name": "t1enc.def",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/t1enc.def",
+      "bytes": 11012,
+      "sha256": "423d5dfaa6283806e22229e6885fa39d3c77d264671ad4f51083004f6c4c4d0a"
+    },
+    {
+      "format": 26,
+      "name": "t1enc.dfu",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/t1enc.dfu",
+      "bytes": 12786,
+      "sha256": "2b9d78a9402f0915485484a9a778073d18515a5299c054eb7c26d2e10b767c7d"
+    },
+    {
+      "format": 26,
+      "name": "texsys.cfg",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/texsys.cfg",
+      "bytes": 8067,
+      "sha256": "a0986d94c81fd7ce2251695a1affc58060055ccc9430483e64a73f4aa5e53306"
+    },
+    {
+      "format": 26,
+      "name": "ts1cmr.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ts1cmr.fd",
+      "bytes": 2466,
+      "sha256": "7e7a1d251a9bcbeadce179e7731710d8ebe308f5dd24dff7d16fcd6a6c67da42"
+    },
+    {
+      "format": 26,
+      "name": "ts1cmss.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ts1cmss.fd",
+      "bytes": 2411,
+      "sha256": "ff0bf4aa034205784dafc6cec30a7a26e67f40d6035786f918f6b14cfccb63b8"
+    },
+    {
+      "format": 26,
+      "name": "ts1cmtt.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ts1cmtt.fd",
+      "bytes": 2324,
+      "sha256": "217325a82a349031f36d75342e8e02431dc94a770cee1b347a7e2324019cbd55"
+    },
+    {
+      "format": 26,
+      "name": "ts1enc.def",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ts1enc.def",
+      "bytes": 8090,
+      "sha256": "4f69a99eeffa5ac70ec245672756e47870b88b7be9cd1a48bc575bdbc2acef16"
+    },
+    {
+      "format": 26,
+      "name": "ts1enc.dfu",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ts1enc.dfu",
+      "bytes": 5133,
+      "sha256": "cd9aec2ee54900b244c8ee5c4faa1ea4e97f1668e49452e8a3bc173fb7351e03"
+    },
+    {
+      "format": 26,
+      "name": "ucmr.fd",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/ucmr.fd",
+      "bytes": 3680,
+      "sha256": "db0bcaa76c20a89d8a47df51532cad944b48d57137c4676d1ebfbfc234957cb0"
+    },
+    {
+      "format": 26,
+      "name": "utf8.def",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/base/utf8.def",
+      "bytes": 11506,
+      "sha256": "391ea8a922cedd4aab7f7843b0156e56192c9030ba93359679ea0d6de53b43c2"
+    },
+    {
+      "format": 26,
+      "name": "latex2e-first-aid-for-external-files.ltx",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/firstaid/latex2e-first-aid-for-external-files.ltx",
+      "bytes": 14202,
+      "sha256": "84d1931f542c8cb97196f0ae7a0eaa4799684ad6c57d6a6bf3878f8053e85c2e"
+    },
+    {
+      "format": 26,
+      "name": "expl3-code.tex",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/l3kernel/expl3-code.tex",
+      "bytes": 1358682,
+      "sha256": "6e10e25b7e9a4b4f1736992a4915d6d716d9cdc40e5f12d4da0b355f9dc4339f"
+    },
+    {
+      "format": 26,
+      "name": "expl3.ltx",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/l3kernel/expl3.ltx",
+      "bytes": 5632,
+      "sha256": "ea885c3e350b03bf79b6a556a496ee342a68784ce4c0127f5f89444b82967186"
+    },
+    {
+      "format": 26,
+      "name": "pdflatex.ini",
+      "path": "texlive-20260301-texmf/texmf-dist/tex/latex/tex-ini-files/pdflatex.ini",
+      "bytes": 130,
+      "sha256": "fbdd461feb0f9579b7c0f9b300685c11fe4d5e963b3adfc25d756f35fbc13799"
+    }
+  ],
+  "unsatisfied": [
+    {
+      "format": 26,
+      "name": "nul:"
+    },
+    {
+      "format": 26,
+      "name": "nul:.tex"
+    },
+    {
+      "format": 26,
+      "name": "nul:.sty"
+    },
+    {
+      "format": 26,
+      "name": "nul:.cls"
+    },
+    {
+      "format": 26,
+      "name": "nul:.def"
+    },
+    {
+      "format": 26,
+      "name": "nul:.cfg"
+    },
+    {
+      "format": 26,
+      "name": "nul:.ltx"
+    },
+    {
+      "format": 3,
+      "name": "cmr10"
+    },
+    {
+      "format": 3,
+      "name": "cmex10"
+    },
+    {
+      "format": 3,
+      "name": "line10"
+    },
+    {
+      "format": 3,
+      "name": "linew10"
+    },
+    {
+      "format": 3,
+      "name": "lcircle10"
+    },
+    {
+      "format": 3,
+      "name": "lcirclew10"
+    },
+    {
+      "format": 3,
+      "name": "cmr5"
+    },
+    {
+      "format": 3,
+      "name": "cmr7"
+    },
+    {
+      "format": 3,
+      "name": "cmmi5"
+    },
+    {
+      "format": 3,
+      "name": "cmmi7"
+    },
+    {
+      "format": 3,
+      "name": "cmmi10"
+    },
+    {
+      "format": 3,
+      "name": "cmsy5"
+    },
+    {
+      "format": 3,
+      "name": "cmsy7"
+    },
+    {
+      "format": 3,
+      "name": "cmsy10"
+    },
+    {
+      "format": 26,
+      "name": "l3opacity.sty"
+    },
+    {
+      "format": 26,
+      "name": "l3opacity"
+    },
+    {
+      "format": 26,
+      "name": "l3opacity.sty.tex"
+    },
+    {
+      "format": 26,
+      "name": "l3opacity.sty.cls"
+    },
+    {
+      "format": 26,
+      "name": "l3opacity.sty.def"
+    },
+    {
+      "format": 26,
+      "name": "l3opacity.sty.cfg"
+    },
+    {
+      "format": 26,
+      "name": "l3opacity.sty.ltx"
+    },
+    {
+      "format": 26,
+      "name": "babel-pdflatex.cfg"
+    },
+    {
+      "format": 26,
+      "name": "babel-pdflatex"
+    },
+    {
+      "format": 26,
+      "name": "babel-pdflatex.cfg.tex"
+    },
+    {
+      "format": 26,
+      "name": "babel-pdflatex.cfg.sty"
+    },
+    {
+      "format": 26,
+      "name": "babel-pdflatex.cfg.cls"
+    },
+    {
+      "format": 26,
+      "name": "babel-pdflatex.cfg.def"
+    },
+    {
+      "format": 26,
+      "name": "babel-pdflatex.cfg.ltx"
+    },
+    {
+      "format": 26,
+      "name": "catkoi"
+    },
+    {
+      "format": 26,
+      "name": "koi2t2a"
+    },
+    {
+      "format": 26,
+      "name": "ruhyphal"
+    },
+    {
+      "format": 26,
+      "name": "cyryoal"
+    },
+    {
+      "format": 26,
+      "name": "hypht2"
+    },
+    {
+      "format": 26,
+      "name": "catlcy"
+    },
+    {
+      "format": 26,
+      "name": "lcy2t2a"
+    },
+    {
+      "format": 26,
+      "name": "ukrhypmp"
+    },
+    {
+      "format": 26,
+      "name": "glyphtounicode"
+    },
+    {
+      "format": 26,
+      "name": "omlenc.dfu"
+    },
+    {
+      "format": 26,
+      "name": "omlenc"
+    },
+    {
+      "format": 26,
+      "name": "omlenc.dfu.tex"
+    },
+    {
+      "format": 26,
+      "name": "omlenc.dfu.sty"
+    },
+    {
+      "format": 26,
+      "name": "omlenc.dfu.cls"
+    },
+    {
+      "format": 26,
+      "name": "omlenc.dfu.def"
+    },
+    {
+      "format": 26,
+      "name": "omlenc.dfu.cfg"
+    },
+    {
+      "format": 26,
+      "name": "omlenc.dfu.ltx"
+    },
+    {
+      "format": 26,
+      "name": "omxenc.dfu"
+    },
+    {
+      "format": 26,
+      "name": "omxenc"
+    },
+    {
+      "format": 26,
+      "name": "omxenc.dfu.tex"
+    },
+    {
+      "format": 26,
+      "name": "omxenc.dfu.sty"
+    },
+    {
+      "format": 26,
+      "name": "omxenc.dfu.cls"
+    },
+    {
+      "format": 26,
+      "name": "omxenc.dfu.def"
+    },
+    {
+      "format": 26,
+      "name": "omxenc.dfu.cfg"
+    },
+    {
+      "format": 26,
+      "name": "omxenc.dfu.ltx"
+    },
+    {
+      "format": 26,
+      "name": "uenc.dfu"
+    },
+    {
+      "format": 26,
+      "name": "uenc"
+    },
+    {
+      "format": 26,
+      "name": "uenc.dfu.tex"
+    },
+    {
+      "format": 26,
+      "name": "uenc.dfu.sty"
+    },
+    {
+      "format": 26,
+      "name": "uenc.dfu.cls"
+    },
+    {
+      "format": 26,
+      "name": "uenc.dfu.def"
+    },
+    {
+      "format": 26,
+      "name": "uenc.dfu.cfg"
+    },
+    {
+      "format": 26,
+      "name": "uenc.dfu.ltx"
+    }
+  ],
+  "texliveSnapshot": {
+    "year": "2026",
+    "archive": "texlive-20260301-texmf.tar.xz",
+    "sha512": "0b8f87622e4b9e31d4bd8c7720376aa9685e5ee299c896e3e1660459546a31e11508946f2c40a71671944c8b467483e5d4d859ff17698d239c7d5aced65d4a6b",
+    "signedBy": "TeX Live Distribution <tex-live@tug.org> (C78B82D8C79512F79CC0D7C80D5E5D9106BAB6BC)",
+    "generatedMap": "texmf-var/fonts/map/pdftex/updmap/pdftex.map, written by updmap against this tree"
+  }
+}

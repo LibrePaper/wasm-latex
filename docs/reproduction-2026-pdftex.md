@@ -42,9 +42,11 @@ are what the published source says they are.
 
 ## Not yet reproduced
 
-- `wasmtex-pdftex.fmt`: the format is dumped by the built engine in a
-  Playwright-driven browser against a TeX Live mirror (see
-  format-generation.md). Separate step; needs the mirror.
+- `wasmtex-pdftex.fmt`: not attempted, and no longer a goal. The format is
+  now built offline from a local texmf tree by `tools/build-format.mjs` (see
+  format-generation.md), from inputs we hash ourselves rather than from
+  upstream's CDN, so its bytes are ours and are not expected to match the
+  pinned receipt.
 - The other engines: XeTeX, LuaHBTeX, dvipdfm, BibTeX8, makeindex each have
   their own Dockerfile and workflow under `upstream-ci/`.
 
@@ -53,9 +55,13 @@ are what the published source says they are.
 - The Dockerfile clones TeX Live source from GitHub at the pinned commit
   during the image build. The corresponding-source tarball carries the same
   tree; pointing the build at it is part of the vendoring work.
-- `wasm-libs` runs a recursive make with `-` and `|| true`, expecting it to
-  fail once it reaches libraries pdfTeX does not use (it fails configuring
-  luajit). A tolerated failure hides real ones; replace with an explicit
-  list of the subdirectories needed.
+- `wasm-libs` ran a recursive make with `-` and `|| true`, expecting it to
+  fail once it reached libraries pdfTeX does not use (it failed configuring
+  luajit). A tolerated failure hides real ones. Replaced with an explicit
+  list of the subdirectories the link lines draw from (`libs/zlib`,
+  `texk/kpathsea`), each of which must now succeed. `native-build` still
+  tolerates its own failure, for a harder reason: the native phase exists to
+  run web2c's code generation across the whole tree, and it is checked
+  afterwards by asserting the generated pdfTeX C files exist.
 - Source maps (`*.map`) are produced beside the modules and are not part of
   the receipt.

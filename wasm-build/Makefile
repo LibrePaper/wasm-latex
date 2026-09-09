@@ -307,15 +307,45 @@ wasm-configure:
 wasm-build: wasm-libs wasm-prep wasm-compile
 
 # wasm-libs: Build WASM static libraries.
-# Step 1: Recursive make builds kpathsea + zlib (stops at web2c failure).
-# Step 2: Build libpng and xpdf explicitly (recursive make doesn't reach them).
+# Step 1: Configure and build the libraries pdfTeX and BibTeX link.
+# Step 2: Build libpng and xpdf the same way.
+#
+# Upstream ran a recursive `emmake make` from the top of the build tree under
+# `-` and `|| true`, relying on it to configure and build far enough to produce
+# libz.a and libkpathsea.a before dying in libs/luajit — a library pdfTeX never
+# links. A recipe that tolerates its own failure cannot tell that expected death
+# from a real one: a broken kpathsea would sail through the step and surface
+# later as a confusing link error.
+#
+# The top-level configure does not create these build directories; TeX Live
+# configures each sub-subdirectory lazily on the recursive make's way past. So
+# each one is configured explicitly here, exactly as the libpng and xpdf steps
+# below already do, and any failure stops the build.
+WASM_LIB_SUBDIRS = libs/zlib texk/kpathsea
+
 wasm-libs:
 	@echo "========================================"
 	@echo "Phase 2b: WASM libraries"
 	@echo "========================================"
 	@echo ""
-	@echo "--- Step 2b.1: Recursive make (kpathsea + zlib) ---"
-	-cd $(BUILD_WASM) && emmake $(MAKE) MAKEINFO=true -j1 || true
+	@echo "--- Step 2b.1: Build $(WASM_LIB_SUBDIRS) ---"
+	@for d in $(WASM_LIB_SUBDIRS); do \
+		if [ ! -d "$(TEXLIVE_SRC)/$$d" ]; then \
+			echo "ERROR: $(TEXLIVE_SRC)/$$d is not in the TeX Live source tree;" >&2; \
+			echo "       the library list in wasm-libs is stale." >&2; \
+			exit 1; \
+		fi; \
+		if [ ! -f "$(BUILD_WASM)/$$d/Makefile" ]; then \
+			echo "  configuring $$d"; \
+			mkdir -p "$(BUILD_WASM)/$$d" || exit 1; \
+			( cd "$(BUILD_WASM)/$$d" && emconfigure $(TEXLIVE_SRC)/$$d/configure \
+				--host=wasm32-unknown-emscripten \
+				--build=x86_64-pc-linux-gnu \
+				--disable-shared --enable-static ) || exit 1; \
+		fi; \
+		echo "  building $$d"; \
+		( cd "$(BUILD_WASM)/$$d" && emmake $(MAKE) MAKEINFO=true -j1 ) || exit 1; \
+	done
 	@echo ""
 	@echo "--- Step 2b.2: Build libpng ---"
 	@if [ ! -f "$(BUILD_WASM)/libs/libpng/libpng.a" ]; then \
