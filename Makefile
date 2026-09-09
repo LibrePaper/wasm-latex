@@ -134,7 +134,7 @@ release:  ## The whole chain: test, source, publish, stage, annotate (needs TAG=
 	@HASH=$$(sha256sum $(STAGED)/MANIFEST.json | cut -d' ' -f1); \
 	echo ""; \
 	echo "Staged and annotated. Review $(STAGED)/MANIFEST.json, then:"; \
-	echo "  make mirror        # staged manifest $HASH"; \
+	echo "  make mirror        # staged manifest $$HASH"; \
 	echo "  make push"
 
 clean-staged:  ## Remove the staged directory
@@ -144,9 +144,9 @@ mirror:  ## Build the mirror LibrePaper serves from staged/ (MANIFEST_SHA256= to
 	@test -f $(STAGED)/MANIFEST.json || { echo "no $(STAGED)/MANIFEST.json; run make release TAG=<tag> (or make stage SOURCE_URL=<url>) first"; exit 2; }
 	@# The hash is read from the staged manifest when not given: this repository
 	@# staged it, so there is no second party whose review the hash would carry.
-	@HASH="$(MANIFEST_SHA256)"; [ -n "$HASH" ] || HASH=$(sha256sum $(STAGED)/MANIFEST.json | cut -d' ' -f1); \
-	echo "mirror: staged manifest $HASH"; \
-	node tools/build-mirror.mjs --staged $(STAGED) --sha256 "$HASH" --out $(MIRROR)
+	@HASH="$(MANIFEST_SHA256)"; [ -n "$$HASH" ] || HASH=$$(sha256sum $(STAGED)/MANIFEST.json | cut -d' ' -f1); \
+	echo "mirror: staged manifest $$HASH"; \
+	node tools/build-mirror.mjs --staged $(STAGED) --sha256 "$$HASH" --out $(MIRROR)
 	node tools/check-mirror.mjs $(MIRROR)
 
 push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUDFLARE_API_TOKEN)
