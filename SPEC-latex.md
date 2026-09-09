@@ -413,4 +413,11 @@ Not done:
   `preload` list from what a project used last time; the controller sends
   only the bare index today.
 - Publishing the corresponding source and importing a release into
-  LibrePaper's shipped mirror.
+  LibrePaper's shipped mirror, which still points at the pinned WasmTex
+  package snapshot. The gate checks only that a source URL is HTTPS and
+  hashed; no release has been staged with a real one.
+- The engine Dockerfiles still clone TeX Live source from GitHub rather than
+  copying in a vendored tarball.
+- A clean rebuild from the source archive has not been shown to reproduce
+  the distributed bytes; the only reproduction evidence is pdfTeX against
+  WasmTex's receipts.
