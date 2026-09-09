@@ -22,13 +22,16 @@ The Docker build uses Emscripten 5.0.4, Perl 5.38.2 and Biber 2.22, matching
 the upstream recipe. The container downloads dependencies, compiles Perl and
 its XS modules, and runs a Node smoke check for XS loading and Unicode Biber
 tool output. Only successful builds copy artifacts into
-`dist/biber-experimental/`: `biber.js`, `biber.wasm`, `biber.data`, the vendor
-receipt, installed package versions and compiler version. Both building the
+`wasm-build/dist/`: `biber.js`, `biber.wasm`, `biber.data`,
+`biber.worker.js`, `biber.build.json`, the link map, notices and
+`BIBER-SOURCE.tar.gz`. Both building the
 image and running it require network access. Each run uses a fresh build tree.
 
-This is a build integration, not advertised browser support. It neither
-replaces LibrePaper's VM nor adds Biber to the release manifest. The existing
-release source collector does not yet collect this family's dependencies.
+Biber is an engine family in the normal release and mirror pipeline. The
+release gate verifies its artifact hashes, link inventory and source receipt.
+The mirror builder checks its control-file version against bundled biblatex.
+LibrePaper loads the verified runtime lazily and runs each bibliography job in
+a fresh worker. New mirrors need no Linux VM or server Biber flag.
 
 ## Initial validation (2026-09-09)
 
@@ -103,29 +106,36 @@ make biber-browser-check BIBER_CHECK_ARGS='--native-bbl /path/to/native/main.bbl
 `CHROMIUM` can select a different Chromium executable. The check writes the
 PDF, extracted text, BCF, BBL, logs, timings and Biber artifact hashes under
 `dist/biber-validation/browser/`. It uses a fresh browser profile on each run.
-This verifies the engine combination in an isolated harness; LibrePaper's
-application controller still needs to be connected to this Biber backend.
+To test the actual LibrePaper controller against a staged mirror, run:
+
+```sh
+node tools/biber-app-browser-check.mjs --app ../librepaper/web --mirror mirror
+```
+
+This checks bibliography output, reuse after a prose edit, nested document
+paths, and invalidation after a bibliography edit.
 
 ## Licensing
 
 The vendored code retains TeXlyre's AGPL-3.0 license and copyright notice.
 It is excluded from this repository's MIT claim. Local wrappers and checks
 are MIT; the upstream scripts and patches are unchanged. The source snapshot
-includes runtime patches and `browser_prerun.js`, not just build scripts:
-audit their effect on the resulting artifact's terms before distributing it.
-The Perl, Biber, XS and supporting-library licenses also need inventory.
+includes runtime patches and `browser_prerun.js`, not just build scripts.
+The artifact-specific inventory records the linked XS modules, Perl runtime,
+Biber, supporting libraries and packaged Perl modules. Their license texts
+ship under `biber-notices/`. The corresponding-source collector includes
+`BIBER-SOURCE.tar.gz`, containing the actual patched sources, runtime modules,
+compiler sources, link map and rebuild instructions.
 
-## Before release integration
+## Remaining coverage and reproducibility work
 
 - Lock OS packages, CPAN archive URLs and hashes, and
   emperl/sombok git commits. Upstream currently resolves downloads at build
   time and copies pure Perl dependencies from `/usr/share/perl5`.
-- Archive the complete sources and record the linked/runtime components.
 - Expand the passing browser/native comparison beyond the Unicode author-year
   fixture to disambiguation, sourcemaps, cross-references, multiple bibliography
-  sections and nested project paths.
-- Add a browser worker that preserves relative project paths, then measure
-  compressed download size, memory, cold and warm execution in browsers.
+  sections. Nested project paths are covered by the application check.
+- Expand download, memory and execution measurements across browsers.
 
 To update the vendor snapshot, select a new upstream commit, copy the same
 paths without modification, regenerate `UPSTREAM.json`, and review the diff.

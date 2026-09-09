@@ -43,10 +43,11 @@ TeXlyre's build repository at commit
 - Upstream notice: [`third-party/texlyre-biber/NOTICE`](third-party/texlyre-biber/NOTICE)
 - File hashes and source: [`third-party/texlyre-biber/UPSTREAM.json`](third-party/texlyre-biber/UPSTREAM.json)
 
-These files are not covered by this repository's MIT license. The experimental
-Biber output is not included in the engine release. Its runtime patches,
-JavaScript, Perl modules and native dependencies require an artifact-specific
-license inventory before distribution; see [`docs/biber.md`](docs/biber.md).
+These files are not covered by this repository's MIT license. Biber releases
+retain the AGPL terms for the derived runtime alongside the component terms
+recorded in `LINK-INVENTORY.biber.json`. Runtime notices ship under
+`biber-notices/`; the corresponding-source archive embeds the actual Biber,
+Perl, XS and compiler sources. See [`docs/biber.md`](docs/biber.md).
 
 ## SyncTeX
 

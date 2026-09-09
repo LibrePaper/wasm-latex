@@ -1,5 +1,5 @@
 // Full browser pdfTeX → Biber → pdfTeX check. Requires Chromium, pdftotext,
-// built pdfTeX/format/bundles and experimental Biber artifacts.
+// built pdfTeX/format/bundles and Biber artifacts.
 import fs from 'node:fs';
 import path from 'node:path';
 import {createServer} from 'node:http';
@@ -19,7 +19,7 @@ const server=createServer((req,res)=>{
   const name=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
   if(name==='/'){res.setHeader('Content-Type','text/html');res.end('<!doctype html><title>Biber validation</title>');return;}
   let base,rel;
-  for(const [prefix,dir] of [['/biber/','dist/biber-experimental'],['/tex/','wasm-build/dist'],['/bundles/','wasm-build/dist/bundles']]){
+  for(const [prefix,dir] of [['/biber/','wasm-build/dist'],['/tex/','wasm-build/dist'],['/bundles/','wasm-build/dist/bundles']]){
    if(name.startsWith(prefix)){base=path.resolve(root,dir);rel=name.slice(prefix.length);break;}
   }
   if(!base || path.resolve(base,rel).startsWith(base+'/')===false) {res.writeHead(404);res.end();return;}
@@ -98,7 +98,7 @@ try{
  const nativeIndex=process.argv.indexOf('--native-bbl');
  if(nativeIndex>=0)assert.deepEqual(Buffer.from(result.bbl),fs.readFileSync(path.resolve(process.argv[nativeIndex+1])),'native/WASM BBL mismatch');
  result.nativeBblCompared=nativeIndex>=0;
- result.artifactHashes=Object.fromEntries(['biber.js','biber.wasm','biber.data'].map(name=>[name,createHash('sha256').update(fs.readFileSync(path.join(root,'dist/biber-experimental',name))).digest('hex')]));
+ result.artifactHashes=Object.fromEntries(['biber.js','biber.wasm','biber.data'].map(name=>[name,createHash('sha256').update(fs.readFileSync(path.join(root,'wasm-build/dist',name))).digest('hex')]));
  delete result.pdf;
  fs.writeFileSync(path.join(out,'result.json'),JSON.stringify(result,null,2));
  console.log(JSON.stringify({coldMs:{load:result.cold.loadMs,run:result.cold.runMs},warmMs:{load:result.warm.loadMs,run:result.warm.runMs},tex:result.phases.map(p=>({phase:p.phase,ms:p.ms})),bblBytes:Buffer.byteLength(result.bbl)}));

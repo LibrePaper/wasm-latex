@@ -22,21 +22,20 @@ mirror/
     pdftex.worker.js pdftex.js pdftex.wasm
     pdftex.fmt pdftex-resolver-evidence.js ...
     kpse-resolve.js bundle-mode.js   -- imported by every worker
-    bibtex.* bibtex8.* makeindex.*
+    bibtex.* bibtex8.* makeindex.* biber.* biber-notices/
     xetex.* xetex.fmt.gz icudt68l.dat.gz dvipdfm.*
     LICENSE THIRD_PARTY_NOTICES.md SOURCE.md SOURCE-RECEIPT.json RELINK.md
     LICENSES/  LINK-INVENTORY.*.json  FORMAT-RECEIPT.*.json  BUNDLE-RECEIPT.*.json
   engines/<engineRelease>/bundles/bundles.json     package index
   engines/<engineRelease>/bundles/b/<sha256>/<slug>.tar   one tar per package directory
-  biber-vm/<vmRelease>/...                          the Biber VM image, LibrePaper's own
 ```
 
 `<engineRelease>` is the bare `<sha256 of the staged MANIFEST.json>`.
 Directories are immutable; a new digest is a new directory, and every
 release this repository has ever imported stays in `manifest.releases` --
-only `default_release` moves. The Biber VM is not part of the mirror: it is
-LibrePaper's own artefact, hosted where LibrePaper puts it and named to the
-server with `--biber-vm <url>#<sha256>`.
+only `default_release` moves. Biber WASM travels with the engine release.
+The separate `--biber-vm` server setting is only a legacy fallback for mirrors
+that do not advertise `engines.biber`.
 
 ## Manifest, format 1
 
@@ -107,7 +106,7 @@ network: the former importer's old CDN fetch of `biblatex.sty` at import time is
 because the file is already part of the staged release's `core` bundle.
 
 `vm` is always `null`. The field survives from the time the Biber VM was
-registered into the mirror; LibrePaper now finds its VM through its own
+registered into the mirror; older releases can find their VM through the
 `--biber-vm <url>#<sha256>` flag and ignores this field. It will be dropped
 in format 2.
 

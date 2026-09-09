@@ -171,7 +171,12 @@ The format file is built separately and is not linked code; see
 
 To substitute your own copy of an LGPL library and relink, see \`RELINK.md\`.
 
-Toolchain: Emscripten 3.1.46, image digest in \`MANIFEST.json\`. The build pulls
+When Biber is present, extract the embedded BIBER-SOURCE.tar.gz and follow
+its README rebuild instructions. It contains the actual patched Perl/XS
+sources and packaged modules and uses its separately pinned Emscripten 5.0.4
+tooling image. See MANIFEST.json biberSource for the archive hash.
+
+TeX toolchain: Emscripten 3.1.46, image digest in \`MANIFEST.json\`. The build pulls
 that exact digest, so a rebuild uses the same compiler.
 `)
 
