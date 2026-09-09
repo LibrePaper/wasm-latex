@@ -3,7 +3,7 @@
 # archive on a GitHub Release so the shipped SOURCE.md can point at it.
 #
 #   tools/release.sh preflight       <tag>                 clean tree, tag unused, gh signed in
-#   tools/release.sh commit-receipt                        commit receipts/SOURCE-RECEIPT.json after make source
+#   tools/release.sh commit-receipt                        commit what make inventory and make source wrote under receipts/
 #   tools/release.sh publish-source  <tag> [dist-source]   tag HEAD, create the release, upload
 #   tools/release.sh source-url      <tag> [dist-source]   print the download URL for the archive
 #   tools/release.sh annotate        <tag> [staged]        add the manifest hash to the release notes
@@ -58,13 +58,14 @@ case "$cmd" in
     ;;
 
   commit-receipt)
-    # After make source: commit the receipt so the tag names it. Nothing to do
-    # when the receipt is unchanged.
-    git diff --quiet -- receipts/SOURCE-RECEIPT.json && { echo "receipt unchanged"; exit 0; }
+    # After make inventory and make source: commit every receipt they
+    # rewrote, so the tag names the evidence of what it publishes. Nothing to
+    # do when none changed.
+    git diff --quiet -- receipts/ && { echo "receipts unchanged"; exit 0; }
     from=$(built_from)
-    git add receipts/SOURCE-RECEIPT.json
-    git commit -q -m "Record the corresponding source for ${from:0:12}" -m "Claude-Session: https://claude.ai/code/session_01JACqCUhphavt1ZsKdgH9UG"
-    echo "committed the receipt for ${from:0:12}"
+    git add receipts/
+    git commit -q -m "Record the corresponding source and inventories for ${from:0:12}" -m "Claude-Session: https://claude.ai/code/session_01JACqCUhphavt1ZsKdgH9UG"
+    echo "committed receipts for ${from:0:12}: $(git show --stat --format= HEAD | tail -1)"
     ;;
 
   publish-source)
