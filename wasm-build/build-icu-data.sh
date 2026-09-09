@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Produce + (optionally) upload the ICU common-data file the from-source XeTeX engine
-# fetches at runtime.  [#52 M4b]
+# Produce the ICU common-data file the from-source XeTeX engine fetches at runtime.
 #
 # Why: emscripten's -sUSE_ICU links libicu_stubdata (ICU with NO converter data), so
 # the unpatched upstream XeTeX font manager (ucnv_open("macintosh")) fails. Rather
@@ -8,30 +7,29 @@
 # init (see wasm-build/icu-data-loader.c + xetex-worker.js) and registers it
 # via udata_setCommonData.
 #
-# This is an IMMUTABLE asset (tied to ICU 68.2 == the version emscripten's port uses),
-# so it's a ONE-TIME upload — NOT part of every engine CI build. Re-run only when the
-# ICU version changes.
+# This is an IMMUTABLE asset, tied to ICU 68.2 (the version emscripten's port uses),
+# so it is built once and only rebuilt when the ICU version changes. It is not part
+# of an engine build.
 #
-# Usage:
 #   wasm-build/build-icu-data.sh                 # build icudt68l.dat into /tmp/icu-data/
-#   wasm-build/build-icu-data.sh --upload        # build + gzip + upload to R2
 #
-# R2 target: <bucket>/<immutable-prefix>/<year>/icudt68l.dat (gzip Content-Encoding,
-# so the worker's XHR transparently decompresses). The worker fetches it at
-# ${texlive_endpoint}icudt68l.dat.
+# Publishing it is deliberately not this script's job. It previously uploaded to a
+# Cloudflare R2 bucket, defaulting to WasmTex's own `corca-texlive-production` —
+# infrastructure that is not ours, named as the destination of an `--upload` flag.
+# Serving the asset belongs with whatever serves the engines; the worker fetches it
+# from ${texlive_endpoint}icudt68l.dat, gzipped, with a long immutable cache header.
 set -euo pipefail
 
 ICU_VER="68_2"          # must match emscripten's ICU port (tools/ports/icu.py TAG)
 ICU_MAJOR="68"
 YEAR="${TEXLIVE_YEAR:-${YEAR:-2025}}"
-OBJECT_BUCKET="${TEXLIVE_OBJECT_BUCKET:-corca-texlive-production}"
-OBJECT_ENDPOINT="${TEXLIVE_OBJECT_ENDPOINT:-}"
-OBJECT_PREFIX="${TEXLIVE_OBJECT_PREFIX:-}"
-OBJECT_PROFILE="${TEXLIVE_R2_PROFILE:-}"
 EMSDK_IMAGE="${EMSDK_IMAGE:-emscripten/emsdk:3.1.46}"
 WORK="${WORK_DIR:-/tmp/icu-data}"
-UPLOAD=0
-[ "${1:-}" = "--upload" ] && UPLOAD=1
+if [ "${1:-}" = "--upload" ]; then
+  echo "--upload was removed: it published to a bucket that is not ours." >&2
+  echo "Build the file here, then publish it alongside the engines." >&2
+  exit 2
+fi
 
 command -v docker >/dev/null || { echo "docker required"; exit 1; }
 mkdir -p "$WORK"
@@ -68,27 +66,4 @@ DAT="$WORK/icudt${ICU_MAJOR}l.dat"
 [ -f "$DAT" ] || { echo "ICU data build produced no .dat"; exit 1; }
 echo "Built $DAT ($(wc -c < "$DAT") bytes)"
 
-if [ "$UPLOAD" = 1 ]; then
-  if [ -z "$OBJECT_ENDPOINT" ]; then
-    echo "TEXLIVE_OBJECT_ENDPOINT is required for R2 upload" >&2
-    exit 1
-  fi
-  case "$OBJECT_ENDPOINT" in
-    https://*.r2.cloudflarestorage.com|https://*.r2.cloudflarestorage.com/) ;;
-    *) echo "TEXLIVE_OBJECT_ENDPOINT must be a Cloudflare R2 endpoint" >&2; exit 1 ;;
-  esac
-  gzip -9 -c "$DAT" > "$DAT.gz"
-  OBJECT_PREFIX="${OBJECT_PREFIX#/}"; OBJECT_PREFIX="${OBJECT_PREFIX%/}"
-  if [ -n "$OBJECT_PREFIX" ]; then
-    DEST="s3://$OBJECT_BUCKET/$OBJECT_PREFIX/$YEAR/icudt${ICU_MAJOR}l.dat"
-  else
-    DEST="s3://$OBJECT_BUCKET/$YEAR/icudt${ICU_MAJOR}l.dat"
-  fi
-  set -- aws ${OBJECT_PROFILE:+--profile "$OBJECT_PROFILE"} \
-    --endpoint-url "$OBJECT_ENDPOINT" s3 cp "$DAT.gz" "$DEST"
-  echo "Uploading to $DEST (gzip) ..."
-  "$@" \
-    --content-encoding gzip --content-type application/octet-stream \
-    --cache-control "public, max-age=31536000, immutable"
-  echo "Uploaded immutable ICU data."
-fi
+echo "Publish it next to the engines, gzipped, at the URL the worker fetches."
