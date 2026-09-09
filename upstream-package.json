@@ -1,0 +1,131 @@
+{
+  "name": "wasmtex",
+  "version": "0.1.0",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "lib",
+    "LICENSE",
+    "LICENSES",
+    "THIRD_PARTY_NOTICES.md",
+    "docs/licensing.md",
+    "docs/proprietary-integration.md"
+  ],
+  "private": true,
+  "type": "module",
+  "main": "./lib/wasmtex.js",
+  "module": "./lib/wasmtex.js",
+  "types": "./lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "import": "./lib/wasmtex.js"
+    },
+    "./headless": {
+      "types": "./lib/headless.d.ts",
+      "import": "./lib/headless.js"
+    },
+    "./node": {
+      "types": "./lib/node.d.ts",
+      "import": "./lib/node.js"
+    },
+    "./synctex": {
+      "types": "./lib/synctex.d.ts",
+      "import": "./lib/synctex.js"
+    },
+    "./warmup": {
+      "types": "./lib/warmup.d.ts",
+      "import": "./lib/warmup.js"
+    },
+    "./lsp": {
+      "types": "./lib/lsp-service.d.ts",
+      "import": "./lib/lsp.js"
+    },
+    "./lsp/monaco": {
+      "types": "./lib/lsp-monaco.d.ts",
+      "import": "./lib/lsp-monaco.js"
+    },
+    "./lsp/server": {
+      "types": "./lib/lsp-server.d.ts",
+      "import": "./lib/lsp-server.js"
+    },
+    "./syntax": {
+      "types": "./lib/syntax.d.ts",
+      "import": "./lib/syntax.js"
+    },
+    "./style.css": "./lib/wasmtex.css",
+    "./wasmtex.css": "./lib/wasmtex.css"
+  },
+  "scripts": {
+    "dev": "vite --port 6001",
+    "build": "tsgo && vite build",
+    "preview": "vite preview",
+    "check": "tsgo --noEmit",
+    "lint": "biome check src/",
+    "lint:fix": "biome check --write src/",
+    "format": "biome format --write src/",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:golden": "playwright test golden-output",
+    "check:licenses": "node scripts/check-license-compliance.mjs 2025",
+    "check:licenses:2026": "node scripts/check-license-compliance.mjs 2026",
+    "check:engine-license-inventory": "node scripts/check-engine-license-inventory.mjs 2025",
+    "check:release-notices": "node scripts/check-release-notices.mjs",
+    "check:engine-performance": "node scripts/check-engine-performance-budget.mjs 2025",
+    "check:engine-performance:2026": "node scripts/check-engine-performance-budget.mjs 2026",
+    "gen:engine-sbom": "node scripts/gen-engine-sbom.mjs 2025",
+    "check:corresponding-source": "node scripts/check-corresponding-source.mjs",
+    "check:texlive-provenance": "node scripts/check-texlive-provenance.mjs",
+    "audit:texlive-provenance": "node scripts/audit-texlive-provenance.mjs",
+    "test:license-tools": "node --test scripts/*.test.mjs",
+    "update:golden": "GOLDEN_UPDATE=1 playwright test golden-output",
+    "compat": "node scripts/compat/run.mjs",
+    "sync-engine-assets": "node scripts/sync-engine-assets.mjs",
+    "extract-luatex-format": "node scripts/extract-luatex-format.mjs",
+    "extract-xetex-format": "node scripts/extract-xetex-format.mjs",
+    "gen-luatex-manifest": "node scripts/gen-luatex-manifest.mjs",
+    "gen-asset-manifest": "node scripts/gen-asset-manifest.mjs",
+    "gen-engine-build-receipt": "node scripts/gen-engine-build-receipt.mjs",
+    "gen-link-inventory": "node scripts/gen-link-inventory.mjs",
+    "build:corresponding-source": "node scripts/build-corresponding-source.mjs",
+    "gen-texlive-provenance": "node scripts/gen-texlive-provenance.mjs",
+    "gen:texlive-catalog": "node scripts/gen-texlive-catalog.mjs",
+    "check:texlive-catalog": "node scripts/check-texlive-catalog.mjs",
+    "check:deployed-completion": "node scripts/check-deployed-completion.mjs",
+    "reconcile:deployed-completion": "node scripts/reconcile-deployed-completion.mjs",
+    "gen:tex-semantic-catalog": "node scripts/gen-tex-semantic-catalog.mjs",
+    "check:tex-semantic-catalog": "node scripts/check-tex-semantic-catalog.mjs",
+    "probe:tex-semantics": "node scripts/run-tex-semantic-probes.mjs",
+    "build:lib": "BUILD_MODE=lib vite build && node scripts/check-dts-exports.mjs",
+    "prepare": "npm run build:lib"
+  },
+  "peerDependencies": {
+    "monaco-editor": "^0.55.1",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.4.624"
+  },
+  "peerDependenciesMeta": {
+    "pdf-lib": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.3",
+    "@playwright/test": "^1.58.2",
+    "@types/node": "^24.13.2",
+    "@typescript/native-preview": "^7.0.0-dev.20260219.1",
+    "@vitest/coverage-v8": "^4.1.10",
+    "jscpd": "^4.0.8",
+    "lefthook": "^2.1.1",
+    "monaco-editor": "^0.55.1",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.4.624",
+    "vite": "^8.2.0",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^4.0.18"
+  }
+}

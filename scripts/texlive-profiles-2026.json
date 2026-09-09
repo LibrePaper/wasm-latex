@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 3,
+  "texliveYear": "2026",
+  "distributionProfileId": "2026-20260826",
+  "discovery": {
+    "name": "2026-latest",
+    "profileId": "2026-20260826",
+    "frozenAtFinal": false
+  },
+  "profiles": [
+    {
+      "id": "2026-initial",
+      "label": "TeX Live 2026 initial (2026-03-01)",
+      "snapshot": "initial",
+      "snapshotDate": "2026-03-01",
+      "mirror": {
+        "revision": "2026-b4f6befbe7732169",
+        "url": "https://texlive.corca.ai/snapshots/2026-b4f6befbe7732169/2026/",
+        "provenanceSha256": "e3de2b970525f1a39e5d97da4ce1c3bbee4c16ecc78b9cc6fe1131c3020f5307",
+        "objects": 164849
+      },
+      "engine": {
+        "releaseId": "2026-e4bc65275123982c",
+        "tag": "engine-2026-e4bc65275123982c",
+        "sourceRevisions": [
+          "2f9ed38431af364ee8c10c6a7dcb06e185423534"
+        ],
+        "correspondingSourceSha256": "bfdd129742502944ae9b0a260eba403a1138e76cde3bfa73c4d8b21828091a97",
+        "buildRuns": {
+          "pdftex-bibtex": 33067203361,
+          "bibtex8": 33067205526,
+          "makeindex": 33067207758,
+          "xetex": 33067209911,
+          "luahbtex": 33067211879
+        }
+      },
+      "qualification": {
+        "browserGoldens": 7,
+        "nodeBrowserParity": 7,
+        "representativeEngines": [
+          "pdflatex",
+          "xelatex",
+          "lualatex"
+        ]
+      }
+    },
+    {
+      "id": "2026-20260826",
+      "label": "TeX Live 2026 latest (2026-08-26)",
+      "snapshot": "2026-08-26",
+      "snapshotDate": "2026-08-26",
+      "mirror": {
+        "revision": "2026-ba38749b8714505a",
+        "url": "https://texlive.corca.ai/snapshots/2026-ba38749b8714505a/2026/",
+        "provenanceSha256": "7c5ef0a46b6a52cd8aa4e4ad2256eb58d6bb2062c45dfa43e48def1dfa9faf00",
+        "objects": 168942
+      },
+      "engine": {
+        "releaseId": "2026-60d599ede070564a",
+        "tag": "engine-2026-60d599ede070564a",
+        "sourceRevisions": [
+          "06f1937c502188fe04f0931fed702d06c2b78ab3",
+          "1d8f269455dba4b903f202dd54152916ce66f401"
+        ],
+        "correspondingSourceSha256": "2e67c4a5f6904f4957504c3a4a54a31d2e8b358b818a678da41d91bd281b0938",
+        "buildRuns": {
+          "pdftex-bibtex": 33706997521,
+          "bibtex8": 33163172428,
+          "makeindex": 33163174571,
+          "xetex": 33163176440,
+          "luahbtex": 33163178493
+        }
+      },
+      "qualification": {
+        "browserGoldens": 7,
+        "nodeBrowserParity": 7,
+        "representativeEngines": [
+          "pdflatex",
+          "xelatex",
+          "lualatex"
+        ]
+      }
+    }
+  ],
+  "finalization": {
+    "status": "pending-texlive-2027-release",
+    "source": "systems/texlive/2026/tlnet-final",
+    "freezeDiscoveryAtFinal": true
+  }
+}

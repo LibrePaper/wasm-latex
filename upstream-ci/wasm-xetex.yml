@@ -1,0 +1,209 @@
+name: WASM XeTeX (from source)
+
+# Builds the XeLaTeX engine (wasmtex-xetex + dvipdfmx) with this project's OWN
+# glue, and uploads the artifacts. `ci.yml` downloads them into
+# public/wasmtex/<version>/ so XeLaTeX ships in the deployed app.
+#
+# wasmtex-xetex is built FROM TeX-Live/texlive-source via Docker
+# (wasm-build/Dockerfile.xetex: native codegen + libkpathsea, then emcc). ICU data is
+# NOT bundled; the engine fetches icudt68l.dat from the CDN at runtime (one-time
+# asset, see scripts/build-icu-data.sh). wasmtex-dvipdfm is also built FROM
+# texlive-source (same Docker image, own controller and glue).
+on:
+  workflow_dispatch:
+    inputs:
+      texlive_year:
+        description: TeX Live engine year
+        required: true
+        type: choice
+        default: '2025'
+        options: ['2025', '2026']
+      texlive_url:
+        description: Exact immutable package-mirror URL used to build formats
+        required: false
+        type: string
+      mirror_revision:
+        description: Byte-derived immutable mirror revision
+        required: false
+        type: string
+      provenance_sha256:
+        description: SHA-256 of the mirror provenance manifest
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - 'wasm-build/Dockerfile.xetex'
+      - 'wasm-build/build-xetex2.sh'
+      - 'wasm-build/patches/texlive-wtpdf*.patch'
+      - 'wasm-build/pdf-backend/**'
+      - 'wasm-build/xetex-entry.c'
+      - 'wasm-build/xetex-worker.js'
+      - 'wasm-build/xetex-library.js'
+      - 'wasm-build/icu-data-loader.c'
+      - 'wasm-build/fontconfig-shim.c'
+      - 'wasm-build/fontconfig-shim.h'
+      - 'wasm-build/kpse-hook.c'
+      - 'wasm-build/texlive-source-*.ref'
+      - 'wasm-build/dvipdfm-worker.js'
+      - 'wasm-build/resolver-evidence.js'
+      - 'wasm-build/xetex-dvipdfm-library.js'
+      - 'wasm-build/build-dvipdfm2.sh'
+      - 'wasm-build/dvipdfm-entry.c'
+      - 'wasm-build/dvipdfm-stubs.c'
+      - 'scripts/build-xetex-fromsource.sh'
+      - 'scripts/build-xetex-pdf-visual-fixture.mjs'
+      - 'scripts/test-xetex-pdf-geometry.mjs'
+      - 'scripts/gen-engine-build-receipt.mjs'
+      - 'scripts/lib/engine-build-receipt.mjs'
+      - 'scripts/corresponding-source-2025.json'
+      - 'scripts/corresponding-source-2026.json'
+      - 'scripts/check-annual-engine-source.mjs'
+      - 'scripts/lib/annual-engine-source.mjs'
+
+jobs:
+  build-xetex:
+    runs-on: ubuntu-latest
+    env:
+      TEXLIVE_YEAR: ${{ inputs.texlive_year || '2025' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Resolve immutable build mirror
+        env:
+          INPUT_TEXLIVE_URL: ${{ inputs.texlive_url }}
+          INPUT_MIRROR_REVISION: ${{ inputs.mirror_revision }}
+          INPUT_PROVENANCE_SHA256: ${{ inputs.provenance_sha256 }}
+        run: node scripts/configure-engine-build-mirror.mjs
+
+      - name: Verify source licensing policy
+        run: node scripts/check-annual-engine-source.mjs "$TEXLIVE_YEAR"
+
+      - name: Verify release policy for the established 2025 line
+        if: env.TEXLIVE_YEAR == '2025' && github.event.repository.visibility == 'public'
+        run: node scripts/check-license-compliance.mjs 2025 --release
+
+      - uses: actions/setup-node@v7
+        with: { node-version: 24 }
+
+      - name: Build XeLaTeX engine from source (own glue)
+        # Docker texlive-source build (native codegen + emcc) + the dvipdfmx pass.
+        # Much heavier than the old single-emcc build; allow ~an hour.
+        timeout-minutes: 75
+        run: bash scripts/build-xetex-fromsource.sh wasm-build/dist-xetex
+
+      - name: Smoke test (WASM validity + own glue, no AGPL markers)
+        run: |
+          node -e "
+            const fs = require('fs');
+            const d = 'wasm-build/dist-xetex/';
+            for (const f of ['wasmtex-xetex.wasm', 'wasmtex-dvipdfm.wasm']) {
+              const w = fs.readFileSync(d + f);
+              if (!WebAssembly.validate(w)) { console.error(f + ' INVALID'); process.exit(1); }
+              console.log(f + ' OK (' + w.length + ' bytes)');
+            }
+            // Both engine controllers must be authored here (no obsolete upstream markers).
+            for (const f of ['wasmtex-xetex.js', 'wasmtex-dvipdfm.js']) {
+              const controller = fs.readFileSync(d + f.replace('.js', '.worker.js'), 'utf8');
+              const obsoleteHost = ['texlive2', ['swift', 'latex'].join('')].join('.');
+              if (controller.includes('getResponseHeader(\"fileid\")') || controller.includes(obsoleteHost)) {
+                console.error(f + ': obsolete upstream controller markers present'); process.exit(1);
+              }
+              for (const token of ['kpse_find_file_impl', 'texlive_endpoint', 'importScripts']) {
+                if (!controller.includes(token)) { console.error(f + ': controller token missing: ' + token); process.exit(1); }
+              }
+            }
+            // The from-source xetex registers runtime-fetched ICU data (no stubdata crash).
+            if (!fs.readFileSync(d + 'wasmtex-xetex.worker.js', 'utf8').includes('set_icu_common_data')) {
+              console.error('wasmtex-xetex.worker.js: ICU data loader missing'); process.exit(1);
+            }
+            // Interposition contract (#50): the C entry exports must survive the build,
+            // else a silent drift ships a non-functional engine.
+            const entry = {
+              'wasmtex-xetex.js': ['_compileLaTeX', '_compileFormat', '_setMainEntry'],
+              'wasmtex-dvipdfm.js': ['_compilePDF', '_setMainEntry'],
+            };
+            for (const [f, syms] of Object.entries(entry)) {
+              const js = fs.readFileSync(d + f, 'utf8');
+              const missing = syms.filter(s => !js.includes(s));
+              if (missing.length) { console.error(f + ': missing entry exports: ' + missing.join(', ')); process.exit(1); }
+            }
+            console.log('own glue OK');
+          "
+
+      - name: Record and upload raw 2026 XeTeX build evidence
+        if: env.TEXLIVE_YEAR == '2026'
+        run: |
+          node scripts/gen-engine-build-receipt.mjs \
+            xetex wasm-build/dist-xetex wasm-build/dist-xetex/BUILD-RECEIPT.xetex-raw.json \
+            wasmtex-xetex.js wasmtex-xetex.worker.js wasmtex-xetex.wasm \
+            wasmtex-dvipdfm.js wasmtex-dvipdfm.worker.js wasmtex-dvipdfm.wasm \
+            wasmtex-xetex-resolver-evidence.js
+
+      - name: Upload raw 2026 XeTeX build evidence
+        if: env.TEXLIVE_YEAR == '2026'
+        uses: actions/upload-artifact@v7
+        with:
+          name: wasm-xetex-2026-raw
+          path: |
+            wasm-build/dist-xetex/wasmtex-xetex.*
+            wasm-build/dist-xetex/wasmtex-dvipdfm.*
+            wasm-build/dist-xetex/wasmtex-xetex-resolver-evidence.js
+            wasm-build/dist-xetex/BUILD-RECEIPT.xetex-raw.json
+          retention-days: 90
+
+      - name: Extract + compress prebuilt XeLaTeX format (.fmt.gz)
+        # Run the freshly-built engine's `xetex -ini xelatex.ini` once and capture
+        # the .fmt so the app preloads it instead of rebuilding the format on every
+        # cold start (the dominant first-compile cost). The .fmt is ~25 MB so ship
+        # it gzipped (~5 MB; the engine decompresses in-browser). Uses the runner's
+        # system Chrome (channel=chrome) — Playwright's browser download hangs in CI.
+        timeout-minutes: 10
+        env:
+          PLAYWRIGHT_CHANNEL: chrome
+        run: |
+          npm ci
+          npx playwright install-deps chromium
+          mkdir -p "public/wasmtex/$TEXLIVE_YEAR"
+          cp wasm-build/dist-xetex/wasmtex-xetex.js \
+             wasm-build/dist-xetex/wasmtex-xetex.worker.js \
+             wasm-build/dist-xetex/wasmtex-xetex.wasm \
+             wasm-build/dist-xetex/wasmtex-xetex-resolver-evidence.js "public/wasmtex/$TEXLIVE_YEAR/"
+          node scripts/extract-xetex-format.mjs "$TEXLIVE_YEAR"
+          gzip -n -9 -c "public/wasmtex/$TEXLIVE_YEAR/wasmtex-xetex.fmt" \
+            > wasm-build/dist-xetex/wasmtex-xetex.fmt.gz
+          ls -lh wasm-build/dist-xetex/wasmtex-xetex.fmt.gz
+
+      - name: Record exact XeTeX/dvipdfmx build inputs and outputs
+        run: |
+          node scripts/gen-engine-build-receipt.mjs \
+            xetex wasm-build/dist-xetex wasm-build/dist-xetex/BUILD-RECEIPT.xetex.json \
+            wasmtex-xetex.js wasmtex-xetex.worker.js wasmtex-xetex.wasm \
+            wasmtex-xetex.fmt.gz \
+            wasmtex-dvipdfm.js wasmtex-dvipdfm.worker.js wasmtex-dvipdfm.wasm \
+            wasmtex-xetex-resolver-evidence.js
+
+      - name: Upload XeLaTeX WASM artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.TEXLIVE_YEAR == '2025' && 'wasm-xetex' || 'wasm-xetex-2026' }}
+          path: |
+            wasm-build/dist-xetex/wasmtex-xetex.js
+            wasm-build/dist-xetex/wasmtex-xetex.worker.js
+            wasm-build/dist-xetex/wasmtex-xetex.wasm
+            wasm-build/dist-xetex/wasmtex-xetex.fmt.gz
+            wasm-build/dist-xetex/wasmtex-dvipdfm.js
+            wasm-build/dist-xetex/wasmtex-dvipdfm.worker.js
+            wasm-build/dist-xetex/wasmtex-dvipdfm.wasm
+            wasm-build/dist-xetex/wasmtex-xetex-resolver-evidence.js
+            wasm-build/dist-xetex/BUILD-RECEIPT.xetex.json
+          retention-days: 90
+
+      - name: Upload non-release XeTeX link-map evidence
+        uses: actions/upload-artifact@v7
+        with:
+          name: wasm-xetex-link-map
+          path: |
+            wasm-build/dist-xetex/wasmtex-xetex.map
+            wasm-build/dist-xetex/wasmtex-dvipdfm.map
+          retention-days: 90
