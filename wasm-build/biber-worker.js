@@ -48,7 +48,8 @@ self.onmessage = async ({ data: job }) => {
     write(`${stem}.bcf`, job.bcf);
     // Match TeX's project-root working directory and retain nested paths.
     // --input-directory also allows resources relative to a nested main file.
-    const parent = stem.includes('/') ? stem.slice(0, stem.lastIndexOf('/')) : '.';
+    const main = projectPath(job.main || stem);
+    const parent = main.includes('/') ? main.slice(0, main.lastIndexOf('/')) : '.';
     const args = ['/opt/perl-wasm/bin/biber', '--input-directory', `${root}/${parent}`,
       '--output-file', `${root}/${stem}.bbl`, `${root}/${stem}.bcf`];
     let status;
