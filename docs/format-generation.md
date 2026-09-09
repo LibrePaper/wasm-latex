@@ -71,3 +71,54 @@ looks wrong, because a genuinely missing input shows up there first.
 
 The inputs recorded are the format build's only; the `--smoke` compile runs
 after the manifest is closed and its own font lookups are not mixed in.
+
+## XeTeX
+
+`--engine xetex` builds `wasmtex-xetex.fmt` against `wasm-build/dist/wasmtex-xetex.{wasm,worker.js}`
+instead of the pdfTeX engine. Everything above still applies — same harness,
+same frozen clock, same `--texmf` trees, same evidence shape — but four things
+differ, all confined to the XHR shim and the smoke step:
+
+- **Gzip.** LibrePaper's `ENGINE_FILE_SETS` names `wasmtex-xetex.fmt.gz`, so
+  `--engine xetex` writes both `wasmtex-xetex.fmt` and a gzip of it beside it.
+  The bytes served to the engine itself are always the uncompressed form —
+  xetex-worker.js does not gunzip client-side — so this is packaging for the
+  host, not something the resolver needs to know about.
+- **ICU data.** XeTeX's font manager needs real ICU data (emscripten's
+  `-sUSE_ICU` links stub data only); the worker fetches `icudt68l.dat` at
+  `<endpoint>icudt68l.dat`, with no `pdftex/<format>/` prefix, and the harness
+  answers that one URL shape directly from `wasm-build/dist/icudt68l.dat`
+  before falling through to the normal per-format resolver.
+- **The format is not preloaded.** pdfTeX's worker has a `loadformat` message
+  that hands the engine format bytes directly; xetex-worker.js has no such
+  command. The engine fetches its own format through the *same* kpse hook as
+  every other file, under the bare name `--fmt=` was given in
+  `xetex-entry.c` (`wasmtex-xetex`), kpathsea format 10. The harness registers
+  the format bytes it just dumped under that name before running the smoke
+  compile, so the fetch is served from memory instead of the disk.
+- **Fonts.** `\setmainfont{lmroman10-regular.otf}` (by file name) resolves
+  through the ordinary per-format search order — format 47 is
+  `fonts/opentype/`, 36 is `fonts/truetype/`. `\setmainfont{Latin Modern Roman}`
+  (by family name) goes through fontconfig-shim.c's `FcFontList()`, which
+  reads a by-name font database, `xetexfontlist.txt` (kpse format 26) — a file
+  with no counterpart in TeX Live. The harness generates it at build time from
+  every OpenType/TrueType font in the `--texmf` trees, using `otfinfo` (a
+  build-machine tool; it never runs inside the engine sandbox) to read each
+  font's family/style/full names, in the record format `fontconfig-shim.c`
+  parses.
+
+`--smoke` for XeTeX compiles a fontspec document twice — once selecting the
+font by family name, once by file name (`--font-variant name|file` picks one,
+`--smoke-both` runs both) — then feeds the `.xdv` XeTeX writes to a second,
+independently booted `wasmtex-dvipdfm` engine session (same texmf index, same
+XHR shim) and asserts the result starts with `%PDF-` and embeds an LM font.
+That second assertion has to look past xdvipdfmx's default use of compressed
+PDF object streams: a plain byte search for `LMRoman` misses a correctly
+embedded font whose `/BaseFont` entry lives inside a Flate-compressed
+`/ObjStm`, so the harness also inflates every `stream`…`endstream` region and
+searches the decompressed bytes.
+
+XeTeX runs with `-synctex=1` (a one-line addition to `xetex-entry.c`;
+`xetex-synctex.o` was already linked in) and the worker returns the
+`.synctex(.gz)` bytes on the compile reply as a `synctex` field, mirroring
+`pdftex-worker.js`.

@@ -31,9 +31,12 @@ int setMainEntry(const char *entry) {
 }
 
 int compileLaTeX(void) {
+  /* -synctex=1: xetex-synctex.o is linked in (receipts/LINK-INVENTORY.xetex.json)
+   * but nothing turned it on. Mirrors pdftex-worker.js, which always passes
+   * -synctex=1 and returns the .synctex(.gz) bytes on the compile reply. */
   char *argv[] = {PROG, "-no-pdf", "-interaction=nonstopmode", "-recorder",
-                  "--fmt=wasmtex-xetex", main_entry, NULL};
-  return main(6, argv);
+                  "-synctex=1", "--fmt=wasmtex-xetex", main_entry, NULL};
+  return main(7, argv);
 }
 
 int compileFormat(void) {

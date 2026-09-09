@@ -61,6 +61,12 @@ engine cannot read. See [`docs/bundles.md`](docs/bundles.md).
 receipts/FORMAT-RECEIPT.pdftex-2026.json` builds the format through the
 bundles instead of the tree and checks it resolved the same inputs.
 
+`--engine xetex` builds `wasmtex-xetex.fmt` (and a `.fmt.gz` alongside it)
+against the XeTeX engine instead; `--smoke-both` compiles a fontspec smoke
+document both by family name and by file name and feeds the result through
+`wasmtex-dvipdfm` to a PDF. See the XeTeX section of
+[`docs/format-generation.md`](docs/format-generation.md).
+
 **Prepare a distributable release.** The engines are GPL, so publishing them
 carries obligations: notices, complete corresponding source, and a working
 relink path for the LGPL library inside them. Four commands discharge and then

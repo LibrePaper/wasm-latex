@@ -246,22 +246,40 @@ function jobNameForMain(mainFile) {
   return name.replace(/\.[^.]+$/, '')
 }
 
+// compileLaTeX runs with -synctex=1 (xetex-entry.c); read back the .synctex(.gz)
+// it wrote beside the .xdv, exactly as pdftex-worker.js does for the .pdf, and
+// attach it to the reply as "synctex". Only the compile job has a jobName here
+// (the format build does not), so this is a no-op for compileFormatRoutine.
+function readSynctex(jobName) {
+  if (!jobName) return null
+  for (const ext of ['.synctex', '.synctex.gz']) {
+    try {
+      return FS.readFile(`${WORKROOT}/${jobName}${ext}`, { encoding: 'binary' })
+    } catch {}
+  }
+  return null
+}
+
 function postOutput(relPath, status, recorderJobName) {
   const inputFiles = recorderJobName ? readRecorderInputs(recorderJobName) : undefined
   try {
     const buf = FS.readFile(relPath, { encoding: 'binary' })
-    self.postMessage(
-      {
-        result: 'ok',
-        status: 0,
-        log: self.memlog,
-        pdf: buf.buffer,
-        cmd: 'compile',
-        inputFiles,
-        inputFilesComplete: recorderJobName ? inputFiles !== null : undefined,
-      },
-      [buf.buffer],
-    )
+    const synctex = readSynctex(recorderJobName)
+    const transfer = [buf.buffer]
+    const msg = {
+      result: 'ok',
+      status: 0,
+      log: self.memlog,
+      pdf: buf.buffer,
+      cmd: 'compile',
+      inputFiles,
+      inputFilesComplete: recorderJobName ? inputFiles !== null : undefined,
+    }
+    if (synctex) {
+      msg.synctex = synctex.buffer
+      transfer.push(synctex.buffer)
+    }
+    self.postMessage(msg, transfer)
   } catch {
     self.postMessage({
       result: 'failed',
@@ -407,8 +425,16 @@ const texlive200 = {}
 const texlive404Source = {}
 const texlive200Source = {}
 
-/** Canonical extension for a kpse format (for extension-less requests). */
-const FORMAT_EXT = { 4: '.afm', 26: '.tex', 32: '.pfb', 36: '.ttf', 47: '.otf' }
+/** Canonical extension for a kpse format (for extension-less requests). Formats
+ *  3 (TFM), 33 (VF), 11 (map) and 44 (enc) were missing: XeTeX's own preloaded
+ *  OT1/Computer Modern fonts (cmr10 and friends, dumped into every format) are
+ *  requested extension-less at format 3, so without ".tfm" here every plain
+ *  document — fontspec or not — failed math and text fonts alike with "Metric
+ *  (TFM) file or installed font not found". */
+const FORMAT_EXT = {
+  3: '.tfm', 4: '.afm', 6: '.bib', 7: '.bst', 11: '.map',
+  26: '.tex', 32: '.pfb', 33: '.vf', 36: '.ttf', 44: '.enc', 47: '.otf',
+}
 
 /**
  * Resolve [dir, filename] for the CDN request. Fonts are routed by extension
