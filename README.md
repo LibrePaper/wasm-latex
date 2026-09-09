@@ -87,7 +87,9 @@ document both by family name and by file name and feeds the result through
 carries obligations: notices, complete corresponding source, and a working
 relink path for the LGPL library inside them. The root `Makefile` names every
 step and chains them; `tools/release.sh` does the one step that publishes.
-Run the pipeline up through the artifacts:
+The end-to-end runbook, from Docker builds to the Cloudflare push, is
+[`docs/release.md`](docs/release.md). Run the pipeline up through the
+artifacts:
 
     make test        # every check that runs without Docker or network
     make bundles      # pack the vendored texmf tree            -> wasm-build/dist/bundles

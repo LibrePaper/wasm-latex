@@ -93,11 +93,13 @@ digest; their notices are in `repo/LICENSES/`.
 
 ## The gate
 
-    node tools/link-inventory.mjs --family pdftex --out receipts/LINK-INVENTORY.pdftex.json
-    node tools/link-inventory.mjs --family bibtex --out receipts/LINK-INVENTORY.bibtex.json
-    node tools/build-corresponding-source.mjs --dist wasm-build/dist --out dist-source/
-    node tools/stage-release.mjs --dist wasm-build/dist --out staged/ --source-url <published URL>
-    node tools/check-release.mjs --dir staged/
+    make inventory                       # every family: tools/link-inventory.mjs
+    make source                          # tools/build-corresponding-source.mjs
+    make stage SOURCE_URL=<published URL>  # tools/stage-release.mjs --bundles
+    make check                           # tools/check-release.mjs
+
+The full sequence, including publishing the archive, is in
+[`release.md`](release.md).
 
 `check-release.mjs` verifies that every artifact is named and unmodified, that
 every linked component has a recorded license and source, that every required
