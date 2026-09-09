@@ -5,7 +5,7 @@
   "combinedTermsReason": "BibTeX links no Xpdf, libpng or zlib. Its only copyleft component is kpathsea (LGPL-2.1-or-later); the BibTeX and web2c sources carry permission notices rather than the GPL.",
   "modules": [
     {
-      "name": "wasmtex-bibtex",
+      "name": "bibtex",
       "wasm": {
         "bytes": 205813,
         "sha256": "7ee47f5959d9f2a0d4cbde264be97472b6c1b7a1da2ca58b67baea759b03c3d6"

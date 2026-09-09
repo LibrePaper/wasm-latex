@@ -13,7 +13,7 @@
 # the NATIVE tool binaries (the same two-phase approach proven for pdfTeX).
 #
 # Output (/dist):
-#   wasmtex-luatex.worker.js / .js / .wasm   (single worker; writes PDF directly)
+#   luatex.worker.js / .js / .wasm   (single worker; writes PDF directly)
 # =============================================================================
 set -uo pipefail
 
@@ -141,7 +141,7 @@ emmake make MAKEINFO=true CC_FOR_BUILD=gcc BUILD_CC=gcc \
   -C texk/web2c luahbtex >emmake-luahbtex.out 2>&1 || true  # vanilla final link fails under emcc — we relink next
 [ -f "$WW/libluatex.a" ] || { echo "luahbtex objects missing"; tail -50 emmake-luahbtex.out; exit 1; }
 
-echo "=== Phase 2f: final emcc link with WasmTex's own glue ==="
+echo "=== Phase 2f: final emcc link with this repository's own glue ==="
 cd "$WW"
 emcc -O2 -c "$GLUE/luatex-entry.c" -o luatex-entry.o
 emcc -O2 -c "$GLUE/kpse-hook.c"    -o kpse-hook.o
@@ -169,7 +169,7 @@ if [ -n "$NM" ]; then
   fi
 fi
 LUATEX_DEBUG_FLAGS=(-g0)
-if [ "${WASMTEX_LUATEX_PROFILE_NAMES:-0}" = "1" ]; then
+if [ "${LUATEX_PROFILE_NAMES:-0}" = "1" ]; then
   # Release debugging aid: retain WebAssembly function names without changing
   # optimization, so a browser trap can be mapped back to the linked routine.
   LUATEX_DEBUG_FLAGS=(--profiling-funcs)
@@ -198,36 +198,36 @@ em++ -O2 "${LUATEX_DEBUG_FLAGS[@]}" \
   "$WB"/libs/harfbuzz/libharfbuzz.a "$WB"/libs/graphite2/libgraphite2.a \
   "$XPDFLIB" "$WB"/libs/zlib/libz.a \
   lib/lib.a "$WB"/texk/kpathsea/.libs/libkpathsea.a libmputil.a libunilib.a libmd5.a \
-  -Wl,-Map="$OUT/wasmtex-luatex.map" \
+  -Wl,-Map="$OUT/luatex.map" \
   -sALLOW_MEMORY_GROWTH=1 -sMODULARIZE=0 -sINVOKE_RUN=0 -sSTACK_SIZE=33554432 \
   -sEXPORTED_FUNCTIONS='["_compileLaTeX","_compileFormat","_main","_setMainEntry","_malloc","_free"]' \
   -sEXPORTED_RUNTIME_METHODS='["cwrap","FS","UTF8ToString","stringToUTF8","lengthBytesUTF8","intArrayFromString"]' \
   -sINITIAL_MEMORY=805306368 \
   --js-library "$GLUE/luatex-library.js" \
-  -o "$OUT/wasmtex-luatex.js"
-[ -s "$OUT/wasmtex-luatex.map" ] || { echo "LuaHBTeX link map was not generated"; exit 1; }
-if grep -E 'libpplib|utilsha|sha(256|384|512)_digest|pp(doc|dict|array|stream|ref|xref)_' "$OUT/wasmtex-luatex.map"; then
+  -o "$OUT/luatex.js"
+[ -s "$OUT/luatex.map" ] || { echo "LuaHBTeX link map was not generated"; exit 1; }
+if grep -E 'libpplib|utilsha|sha(256|384|512)_digest|pp(doc|dict|array|stream|ref|xref)_' "$OUT/luatex.map"; then
   echo "ERROR: forbidden pplib archive or legacy pplib symbol remains in the LuaHBTeX link map" >&2
   exit 1
 fi
-grep -F 'libxpdf.a' "$OUT/wasmtex-luatex.map" >/dev/null || {
+grep -F 'libxpdf.a' "$OUT/luatex.map" >/dev/null || {
   echo "ERROR: LuaHBTeX link map does not contain the required Xpdf backend" >&2
   exit 1
 }
-grep -F 'wtpdf_' "$OUT/wasmtex-luatex.map" >/dev/null || {
+grep -F 'wtpdf_' "$OUT/luatex.map" >/dev/null || {
   echo "ERROR: LuaHBTeX link map does not contain the required WTPDF adapter" >&2
   exit 1
 }
 if grep -aE 'pplib|utilsha|sha(256|384|512)_digest|pp(doc|dict|array|stream|ref|xref)_' \
-    "$OUT/wasmtex-luatex.js" "$OUT/wasmtex-luatex.wasm"; then
+    "$OUT/luatex.js" "$OUT/luatex.wasm"; then
   echo "ERROR: forbidden pplib or legacy pplib marker remains in the LuaHBTeX release bytes" >&2
   exit 1
 fi
-cp "$GLUE/luatex-worker.js" "$OUT/wasmtex-luatex.worker.js"
-cp "$GLUE/kpse-resolve.cjs" "$OUT/wasmtex-kpse-resolve.js"
-cp "$GLUE/bundle-mode.js" "$OUT/wasmtex-bundle-mode.js"
-cp "$GLUE/resolver-evidence.js" "$OUT/wasmtex-luatex-resolver-evidence.js"
+cp "$GLUE/luatex-worker.js" "$OUT/luatex.worker.js"
+cp "$GLUE/kpse-resolve.cjs" "$OUT/kpse-resolve.js"
+cp "$GLUE/bundle-mode.js" "$OUT/bundle-mode.js"
+cp "$GLUE/resolver-evidence.js" "$OUT/luatex-resolver-evidence.js"
 
 echo ""
 echo "=== Output ==="
-ls -lh "$OUT"/wasmtex-luatex.* || { echo "no output produced"; exit 1; }
+ls -lh "$OUT"/luatex.* || { echo "no output produced"; exit 1; }

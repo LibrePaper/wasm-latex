@@ -75,16 +75,16 @@ function writeBundleFixture(dir, { snapshot = 'texlive-test', phantom = false } 
   return { coreSha, tikzSha, index }
 }
 try {
-  const binary = { name: 'wasmtex-pdftex.wasm', bytes: 6, sha256: hash('binary') }
+  const binary = { name: 'pdftex.wasm', bytes: 6, sha256: hash('binary') }
   write('engines/' + binary.name, 'binary')
-  write('engines/wasmtex-pdftex.fmt', 'format')
+  write('engines/pdftex.fmt', 'format')
   // A gzipped format is matched to its receipt by what it unpacks to.
-  write('engines/wasmtex-xetex.fmt.gz', gzipSync(Buffer.from('xetex-format')))
+  write('engines/xetex.fmt.gz', gzipSync(Buffer.from('xetex-format')))
   for (const name of ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'LICENSES/GPL.txt', 'RELINK.md']) write(name, 'fixture')
   write('linked-components.json', {})
   write('LICENSES/README.md', 'fixture')
   write('receipts/LINK-INVENTORY.pdftex.json', {
-    family: 'pdftex', combinedTerms: 'GPL-2.0-only', modules: [{ name: 'wasmtex-pdftex' }],
+    family: 'pdftex', combinedTerms: 'GPL-2.0-only', modules: [{ name: 'pdftex' }],
     linked: [{ component: 'fixture', license: 'GPL-2.0-only', source: 'source/' }],
     requiredNotices: ['LICENSES/GPL.txt'],
   })

@@ -31,7 +31,8 @@ const log = (...a) => console.error(...a)
 // a font by name without it, and with bundles the endpoint no longer serves it
 // by name, so the host inflates it and hands it over (loadicudata). Shipped
 // gzipped because the raw file is 27 MiB and a static asset may not exceed 25.
-const ARTIFACTS = /\.(wasm|fmt|fmt\.gz)$|^wasmtex-.*\.js$|^icudt[0-9]+[lb]\.dat\.gz$/
+const ARTIFACTS =
+  /\.(wasm|fmt|fmt\.gz)$|^(pdftex|xetex|dvipdfm|bibtex|bibtex8|makeindex|luatex)(-checkpoint|-resolver-evidence)?(\.worker)?\.js$|^(kpse-resolve|bundle-mode)\.js$|^icudt[0-9]+[lb]\.dat\.gz$/
 const files = fs.readdirSync(distDir).filter((f) => ARTIFACTS.test(f) && !f.endsWith('.map')).sort()
 if (!files.length) { console.error(`no engine artifacts in ${distDir}`); process.exit(1) }
 

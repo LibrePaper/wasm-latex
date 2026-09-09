@@ -7,8 +7,8 @@
  */
 "use strict";
 
-importScripts("wasmtex-kpse-resolve.js");
-importScripts("wasmtex-bundle-mode.js");
+importScripts("kpse-resolve.js");
+importScripts("bundle-mode.js");
 
 var TEXCACHEROOT = "/tex";
 var WORKROOT = "/work";
@@ -18,7 +18,7 @@ var texlive200_cache = {};
 var texlive404_cache = {};
 
 var Module = self.Module = {};
-if (self.__wasmtexWasmBinary) Module["wasmBinary"] = self.__wasmtexWasmBinary;
+if (self.__librepaperEngineBinary) Module["wasmBinary"] = self.__librepaperEngineBinary;
 
 Module["print"] = function(a) {
   self.memlog += a + "\n";
@@ -272,4 +272,4 @@ self["onmessage"] = function(ev) {
 };
 
 self.kpse_find_file_impl = kpse_find_file_impl;
-importScripts("wasmtex-makeindex.js");
+importScripts("makeindex.js");

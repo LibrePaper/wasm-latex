@@ -34,8 +34,8 @@ const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex')
 
 /* ------------------------------------------------------------- ENGINE_FILE_SETS */
 // Copied verbatim from LibrePaper's latex/tools/release.mjs. Every worker
-// importScripts() both wasmtex-kpse-resolve.js (the resolver core) and
-// wasmtex-bundle-mode.js (the loadbundleindex/preloadbundle handlers)
+// importScripts() both kpse-resolve.js (the resolver core) and
+// bundle-mode.js (the loadbundleindex/preloadbundle handlers)
 // unconditionally, so an engine missing either fails at importScripts before
 // it can even answer `configure`. An engine whose complete file set is not
 // in the staged release's artifacts is not advertised -- see readRelease
@@ -43,88 +43,88 @@ const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex')
 // complete) out of `engines` without special-casing it.
 export const ENGINE_FILE_SETS = {
   pdftex: {
-    worker: 'wasmtex-pdftex.worker.js',
-    format: 'wasmtex-pdftex.fmt',
+    worker: 'pdftex.worker.js',
+    format: 'pdftex.fmt',
     files: [
-      'wasmtex-pdftex.worker.js',
-      'wasmtex-pdftex.js',
-      'wasmtex-pdftex.wasm',
-      'wasmtex-pdftex-resolver-evidence.js',
-      'wasmtex-kpse-resolve.js',
-      'wasmtex-bundle-mode.js',
-      'wasmtex-pdftex.fmt',
+      'pdftex.worker.js',
+      'pdftex.js',
+      'pdftex.wasm',
+      'pdftex-resolver-evidence.js',
+      'kpse-resolve.js',
+      'bundle-mode.js',
+      'pdftex.fmt',
     ],
   },
   xetex: {
-    worker: 'wasmtex-xetex.worker.js',
-    format: 'wasmtex-xetex.fmt.gz',
+    worker: 'xetex.worker.js',
+    format: 'xetex.fmt.gz',
     // XeTeX also needs its ICU data table decompressed and sent over
     // loadicudata before a bundled compile: without it, in bundle mode, the
     // worker would try to fetch icudt68l.dat by name from the endpoint and
     // fail, and font-by-name lookups would fail too.
     icu: 'icudt68l.dat.gz',
     files: [
-      'wasmtex-xetex.worker.js',
-      'wasmtex-xetex.js',
-      'wasmtex-xetex.wasm',
-      'wasmtex-xetex-resolver-evidence.js',
-      'wasmtex-kpse-resolve.js',
-      'wasmtex-bundle-mode.js',
-      'wasmtex-xetex.fmt.gz',
+      'xetex.worker.js',
+      'xetex.js',
+      'xetex.wasm',
+      'xetex-resolver-evidence.js',
+      'kpse-resolve.js',
+      'bundle-mode.js',
+      'xetex.fmt.gz',
       'icudt68l.dat.gz',
     ],
   },
   dvipdfm: {
-    worker: 'wasmtex-dvipdfm.worker.js',
+    worker: 'dvipdfm.worker.js',
     files: [
-      'wasmtex-dvipdfm.worker.js',
-      'wasmtex-dvipdfm.js',
-      'wasmtex-dvipdfm.wasm',
-      'wasmtex-kpse-resolve.js',
-      'wasmtex-bundle-mode.js',
+      'dvipdfm.worker.js',
+      'dvipdfm.js',
+      'dvipdfm.wasm',
+      'kpse-resolve.js',
+      'bundle-mode.js',
     ],
   },
   luatex: {
-    worker: 'wasmtex-luatex.worker.js',
-    format: 'wasmtex-luatex.fmt.gz',
+    worker: 'luatex.worker.js',
+    format: 'luatex.fmt.gz',
     files: [
-      'wasmtex-luatex.worker.js',
-      'wasmtex-luatex.js',
-      'wasmtex-luatex.wasm',
-      'wasmtex-luatex-resolver-evidence.js',
-      'wasmtex-kpse-resolve.js',
-      'wasmtex-bundle-mode.js',
-      'wasmtex-luatex.fmt.gz',
+      'luatex.worker.js',
+      'luatex.js',
+      'luatex.wasm',
+      'luatex-resolver-evidence.js',
+      'kpse-resolve.js',
+      'bundle-mode.js',
+      'luatex.fmt.gz',
     ],
   },
   bibtex: {
-    worker: 'wasmtex-bibtex.worker.js',
+    worker: 'bibtex.worker.js',
     files: [
-      'wasmtex-bibtex.worker.js',
-      'wasmtex-bibtex.js',
-      'wasmtex-bibtex.wasm',
-      'wasmtex-kpse-resolve.js',
-      'wasmtex-bundle-mode.js',
+      'bibtex.worker.js',
+      'bibtex.js',
+      'bibtex.wasm',
+      'kpse-resolve.js',
+      'bundle-mode.js',
     ],
   },
   bibtex8: {
-    worker: 'wasmtex-bibtex8.worker.js',
+    worker: 'bibtex8.worker.js',
     files: [
-      'wasmtex-bibtex8.worker.js',
-      'wasmtex-bibtex8.js',
-      'wasmtex-bibtex8.wasm',
-      'wasmtex-kpse-resolve.js',
-      'wasmtex-bundle-mode.js',
+      'bibtex8.worker.js',
+      'bibtex8.js',
+      'bibtex8.wasm',
+      'kpse-resolve.js',
+      'bundle-mode.js',
     ],
   },
   makeindex: {
-    worker: 'wasmtex-makeindex.worker.js',
+    worker: 'makeindex.worker.js',
     files: [
-      'wasmtex-makeindex.worker.js',
-      'wasmtex-makeindex.js',
-      'wasmtex-makeindex.wasm',
-      'wasmtex-kpse-resolve.js',
-      'wasmtex-bundle-mode.js',
+      'makeindex.worker.js',
+      'makeindex.js',
+      'makeindex.wasm',
+      'kpse-resolve.js',
+      'bundle-mode.js',
     ],
   },
 }
@@ -290,12 +290,12 @@ export function bibliographyIdentity(payload) {
 
 export function buildMirror({ stagedDir, expectedDigest, outDir }) {
   const { manifest: staged, files: payload, digest, engines } = readRelease(stagedDir, expectedDigest)
-  const engineRelease = `librepaper-${digest}`
+  const engineRelease = digest
   // No texlive snapshot travels with a bundled release, so the release id is
   // just the engine release -- unlike LibrePaper's `<engineRelease>+<snapshot>`,
   // which named a per-file TeX Live pin this repository does not ship.
   const releaseId = engineRelease
-  const releaseDir = `wasmtex/${engineRelease}`
+  const releaseDir = `engines/${engineRelease}`
 
   const files = {}
   for (const [name, bytes] of payload) {

@@ -11,9 +11,9 @@
 #   docker run --platform linux/amd64 -v $(pwd)/dist:/dist pdftex-wasm
 #
 # Output:
-#   /dist/wasmtex-pdftex.worker.js — authored worker controller
-#   /dist/wasmtex-pdftex.js    — generated Emscripten module
-#   /dist/wasmtex-pdftex.wasm  — WebAssembly binary (~3-5MB)
+#   /dist/pdftex.worker.js — authored worker controller
+#   /dist/pdftex.js    — generated Emscripten module
+#   /dist/pdftex.wasm  — WebAssembly binary (~3-5MB)
 #
 # =============================================================================
 set -euo pipefail
@@ -83,7 +83,7 @@ if ls /build/native/texk/web2c/bibtex.c >/dev/null 2>&1; then
     echo "--- BibTeX: compile ---"
     if make -f /src/Makefile bibtex-wasm-compile; then
         echo ""
-        ls -lh /dist/wasmtex-bibtex.* 2>/dev/null || echo "  (BibTeX output files missing)"
+        ls -lh /dist/bibtex.* 2>/dev/null || echo "  (BibTeX output files missing)"
     else
         echo ""
         echo "  WARNING: BibTeX WASM build failed (non-fatal)"
@@ -107,8 +107,8 @@ echo "  Build Complete — ${TOTAL_TIME} seconds"
 echo "============================================================"
 echo ""
 echo "  Output files in /dist/:"
-ls -lh /dist/wasmtex-pdftex.* 2>/dev/null || echo "  (no pdfTeX output files found)"
-ls -lh /dist/wasmtex-bibtex.* 2>/dev/null || echo "  (no BibTeX output — Phase 1 needs --enable-bibtex)"
+ls -lh /dist/pdftex.* 2>/dev/null || echo "  (no pdfTeX output files found)"
+ls -lh /dist/bibtex.* 2>/dev/null || echo "  (no BibTeX output — Phase 1 needs --enable-bibtex)"
 echo ""
 echo "  Next: node tools/stage-release.mjs --dist wasm-build/dist --out staged/"
 echo "  (see README for the release steps)"

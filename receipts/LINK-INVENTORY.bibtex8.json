@@ -5,7 +5,7 @@
   "combinedTermsReason": "bibtex8 (texk/bibtex-x) source headers read \"published by the Free Software Foundation; either version 1, or (at your option) any later version\" (GPL-1.0-or-later); its only other copyleft component is kpathsea (LGPL-2.1-or-later). Both permit later versions, so the combined unit is GPL-2.0-or-later, the earliest version both licenses share by their own \"or later\" terms.",
   "modules": [
     {
-      "name": "wasmtex-bibtex8",
+      "name": "bibtex8",
       "wasm": {
         "bytes": 222168,
         "sha256": "f2ad8f96a35cd5d0b7fd291cd966f0659664bc60ab1d88594af62569a41f1d6c"

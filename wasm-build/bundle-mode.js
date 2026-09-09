@@ -11,8 +11,8 @@
 // plug in its own Emscripten FS, its own texlive_endpoint accessor and its
 // own resolver-evidence sink.
 //
-// Loaded by importScripts('wasmtex-bundle-mode.js') after
-// wasmtex-kpse-resolve.js (it uses resolveName/buildNameIndex/sha256Hex/
+// Loaded by importScripts('bundle-mode.js') after
+// kpse-resolve.js (it uses resolveName/buildNameIndex/sha256Hex/
 // readTar from there) and before the generated Emscripten module. The
 // CommonJS export at the bottom is a no-op in the worker (where `module` is
 // undefined) and lets wasm-build/bundle-mode.test.cjs require() it.
@@ -36,7 +36,7 @@ var BundleMode = (function() {
     function create(env) {
         // env.FS is not captured into a local here: it is the Emscripten
         // runtime's FS global, which does not exist yet when the worker
-        // creates its BundleMode instance (importScripts('wasmtex-bundle-mode.js')
+        // creates its BundleMode instance (importScripts('bundle-mode.js')
         // runs before importScripts of the generated engine module). Every
         // access below goes through env.FS at call time instead, by which
         // point the engine has finished loading.
@@ -103,7 +103,7 @@ var BundleMode = (function() {
             if (sha256Hex(bytes) !== meta.sha256) return "digest-mismatch";
             unpackBundle(name, bytes);
             if (cacheStorage) {
-                cacheStorage.open("wasmtex-bundles").then(function(cache) {
+                cacheStorage.open("librepaper-bundles").then(function(cache) {
                     return cache.put(url, new Response(bytes.slice()));
                 }).catch(function(e) {});
             }
@@ -169,7 +169,7 @@ var BundleMode = (function() {
                 return null;
             }
 
-            return cacheStorage.open("wasmtex-bundles").then(function(cache) {
+            return cacheStorage.open("librepaper-bundles").then(function(cache) {
                 return cache.keys().then(function(requests) {
                     var cachedCount = 0;
                     var skippedCount = 0;

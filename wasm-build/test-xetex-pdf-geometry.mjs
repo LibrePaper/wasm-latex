@@ -56,7 +56,7 @@ const queries = [
   ['clamp-last-negative', 'multipage.pdf', -1, 'media'],
 ]
 
-const directory = mkdtempSync(join(tmpdir(), 'wasmtex-xetex-geometry-'))
+const directory = mkdtempSync(join(tmpdir(), 'xetex-geometry-'))
 try {
   writeFileSync(
     join(directory, 'all-boxes.pdf'),

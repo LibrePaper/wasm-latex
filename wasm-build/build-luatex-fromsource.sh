@@ -79,7 +79,7 @@ docker run --rm --platform linux/amd64 --tmpfs /work \
     set -eu
     node /gen-fixtures.mjs /work/fixtures
     /build/native/texk/web2c/luahbtex --luaonly /probe.lua /work/fixtures \
-      | sed -n "s/^WASMTEX_PDF_API_JSON=//p" > /work/pdf-api.json
+      | sed -n "s/^PDF_API_JSON=//p" > /work/pdf-api.json
     cmp /work/pdf-api.json /expected.json || {
       echo "pdfe/pdfscanner behavior diverged from the approved expectation"
       exit 1
@@ -93,5 +93,5 @@ docker run --rm --platform linux/amd64 \
 
 echo ""
 echo "LuaHBTeX build outputs in $OUT_DIR:"
-ls -lh "$REPO_ROOT/$OUT_DIR"/wasmtex-luatex.* 2>/dev/null \
-  || { echo "  ERROR: no wasmtex-luatex.wasm produced — see build log above"; exit 1; }
+ls -lh "$REPO_ROOT/$OUT_DIR"/luatex.* 2>/dev/null \
+  || { echo "  ERROR: no luatex.wasm produced — see build log above"; exit 1; }

@@ -113,7 +113,7 @@ bundle is fetched once by synchronous XHR, its sha256 is checked in pure JS
 (the kpathsea callback is synchronous, so `crypto.subtle` cannot be used),
 its members are unpacked under `/texmf/` in the virtual filesystem, and later
 requests for siblings are answered from there. Where the Cache Storage API is
-available, fetched bundles are written to the `wasmtex-bundles` cache and
+available, fetched bundles are written to the `librepaper-bundles` cache and
 preloaded from it on the next `loadbundleindex`, so a warm session makes no
 network requests.
 

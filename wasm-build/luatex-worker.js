@@ -2,8 +2,8 @@
  * luatex-worker.js — authored worker controller for the LuaTeX engine
  * =============================================================================
  *
- * Published verbatim as wasmtex-luatex.worker.js. It configures Module, owns the
- * protocol/cache policy, then imports the generated wasmtex-luatex.js core. The
+ * Published verbatim as luatex.worker.js. It configures Module, owns the
+ * protocol/cache policy, then imports the generated luatex.js core. The
  * WebAssembly itself is the GPL LuaTeX engine built from texlive-source.
  *
  * Unlike XeTeX, LuaTeX writes PDF DIRECTLY — there is no XDV and no second
@@ -21,16 +21,16 @@
  *   - saved under the requested name (the CDN has no per-file `fileid` header).
  * ========================================================================== */
 
-importScripts('wasmtex-luatex-resolver-evidence.js')
-importScripts('wasmtex-kpse-resolve.js')
-importScripts('wasmtex-bundle-mode.js')
+importScripts('luatex-resolver-evidence.js')
+importScripts('kpse-resolve.js')
+importScripts('bundle-mode.js')
 
 const TEXCACHEROOT = '/tex'
 const WORKROOT = '/work'
 const TEXMFROOT = '/texmf' // bundle members unpack here; see loadbundleindex
 // biome-ignore lint: emscripten populates Module
 var Module = self.Module = {}
-if (self.__wasmtexWasmBinary) Module.wasmBinary = self.__wasmtexWasmBinary
+if (self.__librepaperEngineBinary) Module.wasmBinary = self.__librepaperEngineBinary
 self.memlog = ''
 self.initmem = undefined
 self.mainfile = 'main.tex'
@@ -59,7 +59,7 @@ self.bundleMode = BundleMode.create({
   workRoot: WORKROOT,
   endpoint: () => self.texlive_endpoint,
   postMessage: (msg) => self.postMessage(msg),
-  evidence: (...args) => self.wasmtexResolverEvidence(...args),
+  evidence: (...args) => self.resolverEvidence(...args),
 })
 Module.postRun = () => {
   self.postMessage({ result: 'ok' })
@@ -461,7 +461,7 @@ self.onmessage = (ev) => {
   }
 }
 
-// --- kpse over HTTP against the WasmTex CDN ---------------------------------
+// --- kpse over HTTP against the TeX Live package CDN -------------------------
 const texlive404 = {}
 const texlive200 = {}
 const texlive404Source = {}
@@ -542,13 +542,13 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
   if (reqname.includes('/')) return 0
   const cacheKey = `${format}/${reqname}`
   if (cacheKey in texlive404) {
-    self.wasmtexResolverEvidence(reqname, format, 'mirror-absent', [{
+    self.resolverEvidence(reqname, format, 'mirror-absent', [{
       source: texlive404Source[cacheKey] || 'durable-negative', outcome: 'not-found',
     }])
     return 0
   }
   if (cacheKey in texlive200) {
-    self.wasmtexResolverEvidence(reqname, format, 'resolved', [{
+    self.resolverEvidence(reqname, format, 'resolved', [{
       source: texlive200Source[cacheKey] || 'session-cache', outcome: 'hit',
     }])
     return _allocate(intArrayFromString(texlive200[cacheKey]))
@@ -634,7 +634,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
     texlive200[cacheKey] = savepath
     texlive200Source[cacheKey] = 'session-cache'
     delete texlive404Source[cacheKey]
-    self.wasmtexResolverEvidence(reqname, format, 'resolved', attempts)
+    self.resolverEvidence(reqname, format, 'resolved', attempts)
     return _allocate(intArrayFromString(savepath))
   }
   const mirrorAbsent = attempts.length > 0 && attempts.every((attempt) => attempt.outcome === 'not-found')
@@ -644,7 +644,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
       ? 'bloom-filter'
       : 'network'
   }
-  self.wasmtexResolverEvidence(
+  self.resolverEvidence(
     reqname,
     format,
     mirrorAbsent ? 'mirror-absent' : 'transport-error',
@@ -661,4 +661,4 @@ function fontconfig_search_font_impl(_fontnamePtr, _varStringPtr) {
 
 self.kpse_find_file_impl = kpse_find_file_impl
 self.fontconfig_search_font_impl = fontconfig_search_font_impl
-importScripts('wasmtex-luatex.js')
+importScripts('luatex.js')

@@ -5,7 +5,7 @@
   "combinedTermsReason": "pdfTeX and web2c are GPL-2.0-or-later, satisfied by v2. The linked Xpdf copy offers GPL v2 or v3; v2 is elected, which fixes the whole unit at GPL-2.0-only because v2-only and v3 code cannot be combined.",
   "modules": [
     {
-      "name": "wasmtex-pdftex",
+      "name": "pdftex",
       "wasm": {
         "bytes": 1672898,
         "sha256": "bf0b9fd1772fc78b02ad19eff39f7e03a73d7eefc1c1d05b15387768e57d013d"
@@ -14,7 +14,7 @@
       "objects": 37
     },
     {
-      "name": "wasmtex-pdftex-checkpoint",
+      "name": "pdftex-checkpoint",
       "wasm": {
         "bytes": 2701068,
         "sha256": "83563869d753277b32f885cc4207355d13aba86e47fd804fb712f3722fecfc48"

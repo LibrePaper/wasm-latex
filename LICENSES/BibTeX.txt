@@ -19,6 +19,6 @@ use or performance of this software.
 The WasmTex build does not edit the `bibtex.web` master file. It applies the
 Web2C change-file build used by the pinned TeX Live source and adds a separate
 WebAssembly entry point and file-lookup interposition layer. The resulting
-executable is distributed as `wasmtex-bibtex`, not as an unmodified upstream
+executable is distributed as `bibtex`, not as an unmodified upstream
 binary. The exact master, change files, generated C, glue, and build scripts
 are provided in the corresponding-source archive.

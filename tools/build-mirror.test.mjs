@@ -149,29 +149,29 @@ try {
   // are missing), so the "advertised only when every file is present" rule
   // has something to actually distinguish.
   const jsNames = [
-    'wasmtex-pdftex.worker.js',
-    'wasmtex-pdftex.js',
-    'wasmtex-pdftex-resolver-evidence.js',
-    'wasmtex-kpse-resolve.js',
-    'wasmtex-bundle-mode.js',
+    'pdftex.worker.js',
+    'pdftex.js',
+    'pdftex-resolver-evidence.js',
+    'kpse-resolve.js',
+    'bundle-mode.js',
     // xetex worker present but its format/icu are not, so it must not be
     // advertised as a complete engine.
-    'wasmtex-xetex.worker.js',
+    'xetex.worker.js',
   ]
   const jsArtifacts = jsNames.map((name) => {
     const bytes = Buffer.from(`fixture:${name}`)
     write(`engines/${name}`, bytes)
     return { name, bytes: bytes.length, sha256: hash(bytes) }
   })
-  const binary = { name: 'wasmtex-pdftex.wasm', bytes: Buffer.byteLength('binary'), sha256: hash('binary') }
-  write('engines/wasmtex-pdftex.wasm', 'binary')
-  write('engines/wasmtex-pdftex.fmt', 'format')
+  const binary = { name: 'pdftex.wasm', bytes: Buffer.byteLength('binary'), sha256: hash('binary') }
+  write('engines/pdftex.wasm', 'binary')
+  write('engines/pdftex.fmt', 'format')
 
   for (const name of ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'LICENSES/GPL.txt', 'RELINK.md']) write(name, 'fixture')
   write('linked-components.json', {})
   write('LICENSES/README.md', 'fixture')
   write('receipts/LINK-INVENTORY.pdftex.json', {
-    family: 'pdftex', combinedTerms: 'GPL-2.0-only', modules: [{ name: 'wasmtex-pdftex' }],
+    family: 'pdftex', combinedTerms: 'GPL-2.0-only', modules: [{ name: 'pdftex' }],
     linked: [{ component: 'fixture', license: 'GPL-2.0-only', source: 'source/' }],
     requiredNotices: ['LICENSES/GPL.txt'],
   })
@@ -201,7 +201,7 @@ try {
   assert.equal(entry.texlive_base, undefined)
   assert.equal(mirror.texlive, undefined)
 
-  // Bundles entry rewritten to the mirror URL, under wasmtex/<engineRelease>/.
+  // Bundles entry rewritten to the mirror URL, under engines/<engineRelease>/.
   assert.ok(entry.bundles, 'release must carry a bundles entry')
   assert.equal(entry.bundles.index, `${entry.base}bundles/bundles.json`)
   const indexPath = path.join(root, 'mirror', entry.bundles.index)
@@ -216,7 +216,7 @@ try {
   console.log('build-mirror: manifest shape, engine advertisement, bundles rewrite, and bibliography identity checked')
 
   // A tampered payload file must be rejected.
-  const tamperPath = path.join(root, 'staged', 'wasmtex-pdftex.wasm')
+  const tamperPath = path.join(root, 'staged', 'pdftex.wasm')
   const original = fs.readFileSync(tamperPath)
   const tampered = Buffer.from(original)
   tampered[0] = tampered[0] ^ 0xff

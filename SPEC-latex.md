@@ -66,7 +66,7 @@ owner's explicit choice, under confinement.
 4. Precise failure messages. When the browser tier stops, name the missing
    package or the required program and print the one-line pairing
    instruction. The resolver evidence the worker already emits
-   (`wasmtexResolverEvidence`) carries what is needed.
+   (`resolverEvidence`) carries what is needed.
 5. A published "what works in the browser" page, readable by people and by
    agents.
 6. XeTeX with ICU data and TeX Live's OpenType fonts, rebuilt with SyncTeX.

@@ -5,7 +5,7 @@
   "combinedTermsReason": "Matches THIRD_PARTY_NOTICES.md's existing XeTeX entry: XeTeX permits GPL-2.0-or-later, but the linked Xpdf 4.06 copy is selected under GPL-2.0-only and the emscripten-ported FreeType this build links is dual FTL/GPL and also selected under GPL-2.0-only for this combined release (docs/THIRD_PARTY_NOTICES.md, \"Emscripten and ports\"). A v2-only component fixes the whole combined unit at GPL-2.0-only; the LGPL kpathsea/Graphite2/TECkit, MIT WTPDF adapter, ICU, HarfBuzz, libpng and zlib notices are retained but do not raise the combined floor.",
   "modules": [
     {
-      "name": "wasmtex-xetex",
+      "name": "xetex",
       "wasm": {
         "bytes": 3494352,
         "sha256": "7f2a1efa54cdc67f570c4547ee372ee9b56f40a0eceaee57647ee9057cc84963"

@@ -6,7 +6,7 @@
 #   make bundles     pack the vendored texmf tree, plus the
 #                    font list, into per-package bundles       -> wasm-build/dist/bundles
 #   make format      dump the pdfTeX and XeTeX formats from
-#                    the tree                                  -> wasm-build/dist/wasmtex-{pdftex,xetex}.fmt
+#                    the tree                                  -> wasm-build/dist/{pdftex,xetex}.fmt
 #   make inventory   what the linker put in every engine    -> receipts/LINK-INVENTORY.*.json
 #   make source      the corresponding-source archive        -> dist-source/
 #   make publish-source TAG=engines-2026.1
@@ -21,7 +21,7 @@
 #   make mirror MANIFEST_SHA256=<staged MANIFEST.json digest>
 #                    build the mirror LibrePaper serves from staged/       -> mirror/
 #   make push        write mirror/_headers and deploy it to Cloudflare (needs
-#                    CLOUDFLARE_API_TOKEN)
+#                    CLOUDFLARE_API_TOKEN; `make secrets` opens a shell that has it)
 #
 # Engines themselves are built with Docker (see README); this file assumes
 # wasm-build/dist already holds them.
@@ -36,13 +36,18 @@ IMAGE       ?= librepaper-pdftex-wasm
 FAMILIES    ?= pdftex bibtex bibtex8 makeindex xetex dvipdfm
 MIRROR      ?= mirror
 # The Cloudflare Worker that is nothing but these files. Two settings, so they
-# live here as flags rather than in a wrangler.toml of their own. A deployment
-# reaches it at https://$(WORKER).<account>.workers.dev/.
-WORKER      ?= librepaper-latex
+# live here as flags rather than in a wrangler.toml of their own. Deployed
+# under the librepaper account's workers.dev subdomain, this reaches it at
+# https://latex.librepaper.workers.dev/.
+WORKER      ?= latex
 COMPAT_DATE ?= 2026-09-01
 TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
+# The Cloudflare token `make push` needs lives sops-encrypted in the
+# application's deploy/keys.yaml, one file for every LibrePaper repo, and is
+# reached through the sibling checkout.
+KEYS        ?= ../librepaper/deploy/keys.yaml
 
-.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push
+.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push secrets
 
 help:  ## List targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*## /  /'
@@ -68,11 +73,11 @@ bundles: fontlist  ## Pack the texmf tree, plus the font list, into per-package 
 	node tools/prune-bundles.mjs --dir $(BUNDLES)
 
 format:  ## Dump the pdfTeX and XeTeX formats, smoke them, and check the bundle path resolves the same pdfTeX inputs
-	node tools/build-format.mjs $(TEXMF_ARGS) --out $(DIST)/wasmtex-pdftex.fmt \
+	node tools/build-format.mjs $(TEXMF_ARGS) --out $(DIST)/pdftex.fmt \
 	  --evidence receipts/FORMAT-RECEIPT.pdftex-2026.json --smoke
 	node tools/build-format.mjs $(TEXMF_ARGS) --bundles $(BUNDLES) --out /dev/null \
 	  --expect-inputs receipts/FORMAT-RECEIPT.pdftex-2026.json --smoke
-	node tools/build-format.mjs $(TEXMF_ARGS) --engine xetex --out $(DIST)/wasmtex-xetex.fmt \
+	node tools/build-format.mjs $(TEXMF_ARGS) --engine xetex --out $(DIST)/xetex.fmt \
 	  --evidence receipts/FORMAT-RECEIPT.xetex-2026.json --smoke-both
 
 inventory:  ## Link inventories for every built family
@@ -121,13 +126,13 @@ mirror:  ## Build the mirror LibrePaper serves from a staged release (needs MANI
 
 push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUDFLARE_API_TOKEN)
 	@node tools/check-mirror.mjs $(MIRROR)
-	@test -n "$$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not set; export it before make push"; exit 1; }
+	@test -n "$$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not set; run make push inside \`make secrets\`, or: sops exec-env $(KEYS) 'make push'"; exit 1; }
 	@# Bundle tars and every engine file are digest-named and cached forever;
 	@# manifest.json is the one release-describing file fetched by a bare
 	@# name and must never be stale; bundles.json is the one bundling file
 	@# fetched by a bare name too, and gets a short no-cache instead of
 	@# no-store since it changes far less often than the manifest.
-	@printf '/*\n  Cache-Control: public, max-age=31536000, immutable\n/manifest.json\n  Cache-Control: no-store\n/wasmtex/*/bundles/bundles.json\n  Cache-Control: no-cache\n' > $(MIRROR)/_headers
+	@printf '/*\n  Cache-Control: public, max-age=31536000, immutable\n/manifest.json\n  Cache-Control: no-store\n/engines/*/bundles/bundles.json\n  Cache-Control: no-cache\n' > $(MIRROR)/_headers
 	@if command -v bunx >/dev/null 2>&1; then \
 	  RUNNER="bunx wrangler"; \
 	elif command -v npx >/dev/null 2>&1; then \
@@ -138,4 +143,13 @@ push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUD
 	  RUNNER="npx wrangler"; \
 	fi; \
 	$RUNNER deploy --name $(WORKER) --compatibility-date $(COMPAT_DATE) --assets "$(abspath $(MIRROR))"
-	@echo "serve with: librepaper serve --latex https://librepaper-latex.<account>.workers.dev/"
+	@echo "serve with: librepaper serve --latex https://latex.librepaper.workers.dev/"
+
+# A target cannot export into the shell that ran make, so this opens a
+# subshell with the keys decrypted in its environment; exit it to drop them.
+# For one command instead of a shell: sops exec-env $(KEYS) '<command>'
+secrets:  ## Open a shell with the sops-encrypted keys in its environment
+	@test -f $(KEYS) || { echo "no $(KEYS) -- clone LibrePaper/librepaper beside this repo, or set KEYS="; exit 1; }
+	@test -t 0 || { echo "make secrets opens an interactive subshell and needs a terminal" >&2; exit 2; }
+	@echo "$(KEYS) is loaded in this shell; exit to drop it"
+	@sops exec-env $(KEYS) "$${SHELL:-/bin/sh}"

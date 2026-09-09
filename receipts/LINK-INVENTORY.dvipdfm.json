@@ -5,7 +5,7 @@
   "combinedTermsReason": "dvipdfm-x (texk/dvipdfm-x) is GPL-2.0-or-later; it links kpathsea (LGPL-2.1-or-later), libpng and zlib (permissive) and no Xpdf, so the combined unit is GPL-2.0-or-later.",
   "modules": [
     {
-      "name": "wasmtex-dvipdfm",
+      "name": "dvipdfm",
       "wasm": {
         "bytes": 832374,
         "sha256": "72fce45bf59aa214328a63593647477b5646ae0ff39d18f74dcd8e93dcb959f0"

@@ -8,10 +8,10 @@ the `.wasm`, and it has to be produced from inputs we control.
 ## How it runs
 
 The invocation is in the README. No network, no browser, no TypeScript host:
-the harness runs `wasm-build/dist/wasmtex-pdftex.worker.js` on Node, gives it
+the harness runs `wasm-build/dist/pdftex.worker.js` on Node, gives it
 the worker-shaped globals it expects (`self`, `importScripts`, synchronous
 `XMLHttpRequest`, `performance`), hands the engine its `.wasm` through
-`__wasmtexWasmBinary`, and drives the worker's own protocol: `settexliveurl`,
+`__librepaperEngineBinary`, and drives the worker's own protocol: `settexliveurl`,
 then `compileformat`. The format bytes come back on a `postMessage`. A build
 takes about five seconds after the texmf tree is indexed.
 
@@ -74,13 +74,13 @@ after the manifest is closed and its own font lookups are not mixed in.
 
 ## XeTeX
 
-`--engine xetex` builds `wasmtex-xetex.fmt` against `wasm-build/dist/wasmtex-xetex.{wasm,worker.js}`
+`--engine xetex` builds `xetex.fmt` against `wasm-build/dist/xetex.{wasm,worker.js}`
 instead of the pdfTeX engine. Everything above still applies — same harness,
 same frozen clock, same `--texmf` trees, same evidence shape — but four things
 differ, all confined to the XHR shim and the smoke step:
 
-- **Gzip.** LibrePaper's `ENGINE_FILE_SETS` names `wasmtex-xetex.fmt.gz`, so
-  `--engine xetex` writes both `wasmtex-xetex.fmt` and a gzip of it beside it.
+- **Gzip.** LibrePaper's `ENGINE_FILE_SETS` names `xetex.fmt.gz`, so
+  `--engine xetex` writes both `xetex.fmt` and a gzip of it beside it.
   The bytes served to the engine itself are always the uncompressed form —
   xetex-worker.js does not gunzip client-side — so this is packaging for the
   host, not something the resolver needs to know about.
@@ -110,7 +110,7 @@ differ, all confined to the XHR shim and the smoke step:
 `--smoke` for XeTeX compiles a fontspec document twice — once selecting the
 font by family name, once by file name (`--font-variant name|file` picks one,
 `--smoke-both` runs both) — then feeds the `.xdv` XeTeX writes to a second,
-independently booted `wasmtex-dvipdfm` engine session (same texmf index, same
+independently booted `dvipdfm` engine session (same texmf index, same
 XHR shim) and asserts the result starts with `%PDF-` and embeds an LM font.
 That second assertion has to look past xdvipdfmx's default use of compressed
 PDF object streams: a plain byte search for `LMRoman` misses a correctly

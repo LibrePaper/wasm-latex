@@ -38,7 +38,7 @@
 //
 // =============================================================================
 
-importScripts('wasmtex-pdftex-resolver-evidence.js');
+importScripts('pdftex-resolver-evidence.js');
 
 // --- Constants ---------------------------------------------------------------
 
@@ -76,7 +76,7 @@ self.mainfile = "main.tex";      // Main .tex file to compile
 self.texlive_endpoint = "";      // TexLive package server URL (set by host)
 
 // Bundle-mode resolver state (see loadbundleindex below). self.bundleMode is
-// created near the bottom of this file, after wasmtex-bundle-mode.js loads;
+// created near the bottom of this file, after bundle-mode.js loads;
 // self.bundleMode.index stays null until loadbundleindex succeeds,
 // kpse_find_file_impl checks it to decide whether to resolve via the index or
 // fall back to the legacy per-file path. All bundle-mode logic (unpacking,
@@ -90,7 +90,7 @@ self.texlive_endpoint = "";      // TexLive package server URL (set by host)
 // starts loading.
 
 var Module = self.Module = {};
-if (self.__wasmtexWasmBinary) Module["wasmBinary"] = self.__wasmtexWasmBinary;
+if (self.__librepaperEngineBinary) Module["wasmBinary"] = self.__librepaperEngineBinary;
 
 // Capture pdfTeX's stdout/stderr into self.memlog so we can return the
 // compilation log to the host.
@@ -545,7 +545,7 @@ function bloomMaybe(format, reqname) {
 // All bundle logic (unpacking, digest verification, fetch, Cache Storage
 // preload/write-back) now lives in wasm-build/bundle-mode.js, shared by every
 // authored engine worker; self.bundleMode is created near the bottom of this
-// file, after wasmtex-bundle-mode.js loads.
+// file, after bundle-mode.js loads.
 
 // Bundle-mode resolution for kpse_find_file_impl (SPEC-latex.md "The
 // resolver"). Returns a heap pointer (hit), 0 (a definitive miss — recorded in
@@ -602,7 +602,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
 
     // Check caches first
     if (cacheKey in texlive404_cache) {
-        self.wasmtexResolverEvidence(reqname, format, "mirror-absent", [{
+        self.resolverEvidence(reqname, format, "mirror-absent", [{
             "source": texlive404_source[cacheKey] || "durable-negative",
             "outcome": "not-found"
         }]);
@@ -610,7 +610,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
     }
     if (cacheKey in texlive200_cache) {
         var savepath = texlive200_cache[cacheKey];
-        self.wasmtexResolverEvidence(reqname, format, "resolved", [{
+        self.resolverEvidence(reqname, format, "resolved", [{
             "source": texlive200_source[cacheKey] || "session-cache",
             "outcome": "hit"
         }]);
@@ -633,7 +633,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
     if (!bloomMaybe(format, reqname)) {
         texlive404_cache[cacheKey] = 1;
         texlive404_source[cacheKey] = "bloom-filter";
-        self.wasmtexResolverEvidence(reqname, format, "mirror-absent", [{
+        self.resolverEvidence(reqname, format, "mirror-absent", [{
             "source": "bloom-filter", "outcome": "not-found"
         }]);
         return 0;
@@ -703,7 +703,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
         texlive200_cache[cacheKey] = savepath;
         texlive200_source[cacheKey] = "session-cache";
         delete texlive404_source[cacheKey];
-        self.wasmtexResolverEvidence(
+        self.resolverEvidence(
             UTF8ToString(nameptr).replace(/^[*&]/, ""), format, "resolved", resolverAttempts
         );
         var ptr = allocateString(savepath);
@@ -716,7 +716,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
             texlive404_cache[cacheKey] = 1;
             texlive404_source[cacheKey] = "network";
         }
-        self.wasmtexResolverEvidence(
+        self.resolverEvidence(
             UTF8ToString(nameptr).replace(/^[*&]/, ""),
             format,
             sawMirrorResponse ? "mirror-absent" : "transport-error",
@@ -913,8 +913,8 @@ async function compileLaTeXRoutine(data) {
     var fmtToUse = usedPreamble ? self._preambleFmtData : self._fmtData;
     if (fmtToUse) {
         var formatInstallStart = performance.now();
-        FS.writeFile(TEXCACHEROOT + "/wasmtex-pdftex.fmt", fmtToUse);
-        texlive200_cache["10/wasmtex-pdftex.fmt"] = TEXCACHEROOT + "/wasmtex-pdftex.fmt";
+        FS.writeFile(TEXCACHEROOT + "/pdftex.fmt", fmtToUse);
+        texlive200_cache["10/pdftex.fmt"] = TEXCACHEROOT + "/pdftex.fmt";
         FS.writeFile(TEXCACHEROOT + "/pdflatex.fmt", fmtToUse);
         texlive200_cache["10/pdflatex.fmt"] = TEXCACHEROOT + "/pdflatex.fmt";
         // Also write to WORKROOT — open_fmt_file() tries fopen() in CWD first,
@@ -993,8 +993,8 @@ async function compileLaTeXRoutine(data) {
         FS.writeFile(WORKROOT + "/" + self.mainfile, texSource);
         if (self._fmtData) {
             var fallbackFormatInstallStart = performance.now();
-            FS.writeFile(TEXCACHEROOT + "/wasmtex-pdftex.fmt", self._fmtData);
-            texlive200_cache["10/wasmtex-pdftex.fmt"] = TEXCACHEROOT + "/wasmtex-pdftex.fmt";
+            FS.writeFile(TEXCACHEROOT + "/pdftex.fmt", self._fmtData);
+            texlive200_cache["10/pdftex.fmt"] = TEXCACHEROOT + "/pdftex.fmt";
             FS.writeFile(TEXCACHEROOT + "/pdflatex.fmt", self._fmtData);
             texlive200_cache["10/pdflatex.fmt"] = TEXCACHEROOT + "/pdflatex.fmt";
             // Must also write to WORKROOT — open_fmt_file() tries fopen() in CWD first.
@@ -1421,7 +1421,7 @@ function setTexliveEndpoint(url) {
 // This is the main entry point for the worker. The host sends commands via
 // postMessage, and we dispatch them to the appropriate routine.
 //
-// The WasmTex protocol includes one
+// The protocol includes one
 // addition: the compile response now includes a "synctex" field containing
 // the raw SyncTeX data (when available).
 
@@ -2014,8 +2014,8 @@ async function compileFromHeapCheckpointRoutine(data) {
     try {
         wantCheckpoint = new URLSearchParams(self.location.search).get("engine") === "checkpoint";
     } catch(e) {}
-    importScripts("wasmtex-kpse-resolve.js");
-    importScripts("wasmtex-bundle-mode.js");
+    importScripts("kpse-resolve.js");
+    importScripts("bundle-mode.js");
     self.bundleMode = BundleMode.create({
         // FS is a getter, not a plain value: the Emscripten module (which
         // defines the global `FS`) has not been loaded yet at this point —
@@ -2026,18 +2026,18 @@ async function compileFromHeapCheckpointRoutine(data) {
         workRoot: WORKROOT,
         endpoint: function() { return self.texlive_endpoint; },
         postMessage: function(msg) { self.postMessage(msg); },
-        evidence: self.wasmtexResolverEvidence
+        evidence: self.resolverEvidence
     });
     if (wantCheckpoint) {
         // A self-hosted asset set may predate the checkpoint build; fall back to the
         // plain engine rather than failing to boot (the host then sees no checkpoint
         // support and keeps the page-break path).
         try {
-            importScripts("wasmtex-pdftex-checkpoint.js");
+            importScripts("pdftex-checkpoint.js");
             return;
         } catch(e) {
-            console.warn("[wasmtex] checkpoint engine unavailable, loading the plain build: " + e);
+            console.warn("[librepaper] checkpoint engine unavailable, loading the plain build: " + e);
         }
     }
-    importScripts("wasmtex-pdftex.js");
+    importScripts("pdftex.js");
 })();

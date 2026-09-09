@@ -17,15 +17,15 @@
 #   docker run --platform linux/amd64 -v $(pwd)/dist:/dist pdftex-wasm
 #
 # The final artifacts land in /dist (mounted as a host volume):
-#   - wasmtex-pdftex.worker.js (authored worker controller)
-#   - wasmtex-pdftex.js   (generated Emscripten module)
-#   - wasmtex-pdftex.wasm (WebAssembly binary)
+#   - pdftex.worker.js (authored worker controller)
+#   - pdftex.js   (generated Emscripten module)
+#   - pdftex.wasm (WebAssembly binary)
 #
 # =============================================================================
 
 FROM emscripten/emsdk:3.1.46@sha256:2491bc4bf6caf8c41993660822341bc72759cb577363dfe0781f0a2d05f7d357
 
-LABEL maintainer="wasmtex"
+LABEL maintainer="librepaper"
 LABEL description="pdfTeX WASM build environment with SyncTeX support (TeX Live 2025)"
 
 # Use bash with pipefail for proper error propagation

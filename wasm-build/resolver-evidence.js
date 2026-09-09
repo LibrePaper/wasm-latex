@@ -1,6 +1,6 @@
 /* Host-local TeX Live resolver evidence shared by every authored engine worker.
  * The TypeScript host validates the payload again before exposing it publicly. */
-self.wasmtexResolverEvidence = function (requestedName, format, outcome, attempts) {
+self.resolverEvidence = function (requestedName, format, outcome, attempts) {
   var safeAttempts = Array.isArray(attempts) ? attempts.slice(0, 8) : []
   self.postMessage({
     cmd: 'resolver',

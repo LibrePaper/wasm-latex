@@ -68,7 +68,7 @@ a URL. In this repository:
 
 which runs `tools/build-mirror.mjs` (verifies the manifest against the hash
 and every payload file against the manifest, then writes the release under
-`mirror/wasmtex/<engineRelease>/`) and `tools/check-mirror.mjs` on the
+`mirror/engines/<engineRelease>/`) and `tools/check-mirror.mjs` on the
 result. See [`docs/mirror.md`](mirror.md) for the layout and manifest shape
 this writes -- it is the contract LibrePaper's `check-mirror.mjs` and
 `web/src/lib/latex/worker.js` consume. Then, with `CLOUDFLARE_API_TOKEN`
@@ -83,7 +83,7 @@ a staged release is under the 25 MiB per-file limit and the whole set is
 under the free plan's 20,000-file cap.
 
 LibrePaper then just points at the deployed URL: `librepaper serve --latex
-https://librepaper-latex.<account>.workers.dev/`, or its own
+https://latex.librepaper.workers.dev/`, or its own
 `latex/tools/check-mirror.mjs <url>` to verify it first. The one piece
 LibrePaper still builds and registers on its own is the Biber VM
 (`latex/tools/wasmtex.mjs --vm <dir>`), since it is not part of a

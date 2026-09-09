@@ -245,7 +245,7 @@ test("resolve hits: fetches once, unpacks, verifies digest, writes back to Cache
     // Cache Storage write-back is fire-and-forget (open().then(cache => cache.put(...))),
     // several microtask turns deep; a setImmediate flushes them all before checking.
     return new Promise((resolve) => setImmediate(resolve)).then(() => {
-        assert.ok(cacheStorage.has("wasmtex-bundles", ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar"));
+        assert.ok(cacheStorage.has("librepaper-bundles", ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar"));
     });
 });
 
@@ -296,8 +296,8 @@ test("transport error does not poison: a later resolve retries the fetch", () =>
 
 test("preload scope: restores only the named bundles and reports skipped", () => {
     const { env, fs, xhr, cacheStorage } = makeEnv();
-    cacheStorage.seed("wasmtex-bundles", ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar", TIKZ_U8);
-    cacheStorage.seed("wasmtex-bundles", ENDPOINT + "b/" + AMSMATH_SHA + "/tex-latex-amsmath.tar", AMSMATH_U8);
+    cacheStorage.seed("librepaper-bundles", ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar", TIKZ_U8);
+    cacheStorage.seed("librepaper-bundles", ENDPOINT + "b/" + AMSMATH_SHA + "/tex-latex-amsmath.tar", AMSMATH_U8);
     const bm = BundleMode.create(env);
     bm.loadIndex(JSON.stringify(makeIndex()));
 
@@ -318,8 +318,8 @@ test("preload scope: restores only the named bundles and reports skipped", () =>
 
 test("preload without scope restores every cached bundle matching the index", () => {
     const { env, cacheStorage } = makeEnv();
-    cacheStorage.seed("wasmtex-bundles", ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar", TIKZ_U8);
-    cacheStorage.seed("wasmtex-bundles", ENDPOINT + "b/" + AMSMATH_SHA + "/tex-latex-amsmath.tar", AMSMATH_U8);
+    cacheStorage.seed("librepaper-bundles", ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar", TIKZ_U8);
+    cacheStorage.seed("librepaper-bundles", ENDPOINT + "b/" + AMSMATH_SHA + "/tex-latex-amsmath.tar", AMSMATH_U8);
     const bm = BundleMode.create(env);
     bm.loadIndex(JSON.stringify(makeIndex()));
 
@@ -336,7 +336,7 @@ test("stale cache entry (digest no longer matches) is deleted, not unpacked or c
     const url = ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar";
     // Seed the cache with bytes that do NOT match the index's recorded digest
     // for this bundle — as if the release rotated under the cached entry.
-    cacheStorage.seed("wasmtex-bundles", url, AMSMATH_U8);
+    cacheStorage.seed("librepaper-bundles", url, AMSMATH_U8);
     const bm = BundleMode.create(env);
     bm.loadIndex(JSON.stringify(makeIndex()));
 
@@ -346,7 +346,7 @@ test("stale cache entry (digest no longer matches) is deleted, not unpacked or c
         assert.strictEqual(result.cached, 0);
         assert.strictEqual(result.skipped, 0);
         assert.ok(!bm.loaded.has("tex/latex/tikz"));
-        assert.ok(!cacheStorage.has("wasmtex-bundles", url), "stale entry must be deleted from Cache Storage");
+        assert.ok(!cacheStorage.has("librepaper-bundles", url), "stale entry must be deleted from Cache Storage");
     });
 });
 

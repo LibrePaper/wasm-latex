@@ -13,7 +13,7 @@
 # teckit. The fontconfig shim is installed into the emcc sysroot as libfontconfig so
 # configure's hard fontconfig requirement is satisfied and the build links our shim.
 #
-# Output (/dist): wasmtex-xetex.worker.js / .js / .wasm
+# Output (/dist): xetex.worker.js / .js / .wasm
 # =============================================================================
 set -uo pipefail
 
@@ -245,7 +245,7 @@ em++ -O2 -g0 \
   kpse-hook.o xetex-entry.o fontconfig-shim.o icu-data-loader.o \
   $XEOBJS \
   -Wl,--wrap=kpse_find_file -Wl,--wrap=FT_New_Face \
-  -Wl,-Map="$OUT/wasmtex-xetex.map" \
+  -Wl,-Map="$OUT/xetex.map" \
   libxetex.a \
   "$(find "$WB/libs/harfbuzz" -name libharfbuzz.a | head -1)" \
   "$(find "$WB/libs/graphite2" -name libgraphite2.a | head -1)" \
@@ -259,22 +259,22 @@ em++ -O2 -g0 \
   -sEXPORTED_RUNTIME_METHODS='["cwrap","FS","UTF8ToString","stringToUTF8","lengthBytesUTF8","intArrayFromString"]' \
   -sINITIAL_MEMORY=805306368 \
   --js-library "$GLUE/xetex-library.js" \
-  -o "$OUT/wasmtex-xetex.js" 2>emlink.out || { echo "final link failed"; tail -60 emlink.out; exit 1; }
+  -o "$OUT/xetex.js" 2>emlink.out || { echo "final link failed"; tail -60 emlink.out; exit 1; }
 
-[ -s "$OUT/wasmtex-xetex.map" ] || { echo "XeTeX link map was not generated"; exit 1; }
-if grep -E 'libpplib|pp(doc|dict|array|stream|ref)_' "$OUT/wasmtex-xetex.map"; then
+[ -s "$OUT/xetex.map" ] || { echo "XeTeX link map was not generated"; exit 1; }
+if grep -E 'libpplib|pp(doc|dict|array|stream|ref)_' "$OUT/xetex.map"; then
   echo "ERROR: forbidden pplib archive or symbol remains in the XeTeX link map" >&2
   exit 1
 fi
-grep -F 'libxpdf.a' "$OUT/wasmtex-xetex.map" >/dev/null || {
+grep -F 'libxpdf.a' "$OUT/xetex.map" >/dev/null || {
   echo "ERROR: XeTeX link map does not contain the required Xpdf backend" >&2
   exit 1
 }
-cp "$GLUE/xetex-worker.js" "$OUT/wasmtex-xetex.worker.js"
-cp "$GLUE/kpse-resolve.cjs" "$OUT/wasmtex-kpse-resolve.js"
-cp "$GLUE/bundle-mode.js" "$OUT/wasmtex-bundle-mode.js"
-cp "$GLUE/resolver-evidence.js" "$OUT/wasmtex-xetex-resolver-evidence.js"
+cp "$GLUE/xetex-worker.js" "$OUT/xetex.worker.js"
+cp "$GLUE/kpse-resolve.cjs" "$OUT/kpse-resolve.js"
+cp "$GLUE/bundle-mode.js" "$OUT/bundle-mode.js"
+cp "$GLUE/resolver-evidence.js" "$OUT/xetex-resolver-evidence.js"
 
 echo ""
 echo "=== Output ==="
-ls -lh "$OUT"/wasmtex-xetex.* || { echo "no output produced"; exit 1; }
+ls -lh "$OUT"/xetex.* || { echo "no output produced"; exit 1; }

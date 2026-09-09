@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Build the XeLaTeX engine (wasmtex-xetex + dvipdfmx) with this project's OWN glue.
+# Build the XeLaTeX engine (xetex + dvipdfmx) with this project's OWN glue.
 #
-#   • wasmtex-xetex — built FROM TeX-Live/texlive-source (Docker, wasm-build/
+#   • xetex — built FROM TeX-Live/texlive-source (Docker, wasm-build/
 #     Dockerfile.xetex): real libkpathsea + our fontconfig shim + own worker controller.
 #     ICU data is NOT bundled — the worker fetches
 #     icudt68l.dat from the CDN at runtime (see wasm-build/icu-data-loader.c and
 #     wasm-build/build-icu-data.sh for producing/hosting that asset).
-#   • wasmtex-dvipdfm — built FROM TeX-Live/texlive-source too (same Docker image
+#   • dvipdfm — built FROM TeX-Live/texlive-source too (same Docker image
 #     as xetex), with our own controller/library + real libkpathsea.
 #     wasm-build/build-dvipdfm2.sh does the emcc build.
 #
@@ -29,11 +29,11 @@ mkdir -p "$OUT_DIR"
 OUT_ABS="$(cd "$OUT_DIR" && pwd)"
 
 # =============================================================================
-# 1) wasmtex-xetex — from texlive-source (Dockerfile.xetex: Phase 1 native +
+# 1) xetex — from texlive-source (Dockerfile.xetex: Phase 1 native +
 #    Phase 2 emcc). Build context is wasm-build/ (the Dockerfile COPYs the glue).
 # =============================================================================
 TEXLIVE_REF="$(cat "wasm-build/texlive-source-${TEXLIVE_YEAR:-2025}.ref")"
-echo "Building wasmtex-xetex from texlive-source ($TEXLIVE_REF) ..."
+echo "Building xetex from texlive-source ($TEXLIVE_REF) ..."
 docker build -f wasm-build/Dockerfile.xetex --platform linux/amd64 \
   --build-arg TEXLIVE_REF="$TEXLIVE_REF" \
   --build-arg TEXLIVE_YEAR="${TEXLIVE_YEAR:-2025}" \
@@ -58,16 +58,16 @@ docker run --rm --platform linux/amd64 --tmpfs /work \
   '
 
 docker run --rm --platform linux/amd64 -v "$OUT_ABS:/dist" wasmtex-xetex-wasm
-[ -f "$OUT_DIR/wasmtex-xetex.wasm" ] || { echo "xetex build produced no wasm"; exit 1; }
-echo "Built: $(wc -c < "$OUT_DIR/wasmtex-xetex.js") + $(wc -c < "$OUT_DIR/wasmtex-xetex.wasm") bytes"
+[ -f "$OUT_DIR/xetex.wasm" ] || { echo "xetex build produced no wasm"; exit 1; }
+echo "Built: $(wc -c < "$OUT_DIR/xetex.js") + $(wc -c < "$OUT_DIR/xetex.wasm") bytes"
 
 # =============================================================================
-# 2) wasmtex-dvipdfm — from texlive-source (XDV->PDF), in the SAME image as
+# 2) dvipdfm — from texlive-source (XDV->PDF), in the SAME image as
 #    xetex (it already has /src/texlive-source + emsdk). Own glue + real
 #    libkpathsea. wasm-build/build-dvipdfm2.sh does the emcc build
 #    (it reads its glue from /src and writes the engine to /dist).
 # =============================================================================
-echo "Building wasmtex-dvipdfm from texlive-source ..."
+echo "Building dvipdfm from texlive-source ..."
 docker run --rm --platform linux/amd64 --entrypoint bash \
   -v "$REPO_ROOT/wasm-build:/glue:ro" -v "$OUT_ABS:/dist" wasmtex-xetex-wasm -c '
     set -euo pipefail
@@ -76,11 +76,11 @@ docker run --rm --platform linux/amd64 --entrypoint bash \
        /glue/xetex-dvipdfm-library.js /src/
     bash /src/build-dvipdfm2.sh
   '
-[ -f "$OUT_DIR/wasmtex-dvipdfm.wasm" ] || { echo "dvipdfm build produced no wasm"; exit 1; }
-echo "Built: $(wc -c < "$OUT_DIR/wasmtex-dvipdfm.js") + $(wc -c < "$OUT_DIR/wasmtex-dvipdfm.wasm") bytes"
+[ -f "$OUT_DIR/dvipdfm.wasm" ] || { echo "dvipdfm build produced no wasm"; exit 1; }
+echo "Built: $(wc -c < "$OUT_DIR/dvipdfm.js") + $(wc -c < "$OUT_DIR/dvipdfm.wasm") bytes"
 
 echo ""
 echo "XeLaTeX engine (own controller and glue) in $OUT_DIR:"
-echo "  wasmtex-xetex   — from texlive-source; fetches ICU data from the CDN"
-echo "  wasmtex-dvipdfm — from texlive-source; loads pdftex.map + fonts from the CDN"
+echo "  xetex   — from texlive-source; fetches ICU data from the CDN"
+echo "  dvipdfm — from texlive-source; loads pdftex.map + fonts from the CDN"
 echo "Deploy next to the pdfTeX engine. Serve icudt68l.dat from the same place (build it with wasm-build/build-icu-data.sh)."

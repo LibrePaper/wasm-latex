@@ -21,7 +21,7 @@
 // Every resolved file is recorded with its sha256 in the evidence JSON, which
 // is what makes the format's inputs auditable without trusting a mirror.
 //
-// --engine (default pdftex) switches to wasmtex-xetex.{wasm,worker.js}. The two
+// --engine (default pdftex) switches to xetex.{wasm,worker.js}. The two
 // engines share one CDN/XHR layout (xetex-worker.js's own header says so: "shares
 // pdftex/<format>/<name> with the pdfTeX mirror"), so almost everything below is
 // engine-agnostic. Three things are genuinely different for XeTeX and are called
@@ -62,8 +62,8 @@ if (engine !== 'pdftex' && engine !== 'xetex') {
   console.error(`unsupported --engine ${engine} (pdftex or xetex)`)
   process.exit(2)
 }
-const engineWasmName = `wasmtex-${engine}.wasm`
-const engineWorkerName = `wasmtex-${engine}.worker.js`
+const engineWasmName = `${engine}.wasm`
+const engineWorkerName = `${engine}.worker.js`
 
 const distDir = path.resolve(arg('dist', 'wasm-build/dist'))
 // --texmf may be repeated. Order is search order: a name found in an earlier
@@ -76,7 +76,7 @@ const texmfDirs = process.argv
   .filter(Boolean)
   .map((d) => path.resolve(d))
 if (!texmfDirs.length && process.env.TEXMF_DIST) texmfDirs.push(path.resolve(process.env.TEXMF_DIST))
-const outPath = path.resolve(arg('out', path.join(distDir, `wasmtex-${engine}.fmt`)))
+const outPath = path.resolve(arg('out', path.join(distDir, `${engine}.fmt`)))
 const evidencePath = arg('evidence', null)
 const epoch = Number(arg('epoch', process.env.SOURCE_DATE_EPOCH ?? DEFAULT_EPOCH))
 const verbose = process.argv.includes('--verbose')
@@ -434,7 +434,7 @@ function bootEngine(workerName, wasmName) {
   }
 
   // The worker takes the engine binary from this global rather than fetching it.
-  sandbox.__wasmtexWasmBinary = new Uint8Array(fs.readFileSync(path.join(distDir, wasmName)))
+  sandbox.__librepaperEngineBinary = new Uint8Array(fs.readFileSync(path.join(distDir, wasmName)))
   vm.runInContext(
     fs.readFileSync(path.join(distDir, workerName), 'utf8'),
     ctx,
@@ -665,7 +665,7 @@ if (process.argv.includes('--smoke') || process.argv.includes('--smoke-both')) {
       // session sharing this same texmf index/XHR shim. Skippable with
       // --no-smoke-pdf for a build machine that has not built dvipdfm.
       if (!process.argv.includes('--no-smoke-pdf')) {
-        const dvipdfm = bootEngine('wasmtex-dvipdfm.worker.js', 'wasmtex-dvipdfm.wasm')
+        const dvipdfm = bootEngine('dvipdfm.worker.js', 'dvipdfm.wasm')
         await dvipdfm.waitFor((m) => m.result === 'ok' && m.cmd === undefined, 120000, 'dvipdfm to boot')
         dvipdfm.sandbox.onmessage({ data: { cmd: 'settexliveurl', url: ENDPOINT } })
         dvipdfm.sandbox.onmessage({ data: { cmd: 'writefile', url: 'main.xdv', src: xdv } })

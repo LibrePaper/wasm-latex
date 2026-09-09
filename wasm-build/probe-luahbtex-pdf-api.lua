@@ -7,7 +7,7 @@ if not root then
 end
 
 local function progress(message)
-  if os.getenv("WASMTEX_PROBE_TRACE") then
+  if os.getenv("PROBE_TRACE") then
     io.stderr:write("probe: ", message, "\n")
     io.stderr:flush()
   end
@@ -196,4 +196,4 @@ collectgarbage("collect")
 collectgarbage("collect")
 
 progress("write JSON")
-io.write("WASMTEX_PDF_API_JSON=", json(result), "\n")
+io.write("PDF_API_JSON=", json(result), "\n")

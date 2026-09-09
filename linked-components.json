@@ -4,43 +4,43 @@
   "families": {
     "pdftex": {
       "modules": [
-        "wasmtex-pdftex",
-        "wasmtex-pdftex-checkpoint"
+        "pdftex",
+        "pdftex-checkpoint"
       ],
       "combinedTerms": "GPL-2.0-only",
       "combinedTermsReason": "pdfTeX and web2c are GPL-2.0-or-later, satisfied by v2. The linked Xpdf copy offers GPL v2 or v3; v2 is elected, which fixes the whole unit at GPL-2.0-only because v2-only and v3 code cannot be combined."
     },
     "bibtex": {
       "modules": [
-        "wasmtex-bibtex"
+        "bibtex"
       ],
       "combinedTerms": "LicenseRef-BibTeX-Web2C-Notices AND LGPL-2.1-or-later",
       "combinedTermsReason": "BibTeX links no Xpdf, libpng or zlib. Its only copyleft component is kpathsea (LGPL-2.1-or-later); the BibTeX and web2c sources carry permission notices rather than the GPL."
     },
     "makeindex": {
       "modules": [
-        "wasmtex-makeindex"
+        "makeindex"
       ],
       "combinedTerms": "LicenseRef-MakeIndex-Notice AND LGPL-2.1-or-later",
       "combinedTermsReason": "makeindex links no Xpdf, libpng or zlib. Its only copyleft component is kpathsea (LGPL-2.1-or-later); texk/makeindexk itself carries the 1989 MakeIndex Distribution Notice (a source-availability permission notice, not the GPL) per texk/makeindexk/COPYING in the pinned TeX Live source."
     },
     "bibtex8": {
       "modules": [
-        "wasmtex-bibtex8"
+        "bibtex8"
       ],
       "combinedTerms": "GPL-2.0-or-later",
       "combinedTermsReason": "bibtex8 (texk/bibtex-x) source headers read \"published by the Free Software Foundation; either version 1, or (at your option) any later version\" (GPL-1.0-or-later); its only other copyleft component is kpathsea (LGPL-2.1-or-later). Both permit later versions, so the combined unit is GPL-2.0-or-later, the earliest version both licenses share by their own \"or later\" terms."
     },
     "xetex": {
       "modules": [
-        "wasmtex-xetex"
+        "xetex"
       ],
       "combinedTerms": "GPL-2.0-only",
       "combinedTermsReason": "Matches THIRD_PARTY_NOTICES.md's existing XeTeX entry: XeTeX permits GPL-2.0-or-later, but the linked Xpdf 4.06 copy is selected under GPL-2.0-only and the emscripten-ported FreeType this build links is dual FTL/GPL and also selected under GPL-2.0-only for this combined release (docs/THIRD_PARTY_NOTICES.md, \"Emscripten and ports\"). A v2-only component fixes the whole combined unit at GPL-2.0-only; the LGPL kpathsea/Graphite2/TECkit, MIT WTPDF adapter, ICU, HarfBuzz, libpng and zlib notices are retained but do not raise the combined floor."
     },
     "dvipdfm": {
       "modules": [
-        "wasmtex-dvipdfm"
+        "dvipdfm"
       ],
       "combinedTerms": "GPL-2.0-or-later",
       "combinedTermsReason": "dvipdfm-x (texk/dvipdfm-x) is GPL-2.0-or-later; it links kpathsea (LGPL-2.1-or-later), libpng and zlib (permissive) and no Xpdf, so the combined unit is GPL-2.0-or-later."

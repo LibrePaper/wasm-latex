@@ -7,7 +7,7 @@
 # final link may fail — we relink with our own glue), then emcc-links the makeindex
 # objects with the entry shim + kpse hook + libkpathsea.
 #
-#   Output (/dist): wasmtex-makeindex.worker.js / .js / .wasm
+#   Output (/dist): makeindex.worker.js / .js / .wasm
 #
 # STATUS: scaffold — first build attempt; expect link-stage iteration (object glob,
 # kpathsea discovery) like the XeTeX/dvipdfmx ports had.
@@ -93,22 +93,22 @@ emcc -O2 -g0 \
   -I"$WB/texk/kpathsea" -I"$SRC/texk/kpathsea" -I"$SRC/texk" -I"$WB/texk" \
   kpse-hook.o makeindex-entry.o $MISRC \
   -Wl,--wrap=kpse_find_file \
-  -Wl,-Map="$OUT/wasmtex-makeindex.map" \
+  -Wl,-Map="$OUT/makeindex.map" \
   "$KPSE" \
   -sALLOW_MEMORY_GROWTH=1 -sFORCE_FILESYSTEM=1 -sEXIT_RUNTIME=0 -sINVOKE_RUN=0 -sMODULARIZE=0 \
   -sEXPORTED_FUNCTIONS='["_compileMakeindex","_setMainEntry","_main","_malloc","_free"]' \
   -sEXPORTED_RUNTIME_METHODS='["cwrap","FS","UTF8ToString","stringToUTF8","lengthBytesUTF8","intArrayFromString"]' \
   -sINITIAL_MEMORY=67108864 \
   --js-library "$GLUE/library.js" \
-  -o "$OUT/wasmtex-makeindex.js" 2>emlink.out || { echo "final link failed"; tail -60 emlink.out; exit 1; }
-[ -s "$OUT/wasmtex-makeindex.map" ] || { echo "makeindex link map was not generated"; exit 1; }
-if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' "$OUT/wasmtex-makeindex.map"; then
+  -o "$OUT/makeindex.js" 2>emlink.out || { echo "final link failed"; tail -60 emlink.out; exit 1; }
+[ -s "$OUT/makeindex.map" ] || { echo "makeindex link map was not generated"; exit 1; }
+if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' "$OUT/makeindex.map"; then
   echo "ERROR: forbidden pplib archive or symbol remains in the makeindex link map" >&2
   exit 1
 fi
-cp "$GLUE/makeindex-worker.js" "$OUT/wasmtex-makeindex.worker.js"
-cp "$GLUE/kpse-resolve.cjs" "$OUT/wasmtex-kpse-resolve.js"
-cp "$GLUE/bundle-mode.js" "$OUT/wasmtex-bundle-mode.js"
+cp "$GLUE/makeindex-worker.js" "$OUT/makeindex.worker.js"
+cp "$GLUE/kpse-resolve.cjs" "$OUT/kpse-resolve.js"
+cp "$GLUE/bundle-mode.js" "$OUT/bundle-mode.js"
 
 echo "=== Output ==="
-ls -lh "$OUT"/wasmtex-makeindex.* || { echo "no output"; exit 1; }
+ls -lh "$OUT"/makeindex.* || { echo "no output"; exit 1; }

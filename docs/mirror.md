@@ -18,20 +18,20 @@ files").
 ```
 mirror/
   manifest.json
-  wasmtex/<engineRelease>/                 engine files from a staged release
-    wasmtex-pdftex.worker.js wasmtex-pdftex.js wasmtex-pdftex.wasm
-    wasmtex-pdftex.fmt wasmtex-pdftex-resolver-evidence.js ...
-    wasmtex-kpse-resolve.js wasmtex-bundle-mode.js   -- imported by every worker
-    wasmtex-bibtex.* wasmtex-bibtex8.* wasmtex-makeindex.*
-    wasmtex-xetex.* wasmtex-xetex.fmt.gz icudt68l.dat.gz wasmtex-dvipdfm.*
+  engines/<engineRelease>/                 engine files from a staged release
+    pdftex.worker.js pdftex.js pdftex.wasm
+    pdftex.fmt pdftex-resolver-evidence.js ...
+    kpse-resolve.js bundle-mode.js   -- imported by every worker
+    bibtex.* bibtex8.* makeindex.*
+    xetex.* xetex.fmt.gz icudt68l.dat.gz dvipdfm.*
     LICENSE THIRD_PARTY_NOTICES.md SOURCE.md SOURCE-RECEIPT.json RELINK.md
     LICENSES/  LINK-INVENTORY.*.json  FORMAT-RECEIPT.*.json  BUNDLE-RECEIPT.*.json
-  wasmtex/<engineRelease>/bundles/bundles.json     package index
-  wasmtex/<engineRelease>/bundles/b/<sha256>/<slug>.tar   one tar per package directory
+  engines/<engineRelease>/bundles/bundles.json     package index
+  engines/<engineRelease>/bundles/b/<sha256>/<slug>.tar   one tar per package directory
   biber-vm/<vmRelease>/...                          the Biber VM image, LibrePaper's own
 ```
 
-`<engineRelease>` is `librepaper-<sha256 of the staged MANIFEST.json>`.
+`<engineRelease>` is the bare `<sha256 of the staged MANIFEST.json>`.
 Directories are immutable; a new digest is a new directory, and every
 release this repository has ever imported stays in `manifest.releases` --
 only `default_release` moves. `biber-vm/` is not written by this repository;
@@ -44,37 +44,37 @@ the VM is built and owned on that side.
 {
   "format": 1,
   "version": 1,
-  "default_release": "librepaper-<sha256>",
+  "default_release": "<sha256>",
   "releases": {
-    "librepaper-<sha256>": {
-      "id": "librepaper-<sha256>",
+    "<sha256>": {
+      "id": "<sha256>",
       "digest": "<sha256 hex of the canonical JSON of this entry without `digest`>",
-      "engine_release": "librepaper-<sha256>",
-      "base": "wasmtex/librepaper-<sha256>/",
+      "engine_release": "<sha256>",
+      "base": "engines/<sha256>/",
       "engines": {
-        "pdftex":  { "worker": "wasmtex-pdftex.worker.js", "format": "wasmtex-pdftex.fmt", "files": ["wasmtex-pdftex.worker.js", "wasmtex-pdftex.js", "wasmtex-pdftex.wasm", "wasmtex-pdftex-resolver-evidence.js", "wasmtex-kpse-resolve.js", "wasmtex-bundle-mode.js", "wasmtex-pdftex.fmt"] },
-        "xetex":   { "worker": "wasmtex-xetex.worker.js",  "format": "wasmtex-xetex.fmt.gz", "icu": "icudt68l.dat.gz", "files": [...] },
-        "dvipdfm": { "worker": "wasmtex-dvipdfm.worker.js", "files": [...] },
-        "bibtex":  { "worker": "wasmtex-bibtex.worker.js", "files": [...] },
-        "bibtex8": { "worker": "wasmtex-bibtex8.worker.js", "files": [...] },
-        "makeindex": { "worker": "wasmtex-makeindex.worker.js", "files": [...] }
+        "pdftex":  { "worker": "pdftex.worker.js", "format": "pdftex.fmt", "files": ["pdftex.worker.js", "pdftex.js", "pdftex.wasm", "pdftex-resolver-evidence.js", "kpse-resolve.js", "bundle-mode.js", "pdftex.fmt"] },
+        "xetex":   { "worker": "xetex.worker.js",  "format": "xetex.fmt.gz", "icu": "icudt68l.dat.gz", "files": [...] },
+        "dvipdfm": { "worker": "dvipdfm.worker.js", "files": [...] },
+        "bibtex":  { "worker": "bibtex.worker.js", "files": [...] },
+        "bibtex8": { "worker": "bibtex8.worker.js", "files": [...] },
+        "makeindex": { "worker": "makeindex.worker.js", "files": [...] }
       },
-      "files": { "<name>": { "url": "wasmtex/librepaper-<sha256>/<name>", "sha256": "...", "size": 123 } },
+      "files": { "<name>": { "url": "engines/<sha256>/<name>", "sha256": "...", "size": 123 } },
       "bibliography": {
         "bibtex": "0.99e",
         "biblatex": "3.22",
         "control_file": "3.11",
         "biber": { "compatible": ["2.21"], "incompatible_hint": "..." }
       },
-      "bundles": { "index": "wasmtex/librepaper-<sha256>/bundles/bundles.json", "sha256": "...", "snapshot": "texlive-20260301-texmf", "count": 5501, "bytes": 3492000000 },
+      "bundles": { "index": "engines/<sha256>/bundles/bundles.json", "sha256": "...", "snapshot": "texlive-20260301-texmf", "count": 5501, "bytes": 3492000000 },
       "vm": null,
       "source": {
         "corresponding_source": { "url": "https://...", "sha256": "..." },
-        "manifest": { "url": "wasmtex/librepaper-<sha256>/MANIFEST.json", "sha256": "...", "size": 0 },
+        "manifest": { "url": "engines/<sha256>/MANIFEST.json", "sha256": "...", "size": 0 },
         "build_receipts": ["FORMAT-RECEIPT.pdftex-2026.json", "..."],
         "reproduced": false
       },
-      "licences": { "pdftex": "GPL-2.0-only", "xetex": "GPL-2.0-only AND LicenseRef-XeTeX", "...": "...", "notices": "wasmtex/librepaper-<sha256>/" },
+      "licences": { "pdftex": "GPL-2.0-only", "xetex": "GPL-2.0-only AND LicenseRef-XeTeX", "...": "...", "notices": "engines/<sha256>/" },
       "sizes": { "pdftex": 5807474, "xetex": 0, "...": 0 }
     }
   }
@@ -119,8 +119,8 @@ directly from the deployed Cloudflare Worker):
 
 | Request | Answer |
 | --- | --- |
-| `wasmtex/<engineRelease>/bundles/bundles.json` | `Cache-Control: no-cache`; the one bundle file named without a digest. |
-| `wasmtex/<engineRelease>/<file>` | Static, `Cache-Control: public, max-age=31536000, immutable`. |
+| `engines/<engineRelease>/bundles/bundles.json` | `Cache-Control: no-cache`; the one bundle file named without a digest. |
+| `engines/<engineRelease>/<file>` | Static, `Cache-Control: public, max-age=31536000, immutable`. |
 | `manifest.json` | `Cache-Control: no-store`. |
 
 `make push`'s `mirror/_headers` (`Makefile`) implements exactly this table.
@@ -145,7 +145,7 @@ used to.
 `tools/check-mirror.mjs` verifies the result, or a deployed URL:
 
     node tools/check-mirror.mjs mirror
-    node tools/check-mirror.mjs https://librepaper-latex.<account>.workers.dev/
+    node tools/check-mirror.mjs https://latex.librepaper.workers.dev/
 
 A directory argument gets the full check: the manifest parses, the default
 release has a complete pdfTeX engine, every engine file is on disk with a

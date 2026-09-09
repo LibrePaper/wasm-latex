@@ -38,14 +38,14 @@ the TeX Live tree from the image, so point it at yours:
       -t relinked-pdftex repo/wasm-build/
     docker run --rm --platform linux/amd64 -v "$PWD/out:/dist" relinked-pdftex
 
-`out/` then holds `wasmtex-pdftex.wasm`, its JavaScript, and the worker,
+`out/` then holds `pdftex.wasm`, its JavaScript, and the worker,
 linked against your kpathsea. `wasm-libs` in the Makefile configures and builds
 `texk/kpathsea` explicitly, so a change there is picked up without touching
 anything else.
 
 To confirm your library is the one in the artifact, compare the link map:
 
-    grep libkpathsea out/wasmtex-pdftex.map
+    grep libkpathsea out/pdftex.map
 
 and the inventory the build produces:
 

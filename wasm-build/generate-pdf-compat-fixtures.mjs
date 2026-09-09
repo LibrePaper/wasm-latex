@@ -120,7 +120,7 @@ const classic = classicPdf(
     '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
     '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 72 144] /Resources << >> /Contents 4 0 R >>',
     stream('', Buffer.from('0.2 0.6 0.9 rg 0 0 72 144 re f\n', 'ascii')),
-    '<< /Producer (WasmTex compatibility fixture) >>',
+    '<< /Producer (PDF backend compatibility fixture) >>',
     stream('/Filter /FlateDecode', compressedProgram),
     '<< /Indirect true /Value 42 >>',
   ],

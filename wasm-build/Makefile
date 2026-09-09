@@ -507,21 +507,21 @@ wasm-compile:
 	@echo "========================================"
 	@echo ""
 	@echo "--- Compiling pdfTeX WASM ---"
-	$(call PDFTEX_LINK,,wasmtex-pdftex)
-	@test -s $(DIST)/wasmtex-pdftex.map || { echo "pdfTeX link map was not generated" >&2; exit 1; }
-	@if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' $(DIST)/wasmtex-pdftex.map; then \
+	$(call PDFTEX_LINK,,pdftex)
+	@test -s $(DIST)/pdftex.map || { echo "pdfTeX link map was not generated" >&2; exit 1; }
+	@if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' $(DIST)/pdftex.map; then \
 		echo "ERROR: forbidden pplib archive or symbol remains in the pdfTeX link map" >&2; exit 1; \
 	fi
-	cp $(PDFTEX_WORKER) $(DIST)/wasmtex-pdftex.worker.js
-	cp $(KPSE_RESOLVE) $(DIST)/wasmtex-kpse-resolve.js
-	cp $(BUNDLE_MODE) $(DIST)/wasmtex-bundle-mode.js
-	cp /src/resolver-evidence.js $(DIST)/wasmtex-pdftex-resolver-evidence.js
+	cp $(PDFTEX_WORKER) $(DIST)/pdftex.worker.js
+	cp $(KPSE_RESOLVE) $(DIST)/kpse-resolve.js
+	cp $(BUNDLE_MODE) $(DIST)/bundle-mode.js
+	cp /src/resolver-evidence.js $(DIST)/pdftex-resolver-evidence.js
 	@echo ""
 	@echo "--- Compiling pdfTeX WASM, checkpoint (Asyncify) variant ---"
-	$(call PDFTEX_LINK,$(PDFTEX_CHECKPOINT_FLAGS),wasmtex-pdftex-checkpoint)
-	@test -s $(DIST)/wasmtex-pdftex-checkpoint.wasm || { echo "checkpoint pdfTeX engine was not generated" >&2; exit 1; }
-	@test -s $(DIST)/wasmtex-pdftex-checkpoint.map || { echo "checkpoint pdfTeX link map was not generated" >&2; exit 1; }
-	@if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' $(DIST)/wasmtex-pdftex-checkpoint.map; then \
+	$(call PDFTEX_LINK,$(PDFTEX_CHECKPOINT_FLAGS),pdftex-checkpoint)
+	@test -s $(DIST)/pdftex-checkpoint.wasm || { echo "checkpoint pdfTeX engine was not generated" >&2; exit 1; }
+	@test -s $(DIST)/pdftex-checkpoint.map || { echo "checkpoint pdfTeX link map was not generated" >&2; exit 1; }
+	@if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' $(DIST)/pdftex-checkpoint.map; then \
 		echo "ERROR: forbidden pplib archive or symbol remains in the checkpoint pdfTeX link map" >&2; exit 1; \
 	fi
 	@echo ""
@@ -537,9 +537,9 @@ dist:
 	@echo "========================================"
 	@echo ""
 	# The emcc step already outputs to /dist. Verify files are there.
-	@if [ -f "$(DIST)/wasmtex-pdftex.worker.js" ] && [ -f "$(DIST)/wasmtex-pdftex.js" ] && [ -f "$(DIST)/wasmtex-pdftex.wasm" ]; then \
+	@if [ -f "$(DIST)/pdftex.worker.js" ] && [ -f "$(DIST)/pdftex.js" ] && [ -f "$(DIST)/pdftex.wasm" ]; then \
 		echo "Build artifacts:"; \
-		ls -lh $(DIST)/wasmtex-pdftex.*; \
+		ls -lh $(DIST)/pdftex.*; \
 		echo ""; \
 		echo "SUCCESS: pdfTeX WASM with SyncTeX built successfully."; \
 		echo ""; \
@@ -583,7 +583,7 @@ BIBTEX_EMCC_FLAGS = \
 	-sWASM=1 \
 	--js-library $(JSLIB) \
 	-Wl,--wrap=kpse_find_file \
-	-Wl,-Map=$(DIST)/wasmtex-bibtex.map
+	-Wl,-Map=$(DIST)/bibtex.map
 
 bibtex-wasm-prep:
 	@echo "========================================"
@@ -621,14 +621,14 @@ bibtex-wasm-compile: bibtex-wasm-prep
 		$(BIBTEX_ENTRY) \
 		$(KPSE_HOOK) \
 		$$(find $(BUILD_WASM) -name 'libkpathsea.a' | head -1) \
-		-o $(DIST)/wasmtex-bibtex.js
-	@test -s $(DIST)/wasmtex-bibtex.map || { echo "BibTeX link map was not generated" >&2; exit 1; }
-	@if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' $(DIST)/wasmtex-bibtex.map; then \
+		-o $(DIST)/bibtex.js
+	@test -s $(DIST)/bibtex.map || { echo "BibTeX link map was not generated" >&2; exit 1; }
+	@if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' $(DIST)/bibtex.map; then \
 		echo "ERROR: forbidden pplib archive or symbol remains in the BibTeX link map" >&2; exit 1; \
 	fi
-	cp $(BIBTEX_WORKER) $(DIST)/wasmtex-bibtex.worker.js
-	cp $(KPSE_RESOLVE) $(DIST)/wasmtex-kpse-resolve.js
-	cp $(BUNDLE_MODE) $(DIST)/wasmtex-bundle-mode.js
+	cp $(BIBTEX_WORKER) $(DIST)/bibtex.worker.js
+	cp $(KPSE_RESOLVE) $(DIST)/kpse-resolve.js
+	cp $(BUNDLE_MODE) $(DIST)/bundle-mode.js
 	@echo "BibTeX WASM compilation complete."
 
 # =============================================================================

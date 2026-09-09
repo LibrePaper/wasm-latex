@@ -5,7 +5,7 @@
   "combinedTermsReason": "makeindex links no Xpdf, libpng or zlib. Its only copyleft component is kpathsea (LGPL-2.1-or-later); texk/makeindexk itself carries the 1989 MakeIndex Distribution Notice (a source-availability permission notice, not the GPL) per texk/makeindexk/COPYING in the pinned TeX Live source.",
   "modules": [
     {
-      "name": "wasmtex-makeindex",
+      "name": "makeindex",
       "wasm": {
         "bytes": 128682,
         "sha256": "a0e199a8ed19c98830be277c2aed5c5a283521c8b96e7f3689107a36f8bb71e7"

@@ -3,7 +3,7 @@
   "engine": "pdftex",
   "sourceDateEpoch": 1772323200,
   "format": {
-    "name": "wasmtex-pdftex.fmt",
+    "name": "pdftex.fmt",
     "bytes": 3633351,
     "sha256": "f63bc17a1d809184ebfa880a1a78dd81f5351a8934e8618905ff726d0054c962"
   },

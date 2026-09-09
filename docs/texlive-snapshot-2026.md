@@ -56,7 +56,7 @@ Building it with the `$T` and `$V` trees above as the two `--texmf` roots gave:
 
 | Item | Value |
 |---|---|
-| `wasmtex-pdftex.fmt` | 3 633 351 bytes |
+| `pdftex.fmt` | 3 633 351 bytes |
 | sha256 | `f63bc17a1d809184ebfa880a1a78dd81f5351a8934e8618905ff726d0054c962` |
 | Inputs | 238 files, each hashed in the receipt |
 | Smoke | compiled a document, 29 911 byte PDF |

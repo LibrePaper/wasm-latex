@@ -26,8 +26,8 @@ is read out of the link maps by `tools/link-inventory.mjs` and recorded in
 
 | Family | Combined terms |
 |---|---|
-| pdfTeX (`wasmtex-pdftex`, `wasmtex-pdftex-checkpoint`) | `GPL-2.0-only` |
-| BibTeX (`wasmtex-bibtex`) | `LicenseRef-BibTeX-Web2C-Notices AND LGPL-2.1-or-later` |
+| pdfTeX (`pdftex`, `pdftex-checkpoint`) | `GPL-2.0-only` |
+| BibTeX (`bibtex`) | `LicenseRef-BibTeX-Web2C-Notices AND LGPL-2.1-or-later` |
 
 **Why pdfTeX is GPL-2.0-only.** pdfTeX and web2c are GPL-2.0-or-later, which v2
 satisfies. The linked Xpdf 4.06 is offered under "GPL v2 or v3"; v2 is elected,

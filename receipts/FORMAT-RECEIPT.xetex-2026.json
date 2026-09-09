@@ -7,7 +7,7 @@
   ],
   "sourceDateEpoch": 1772323200,
   "format": {
-    "name": "wasmtex-xetex.fmt",
+    "name": "xetex.fmt",
     "bytes": 5945900,
     "sha256": "8206489312602342221ba14028ed73c6f88e69ed1655b9851a450b3b8e790a09"
   },
