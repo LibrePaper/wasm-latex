@@ -43,14 +43,14 @@ tree:
   fonts. The list is `DEFAULT_CORE` in the rules module, measured (not guessed)
   from four representative documents resolving through the format build and
   the per-file harness - see the comment above `DEFAULT_CORE` for the method
-  and what got cut for size. Three bundles nearly every document still needs
-  did not make the cut because each alone is bigger than the whole core
-  budget: `tex/context/base` (43 MB, for the one file `supp-pdf.mkii` that
-  `graphics-def/pdftex.def` loads at `\begin{document}`), `fonts/pdftex/updmap`
-  (16 MB, pdftex.map plus every font family's encoding files), and
-  `fonts/public/amsfonts` (4.4 MB, needed by `amssymb`). They ship as their own
-  bundles instead; a plain article typically fetches core once, then those
-  three, then whatever its own packages need.
+  and what got cut for size. The measurement also found two files that
+  dragged whole packages in: `supp-pdf.mkii`, which `pdftex.def` loads at
+  `\begin{document}` and which sat in 47 MB of ConTeXt, and `pdftex.map`,
+  which sat beside two 5.5 MB variants nothing reads. `FILE_BUNDLE_OVERRIDES`
+  in the rules module names those files: the `supp-*.mkii` set is its own
+  half-megabyte bundle and part of core, and `pdftex.map` is its own 5.5 MB
+  bundle. `fonts/public/amsfonts` (4.6 MB, for `amssymb`) stays separate. A
+  plain article fetches core, the map, amsfonts, then its own packages.
 - A bundle over 24 MB is split into `<name>.part1`, `<name>.part2`, ... so that
   every file stays under the 25 MB static-asset limit. The resolver sees parts
   as ordinary bundles.
@@ -67,10 +67,10 @@ mistake at runtime.
 
 | | |
 |---|---|
-| Bundles | 5,478 (73 of them split parts) |
+| Bundles | 5,479 (73 of them split parts) |
 | Files | 159,000 |
 | Bytes | 3.49 GB, of which fonts 2.77 GB and macros 645 MB |
-| `core` | 17.0 MB in one part, 2,165 files (measured 2026-09-09; was 32 MB in two parts under the spec's guessed list) |
+| `core` | 18.3 MB in one part, 2,185 files (measured 2026-09-09; was 32 MB in two parts under the spec's guessed list) |
 | Index | `bundles.json`, 159,000 file entries |
 
 ## The index

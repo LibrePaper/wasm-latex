@@ -193,11 +193,10 @@ test('build-bundles: end-to-end determinism and grouping', async () => {
   }
 
   // The map file from texmf-var still overrides dist's own stale copy, even
-  // though fonts/pdftex/updmap (measured 2026-09-09, see the comment above
-  // DEFAULT_CORE) is no longer folded into core - it is its own bundle now,
-  // too large to fit the 20 MB core budget alongside everything else a
-  // plain article needs.
-  assert.equal(index1.files['fonts/map/pdftex/updmap/pdftex.map'], 'fonts/pdftex/updmap')
+  // though pdftex.map is not in core: FILE_BUNDLE_OVERRIDES gives it a bundle
+  // of its own, 5.5 MB, apart from its two variants that no document reads
+  // (measured 2026-09-09, see the comments in bundle-rules.mjs).
+  assert.equal(index1.files['fonts/map/pdftex/updmap/pdftex.map'], 'fonts/pdftex/pdftex-map')
   // tex/latex/base and amsmath are still in DEFAULT_CORE and merge into core.
   assert.equal(index1.files['tex/latex/base/latex.ltx'], 'core')
   assert.equal(index1.files['tex/latex/amsmath/amsmath.sty'], 'core')

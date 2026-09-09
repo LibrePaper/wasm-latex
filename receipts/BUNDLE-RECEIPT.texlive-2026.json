@@ -9,6 +9,7 @@
     "tex/latex-dev"
   ],
   "core": [
+    "tex/context/supp-mkii",
     "fonts/jknappen/ec",
     "fonts/public/cm",
     "fonts/public/latex-fonts",
@@ -62,8 +63,8 @@
     "tex/latex/url"
   ],
   "index": {
-    "bytes": 14444297,
-    "sha256": "a2b6bad5d939c21c9e9ca3b3f98031dd38306ad23f1588c2f7c35dbe520236b9"
+    "bytes": 14444216,
+    "sha256": "9515e99f994e12e7acad4f2e7be03b9fb767bd56cf6f8944c338a933000ce30d"
   },
   "bundles": [
     {
@@ -1412,10 +1413,10 @@
     },
     {
       "name": "core",
-      "url": "b/55a715bc6bd67eed7966d032d215c2245305d93d5fd8f55659b312a2b2260b92/core.tar",
-      "size": 17846272,
-      "sha256": "55a715bc6bd67eed7966d032d215c2245305d93d5fd8f55659b312a2b2260b92",
-      "files": 2165
+      "url": "b/db6a9f62a51d4ecbd6af3c0ca4702f12acb28a5b3bd637f3e6907405fa7aa09b/core.tar",
+      "size": 18332672,
+      "sha256": "db6a9f62a51d4ecbd6af3c0ca4702f12acb28a5b3bd637f3e6907405fa7aa09b",
+      "files": 2185
     },
     {
       "name": "dvipdfmx/dvipdfmx-unsafe.cfg",
@@ -4813,11 +4814,18 @@
       "files": 29
     },
     {
+      "name": "fonts/pdftex/pdftex-map",
+      "url": "b/2ae9887180971a2bf840d665c45a87bc19c497dc7a2db5d008167004b2d6a300/fonts-pdftex-pdftex-map.tar",
+      "size": 5543424,
+      "sha256": "2ae9887180971a2bf840d665c45a87bc19c497dc7a2db5d008167004b2d6a300",
+      "files": 1
+    },
+    {
       "name": "fonts/pdftex/updmap",
-      "url": "b/b2806d9cdc9467392326d1bfb9f471cf799db7ce0c3c4cc55eaf92066627843c/fonts-pdftex-updmap.tar",
-      "size": 16626176,
-      "sha256": "b2806d9cdc9467392326d1bfb9f471cf799db7ce0c3c4cc55eaf92066627843c",
-      "files": 3
+      "url": "b/8db73dedf00c5b202883e771fdca8a1265c97859358d0c085bf621d63cc15abe/fonts-pdftex-updmap.tar",
+      "size": 11083776,
+      "sha256": "8db73dedf00c5b202883e771fdca8a1265c97859358d0c085bf621d63cc15abe",
+      "files": 2
     },
     {
       "name": "fonts/pdftex/vntex",
@@ -9168,17 +9176,17 @@
     },
     {
       "name": "tex/context/base.part1",
-      "url": "b/d57fc9eceaf62b5492665963df4f1b721f4142cabc1d116838818c83c7f2971f/tex-context-base.part1.tar",
-      "size": 26036224,
-      "sha256": "d57fc9eceaf62b5492665963df4f1b721f4142cabc1d116838818c83c7f2971f",
-      "files": 1137
+      "url": "b/db8975a4f4094ab7084a67d9f28e1774fe3a3cd235127d0cb7ce2813f2ac8a53/tex-context-base.part1.tar",
+      "size": 26033664,
+      "sha256": "db8975a4f4094ab7084a67d9f28e1774fe3a3cd235127d0cb7ce2813f2ac8a53",
+      "files": 1171
     },
     {
       "name": "tex/context/base.part2",
-      "url": "b/8f762b78e413ecbf8be5926fde2e2770fe6e027a2a8fdc3faf357385ee0b7d42/tex-context-base.part2.tar",
-      "size": 20735488,
-      "sha256": "8f762b78e413ecbf8be5926fde2e2770fe6e027a2a8fdc3faf357385ee0b7d42",
-      "files": 1223
+      "url": "b/310cd52681bfccc375e67f94016b4becccfeb368745ac920770454134713873b/tex-context-base.part2.tar",
+      "size": 20251648,
+      "sha256": "310cd52681bfccc375e67f94016b4becccfeb368745ac920770454134713873b",
+      "files": 1169
     },
     {
       "name": "tex/context/bib",
@@ -38414,8 +38422,8 @@
     }
   ],
   "totals": {
-    "bundles": 5478,
+    "bundles": 5479,
     "files": 159000,
-    "bytes": 3491558912
+    "bytes": 3491559936
   }
 }

@@ -327,13 +327,14 @@ cache is wrong.
 - The `core` list is now measured, not guessed (`DEFAULT_CORE` in
   `tools/bundle-rules.mjs`, measured 2026-09-09 against four representative
   documents resolved through `tools/build-format.mjs --smoke-doc
-  --smoke-evidence`): 17.0 MB in one part, 2,165 files. Three bundles nearly
-  every pdfLaTeX document still needs did not fit the 20 MB budget on their
-  own - `tex/context/base` (43 MB, for the one file `supp-pdf.mkii` that
-  `graphics-def/pdftex.def` loads unconditionally at `\begin{document}`),
-  `fonts/pdftex/updmap` (16 MB), and `fonts/public/amsfonts` (4.4 MB) - so a
-  plain article's cold compile still makes more than the "1 to 3" requests
-  below; a finer split of those packages (not done here) is the real fix.
+  --smoke-evidence`): 18.3 MB in one part, 2,185 files. The measurement found
+  two files that dragged whole packages in, `supp-pdf.mkii` (47 MB of
+  ConTeXt, loaded by `pdftex.def` at `\begin{document}`) and `pdftex.map`
+  (beside two 5.5 MB variants nothing reads); `FILE_BUNDLE_OVERRIDES` in
+  `tools/bundle-rules.mjs` names them, the first into core and the second as
+  a 5.5 MB bundle of its own. `fonts/public/amsfonts` (4.6 MB) stays separate,
+  so a cold plain article makes about five requests after core, against the
+  "1 to 3" below; the bytes are what dropped, from roughly 80 MB to 11 MB.
 - OpenType and TrueType fonts are bundled now, by the same rule as Type 1.
 - Also excluded, because no browser engine reads them: Metafont sources, PK
   bitmaps, AFM metrics, Type 3 fonts, non-Lua scripts, and the trees of tools
@@ -344,17 +345,21 @@ cache is wrong.
 
 - The source archive's published location.
 
-## Implementation status, 2026-09-09
+## Implementation status, updated 2026-09-09 evening
 
 Done in this repository:
 
 - `tools/bundle-rules.mjs`, `tools/build-bundles.mjs`, their test, and the
-  2026 build: 5,503 bundles, 159,000 files, receipt in
+  2026 build: 5,479 bundles, 159,000 files, receipt in
   `receipts/BUNDLE-RECEIPT.texlive-2026.json`.
 - `wasm-build/kpse-resolve.cjs` holds the one search order, the name index,
-  ranking, a synchronous SHA-256 and a tar reader; `pdftex-worker.js` has
-  bundle mode, `loadbundleindex`, `preloadbundle`, Cache Storage preload and
-  write-back, and the failure evidence. Legacy per-file mode is unchanged.
+  ranking, a synchronous SHA-256 and a tar reader; `wasm-build/bundle-mode.js`
+  holds bundle mode once, and every worker (pdfTeX, XeTeX, LuaTeX, dvipdfm,
+  BibTeX, BibTeX8, makeindex) imports it, answers `loadbundleindex` and
+  `preloadbundle`, and consults the index before any network. The Cache
+  Storage preload takes an optional list of bundle names and reports what it
+  skipped; a cached tar whose digest no longer matches is deleted. Legacy
+  per-file mode is unchanged.
 - `tools/build-format.mjs --bundles --expect-inputs`: the bundle-built format
   resolves the same 238 inputs as the per-file build, with zero per-file
   requests in the smoke compile.
@@ -364,9 +369,15 @@ Done in this repository:
   the native tools' output. A missing placeholder file made makeindex exit
   before reading its input; fixed in `makeindex-worker.js`.
 - XeTeX built from source with the fontconfig shim, plus dvipdfm and the
-  ICU data file, all link-inventoried. XeTeX boots; no document has been
-  compiled with it, it has no format file yet, and its worker still resolves
-  one file at a time.
+  ICU data file, all link-inventoried. `tools/build-format.mjs --engine xetex`
+  dumps its format (receipt in `receipts/FORMAT-RECEIPT.xetex-2026.json`)
+  and smokes a fontspec document by font name and by file name through
+  dvipdfm to a PDF with Latin Modern embedded. SyncTeX is passed and returned.
+  Both workers lacked `.tfm` in their extension table, which failed every
+  document on the preloaded Computer Modern metrics; fixed.
+- A root `Makefile` names each release step and `tools/release.sh` publishes
+  the corresponding-source archive to a GitHub Release and annotates it with
+  the staged manifest hash.
 - `docs/bundles.md` and `docs/what-works-in-the-browser.md`.
 
 Done in LibrePaper:
@@ -380,18 +391,18 @@ Done in LibrePaper:
 
 Not done:
 
-- A XeTeX format, a XeTeX document compile, SyncTeX in the XeTeX build, and
-  OpenType font lookup by name through the bundles.
-- LuaTeX's timeout, dvipdfm and the other workers' resolvers in bundle mode.
+- OpenType font lookup by name in the browser: the harness generates
+  `xetexfontlist.txt` with `otfinfo` at build time; the release should ship
+  that list as an artifact and the XeTeX worker should read it, which is not
+  wired. LibrePaper also still sends the bundle index to pdfTeX only, and does
+  not hand XeTeX its ICU data through `loadicudata`.
+- LuaTeX's timeout; its engine is still unbuilt.
 - The local tier: platform confinement, the shell-escape policy, stored
   renderings, and doctor output for agents. All of it is Rust in LibrePaper
   and none of it was touched.
 - Biber VM warm-up on biblatex load.
-- Preloading `core` at page load through `preloadbundle`; the controller
-  sends only the index today, so the first compile fetches `core`.
-- The Cache Storage preload unpacks every cached bundle at start-up. That is
-  the only design compatible with a synchronous resolver, and it will grow
-  memory for authors who have used many font packages; scoping it to the
-  bundles a project has used is the fix.
+- Preloading `core` at page load through `preloadbundle`, and passing the
+  `preload` list from what a project used last time; the controller sends
+  only the bare index today.
 - Publishing the corresponding source and importing a release into
   LibrePaper's shipped mirror.

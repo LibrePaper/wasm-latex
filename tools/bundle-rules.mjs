@@ -32,7 +32,21 @@ const EXCLUDED_TOP = new Set([
 // Returns the bundle name for a texmf-relative path (forward-slash separated,
 // no leading slash), or null if the path is never bundled (documentation,
 // source, package metadata, and the ls-R database kpathsea rebuilds itself).
+// Files that would otherwise drag a whole package in for one member. Measured
+// on 2026-09-09: every pdfLaTeX document loads supp-pdf.mkii (pdftex.def does
+// it at \begin{document}), which sat in tex/context/base, 47 MB in two parts;
+// and every document that embeds a font reads pdftex.map, which sat beside its
+// two 5.5 MB variants. These are the "babel-shaped" cases SPEC-latex.md warned
+// about, fixed by naming the files rather than by splitting packages in general.
+const FILE_BUNDLE_OVERRIDES = [
+  [/^tex\/context\/base\/mkii\/supp-[^/]+\.mkii$/, 'tex/context/supp-mkii'],
+  [/^fonts\/map\/pdftex\/updmap\/pdftex\.map$/, 'fonts/pdftex/pdftex-map'],
+]
+
 export function bundleFor(relPath) {
+  for (const [pattern, bundle] of FILE_BUNDLE_OVERRIDES) {
+    if (pattern.test(relPath)) return bundle
+  }
   const parts = relPath.split('/')
   const top = parts[0]
 
@@ -174,6 +188,7 @@ export const EXCLUDED_BUNDLE_PREFIXES = ['tex/latex-dev']
 // TeX Live 2026 tree: one part, 22384640 bytes before this trim, 17.0 MB
 // after dropping fonts/public/amsfonts).
 export const DEFAULT_CORE = [
+  'tex/context/supp-mkii',
   'fonts/jknappen/ec',
   'fonts/public/cm',
   'fonts/public/latex-fonts',
