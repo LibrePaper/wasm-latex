@@ -3,3 +3,7 @@ wasm-build/.cache/
 node_modules/
 dist/
 *.tar.xz
+
+# Vendored TeX Live snapshots: 14 GB of third-party distribution data,
+# verified against TUG signatures. See docs/texlive-snapshot-2026.md.
+vendor/

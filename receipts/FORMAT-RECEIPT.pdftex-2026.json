@@ -1,16 +1,24 @@
 {
   "procedure": "node tools/build-format.mjs",
   "engine": "pdftex",
-  "texmf": [
-    "texlive-20260301-texmf/texmf-dist",
-    "texmf-var"
-  ],
   "sourceDateEpoch": 1772323200,
   "format": {
     "name": "wasmtex-pdftex.fmt",
     "bytes": 3633351,
     "sha256": "f63bc17a1d809184ebfa880a1a78dd81f5351a8934e8618905ff726d0054c962"
   },
+  "texliveSnapshot": {
+    "year": "2026",
+    "archive": "texlive-20260301-texmf.tar.xz",
+    "sha512": "0b8f87622e4b9e31d4bd8c7720376aa9685e5ee299c896e3e1660459546a31e11508946f2c40a71671944c8b467483e5d4d859ff17698d239c7d5aced65d4a6b",
+    "signedBy": "TeX Live Distribution <tex-live@tug.org> (C78B82D8C79512F79CC0D7C80D5E5D9106BAB6BC)",
+    "generatedMap": "texmf-var/fonts/map/pdftex/updmap/pdftex.map, written by updmap against this tree"
+  },
+  "texmfRoot": "vendor/texlive-2026 (gitignored; see docs/texlive-snapshot-2026.md)",
+  "texmf": [
+    "texlive-20260301-texmf/texmf-dist",
+    "texmf-var"
+  ],
   "inputs": [
     {
       "format": 3,
@@ -1952,12 +1960,5 @@
       "format": 26,
       "name": "uenc.dfu.ltx"
     }
-  ],
-  "texliveSnapshot": {
-    "year": "2026",
-    "archive": "texlive-20260301-texmf.tar.xz",
-    "sha512": "0b8f87622e4b9e31d4bd8c7720376aa9685e5ee299c896e3e1660459546a31e11508946f2c40a71671944c8b467483e5d4d859ff17698d239c7d5aced65d4a6b",
-    "signedBy": "TeX Live Distribution <tex-live@tug.org> (C78B82D8C79512F79CC0D7C80D5E5D9106BAB6BC)",
-    "generatedMap": "texmf-var/fonts/map/pdftex/updmap/pdftex.map, written by updmap against this tree"
-  }
+  ]
 }

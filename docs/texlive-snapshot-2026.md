@@ -7,7 +7,7 @@ upstream's CDN and cannot be an input to anything we sign off on.
 
 ## Obtaining and verifying it
 
-    cd ~/texlive-snapshots/2026
+    mkdir -p vendor/texlive-2026 && cd vendor/texlive-2026
     B=https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2026
     curl -O $B/texlive-20260301-texmf.tar.xz.sha512 \
          -O $B/texlive-20260301-texmf.tar.xz.sha512.asc \
@@ -42,8 +42,8 @@ corroborated, not trusted.
 document typesets and then dies at font embedding. Generate it into a
 `texmf-var` tree beside the snapshot:
 
-    T=~/texlive-snapshots/2026/texlive-20260301-texmf/texmf-dist
-    V=~/texlive-snapshots/2026/texmf-var
+    T=vendor/texlive-2026/texlive-20260301-texmf/texmf-dist
+    V=vendor/texlive-2026/texmf-var
     TEXMFDIST=$T TEXMFMAIN=$T TEXMFVAR=$V TEXMFSYSVAR=$V \
     TEXMFCONFIG=$V TEXMFSYSCONFIG=$V TEXMFHOME=$V \
       updmap --quiet --nohash --cnffile $T/web2c/updmap.cfg
@@ -71,7 +71,11 @@ from a tree whose provenance we can demonstrate. See `format-generation.md`.
 
 ## Where it lives
 
-The tree is outside the repository, at `~/texlive-snapshots/2026/`, because it
-is 14 GB of third-party data with its own licensing (see
-`THIRD_PARTY_NOTICES.md`). The repository keeps only the receipt naming what
-was used and its hashes.
+`vendor/texlive-2026/`, gitignored. 14 GB: the archive, its hash and
+signature, the extracted `texmf-dist`, and the generated `texmf-var`. It sits
+in the working tree so a format build needs no path juggling, and stays out of
+git because it is third-party distribution data with its own licensing (see
+`THIRD_PARTY_NOTICES.md`) and because git has no business with 14 GB of it.
+What the repository does keep is the receipt naming exactly what was used and
+the hash of every file that went in, so the tree can be rebuilt from the
+commands above and checked against it.

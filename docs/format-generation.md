@@ -8,7 +8,8 @@ the `.wasm`, and it has to be produced from inputs we control.
 ## The procedure
 
     node tools/build-format.mjs \
-      --texmf <texmf-dist> --texmf <texmf-var> \
+      --texmf vendor/texlive-2026/texlive-20260301-texmf/texmf-dist \
+      --texmf vendor/texlive-2026/texmf-var \
       --out wasm-build/dist/wasmtex-pdftex.fmt \
       --evidence wasm-build/dist/format-inputs.json \
       --smoke
