@@ -6,6 +6,7 @@ repository's own MIT license is in [`LICENSE`](../LICENSE).
 
 | File | Applies to |
 | --- | --- |
+| `Aladdin-MD5.txt` | The Aladdin/zlib-style notice on `texk/web2c/libmd5/md5.c`, compiled into pdfTeX. |
 | `Apache-2.0.txt` | Apache-2.0 components in the Emscripten sysroot (libc++, libc++abi, compiler-rt), used with the LLVM exception. |
 | `BibTeX.txt` | BibTeX 0.99d and the separately identified WasmTex/Web2C port. |
 | `Emscripten-3.1.46.txt` | Emscripten-generated runtime code and Emscripten notices. |

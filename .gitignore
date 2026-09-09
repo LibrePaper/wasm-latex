@@ -7,3 +7,7 @@ dist/
 # Vendored TeX Live snapshots: 14 GB of third-party distribution data,
 # verified against TUG signatures. See docs/texlive-snapshot-2026.md.
 vendor/
+
+# Release staging and source archives, produced by tools/
+dist-source/
+staged/

@@ -54,14 +54,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # texlive-source-2026.ref, passed as --build-arg by the build scripts/workflows. No
 # default → fails loudly if not supplied (build via the scripts, not bare).
 ARG TEXLIVE_REF
-RUN test -n "${TEXLIVE_REF}" || { echo "TEXLIVE_REF build-arg is required"; exit 1; }; \
-    echo "=== Fetching pinned TeX Live source ${TEXLIVE_REF} ===" && \
-    mkdir -p /src/texlive-source && cd /src/texlive-source && \
-    git init -q && \
-    git remote add origin https://github.com/TeX-Live/texlive-source.git && \
-    git fetch --depth 1 -q origin "${TEXLIVE_REF}" && \
-    git checkout -q FETCH_HEAD && \
-    echo "=== Source checkout complete ($(git rev-parse HEAD)) ==="
+
+# A TeX Live tree placed in the build context as `texlive-source/` is used
+# instead of fetching the pinned commit. LGPL-2.1 section 6 requires that a
+# recipient be able to modify kpathsea and relink, which means building from
+# their tree rather than from a clone we choose; the corresponding-source
+# archive ships exactly such a tree. See licensing/RELINK.md.
+#
+# The marker file only exists so the glob always matches: COPY fails the build
+# when no source matches, and the tree is normally absent.
+COPY texlive-source.marker texlive-source* /src/texlive-source-local/
+RUN if [ -x /src/texlive-source-local/configure ]; then \
+        echo "=== Using the TeX Live source from the build context ===" && \
+        rm -f /src/texlive-source-local/texlive-source.marker && \
+        mv /src/texlive-source-local /src/texlive-source; \
+    else \
+        rm -rf /src/texlive-source-local; \
+        test -n "${TEXLIVE_REF}" || { echo "TEXLIVE_REF build-arg is required"; exit 1; }; \
+        echo "=== Fetching pinned TeX Live source ${TEXLIVE_REF} ===" && \
+        mkdir -p /src/texlive-source && cd /src/texlive-source && \
+        git init -q && \
+        git remote add origin https://github.com/TeX-Live/texlive-source.git && \
+        git fetch --depth 1 -q origin "${TEXLIVE_REF}" && \
+        git checkout -q FETCH_HEAD; \
+    fi && \
+    echo "=== Source ready ($(git -C /src/texlive-source rev-parse HEAD 2>/dev/null || echo local-tree)) ==="
 
 # ---- Build directories ------------------------------------------------------
 RUN mkdir -p /build/native /build/wasm /dist

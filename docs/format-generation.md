@@ -78,16 +78,3 @@ looks wrong, because a genuinely missing input shows up there first.
 
 The inputs recorded are the format build's only; the `--smoke` compile runs
 after the manifest is closed and its own font lookups are not mixed in.
-
-## What upstream did, for provenance
-
-`scripts/extract-format.mjs` starts a Vite dev server, launches Playwright
-Chrome, imports `src/engine/wasmtex-engine.ts` in the page, calls
-`engine.buildFormat()`, and base64s the bytes out of the browser. Inputs come
-over the network from `texlive.corca.ai`. `extract-xetex-format.mjs` and
-`extract-luatex-format.mjs` do the same through `createCompileWorker()`.
-
-We do not use any of it, and the three scripts have been removed. They are
-described here because the pinned 2026 receipts name a `wasmtex-pdftex.fmt`
-that was produced that way, and `git log` is where they now live if the
-XeTeX and LuaHBTeX equivalents are ever worth porting rather than replacing.

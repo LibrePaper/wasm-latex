@@ -38,17 +38,34 @@ the result. See [`docs/format-generation.md`](docs/format-generation.md).
 The texmf tree comes from the official TeX Live release archive, verified
 against TUG's signed hash: [`docs/texlive-snapshot-2026.md`](docs/texlive-snapshot-2026.md).
 
+**Prepare a distributable release.** The engines are GPL, so publishing them
+carries obligations: notices, complete corresponding source, and a working
+relink path for the LGPL library inside them. Four commands discharge and then
+check every obligation this repository can check —
+[`docs/licensing.md`](docs/licensing.md) explains each:
+
+    node tools/link-inventory.mjs --family pdftex --out receipts/LINK-INVENTORY.pdftex.json
+    node tools/build-corresponding-source.mjs --dist wasm-build/dist --out dist-source/
+    node tools/stage-release.mjs --dist wasm-build/dist --out staged/ --source-url <published URL>
+    node tools/check-release.mjs --dir staged/
+
+`check-release.mjs` fails closed. Until the source archive is published
+somewhere and named with `--source-url`, it refuses the release, which is the
+correct answer: a GPL binary without its source is not distributable.
+
 ## What is not done yet
 
 - Only pdfTeX and BibTeX are built here. XeTeX, LuaHBTeX, dvipdfm, BibTeX8 and
   makeindex have their Dockerfiles and gates but have never been run.
 - The engine Dockerfiles still clone TeX Live source from GitHub rather than
   using a vendored tarball.
-- No license-compliance gate runs here; upstream's needed its application tree
-  and was removed. The policy still binds — see the status note at the top of
-  [`docs/licensing.md`](docs/licensing.md). This is a precondition for
-  publishing engine artifacts.
-- We generate no build receipts of our own for engine binaries, only for formats.
+- Compliance is established for pdfTeX and BibTeX only. The other five engines
+  have no link inventory, so no terms are established for them.
+- Nowhere is the source archive published yet, and LibrePaper does not link to
+  it from the page serving the engines. That is a product decision, and until
+  it is made `check-release.mjs` blocks the release.
+- A clean rebuild *from the source archive* is not yet verified to reproduce
+  the distributed bytes.
 - LibrePaper itself still fetches TeX Live packages from upstream's CDN at
   compile time. This repository makes the engine ours; the package mirror is
   the next job.
@@ -76,14 +93,10 @@ Copied verbatim from that snapshot:
 - `wasm-build/` — Dockerfiles, Makefile, build scripts, C shims, TeX Live
   patches, worker controllers. The whole TeX-to-wasm layer.
 - `scripts/` — upstream's release tooling, since pruned from 113 files to the
-  16 that do useful work here ([`docs/build-layer-inventory.md`](docs/build-layer-inventory.md)).
+  11 that do useful work here.
 - `LICENSES/`, `THIRD_PARTY_NOTICES.md`, `docs/licensing.md`,
   `docs/corresponding-source.md` — the obligations the engines carry. They are
   GPL: a build we publish must publish its source.
-
-Upstream's GitHub workflows were seeded too and have since been removed: they
-could not run here, and what they actually did per engine is written down in
-[`docs/build-layer-inventory.md`](docs/build-layer-inventory.md).
 
 The upstream editor, runtime library and application code were not copied;
 LibrePaper has its own controller. Written since the seed: `tools/`,
@@ -95,9 +108,10 @@ LibrePaper has its own controller. Written since the seed: `tools/`,
 |---|---|
 | `wasm-build/` | The build: Dockerfiles, Makefile, worker controllers, C shims. Outputs to `dist/` (ignored). |
 | `tools/` | Ours: format builder, receipt comparison. |
-| `receipts/` | Our build evidence — inputs and hashes for what we produce. |
+| `receipts/` | Our build evidence — link inventories, format inputs, source-archive hashes. |
+| `licensing/` | What is linked and on what terms, and the LGPL relink recipe. |
 | `pinned/` | Upstream's published receipts for release `2026-8b7946970153c52e`, the thing we compare against. |
-| `scripts/` | Kept upstream tooling: pinned-source check, corresponding-source builder, gates for the engines not yet built. |
+| `scripts/` | Kept upstream tooling: pinned-source check, and the gates for the engines not yet built. |
 | `vendor/` | The verified TeX Live tree (ignored; 14 GB). |
 | `docs/` | How each part works and what is still missing. |
 

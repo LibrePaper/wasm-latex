@@ -68,6 +68,7 @@ Relevant license texts included here are:
 - [`LICENSES/BibTeX.txt`](LICENSES/BibTeX.txt)
 - [`LICENSES/XeTeX.txt`](LICENSES/XeTeX.txt)
 - [`LICENSES/SyncTeX.txt`](LICENSES/SyncTeX.txt)
+- [`LICENSES/Aladdin-MD5.txt`](LICENSES/Aladdin-MD5.txt)
 - [`LICENSES/Xpdf-4.06-GPL-2.0.txt`](LICENSES/Xpdf-4.06-GPL-2.0.txt)
 - [`LICENSES/Xpdf-4.06-README.txt`](LICENSES/Xpdf-4.06-README.txt)
 
@@ -121,6 +122,18 @@ whose evidence we do not hold is not our evidence. Linked
 component notices, license selections, and the relink method are now recorded in the
 machine-readable inventory; the corresponding-source, security, compatibility, and
 public-audit gates still apply.
+
+## Aladdin MD5
+
+`texk/web2c/libmd5/md5.c` by L. Peter Deutsch is compiled into pdfTeX. It carries
+a zlib-style permission notice that may not be removed or altered.
+
+- Copyright: 1999, 2000, 2002 Aladdin Enterprises
+- License: Zlib-style
+- Notice: [`LICENSES/Aladdin-MD5.txt`](LICENSES/Aladdin-MD5.txt)
+
+It was linked with no notice retained until `tools/link-inventory.mjs` read it
+out of the link map.
 
 ## Emscripten and ports
 

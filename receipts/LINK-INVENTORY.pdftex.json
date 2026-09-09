@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "family": "pdftex",
+  "combinedTerms": "GPL-2.0-only",
+  "combinedTermsReason": "pdfTeX and web2c are GPL-2.0-or-later, satisfied by v2. The linked Xpdf copy offers GPL v2 or v3; v2 is elected, which fixes the whole unit at GPL-2.0-only because v2-only and v3 code cannot be combined.",
+  "modules": [
+    {
+      "name": "wasmtex-pdftex",
+      "wasm": {
+        "bytes": 1672898,
+        "sha256": "bf0b9fd1772fc78b02ad19eff39f7e03a73d7eefc1c1d05b15387768e57d013d"
+      },
+      "archives": 11,
+      "objects": 37
+    },
+    {
+      "name": "wasmtex-pdftex-checkpoint",
+      "wasm": {
+        "bytes": 2701068,
+        "sha256": "83563869d753277b32f885cc4207355d13aba86e47fd804fb712f3722fecfc48"
+      },
+      "archives": 11,
+      "objects": 37
+    }
+  ],
+  "linked": [
+    {
+      "kind": "objects",
+      "component": "Aladdin MD5 (texk/web2c/libmd5)",
+      "license": "Zlib",
+      "staticLinkObligation": "notice",
+      "source": "texlive-source/texk/web2c/libmd5",
+      "notices": [
+        "LICENSES/Aladdin-MD5.txt"
+      ],
+      "objectCount": 1,
+      "selectedAs": [
+        "md5_4.o"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "compiler-rt",
+      "version": null,
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Apache-2.0.txt",
+        "LICENSES/LLVM-exception.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libcompiler_rt.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "dlmalloc (via Emscripten)",
+      "version": null,
+      "license": "CC-PDDC",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libdlmalloc.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten libc (musl)",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/musl.txt",
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libc.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten sockets",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libsockets.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten syscall stubs",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libstubs.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "kpathsea",
+      "version": null,
+      "license": "LGPL-2.1-or-later",
+      "licenseChoice": null,
+      "staticLinkObligation": "lgpl-relink",
+      "source": "texlive-source/texk/kpathsea",
+      "notices": [
+        "LICENSES/LGPL-2.1.txt"
+      ],
+      "relink": "licensing/RELINK.md",
+      "selectedAs": [
+        "/build/wasm/texk/kpathsea/.libs/libkpathsea.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "libc++",
+      "version": null,
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Apache-2.0.txt",
+        "LICENSES/LLVM-exception.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libc++-noexcept.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "libc++abi",
+      "version": null,
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Apache-2.0.txt",
+        "LICENSES/LLVM-exception.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libc++abi-noexcept.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "libpng",
+      "version": null,
+      "license": "libpng-2.0",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "texlive-source/libs/libpng",
+      "notices": [
+        "LICENSES/libpng.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/build/wasm/libs/libpng/libpng.a"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "pdfTeX (texk/web2c, texk/web2c/pdftexdir)",
+      "license": "GPL-2.0-or-later",
+      "staticLinkObligation": "gpl-source",
+      "source": "texlive-source/texk/web2c",
+      "notices": [
+        "LICENSES/GPL-2.0.txt"
+      ],
+      "objectCount": 24,
+      "selectedAs": [
+        "avl_19.o",
+        "avlstuff_20.o",
+        "epdf_21.o",
+        "mapfile_22.o",
+        "pdftex-pool_2.o",
+        "pdftex0_0.o",
+        "pdftexextra_38.o",
+        "pdftexini_1.o",
+        "pdftoepdf_39.o",
+        "pkin_23.o",
+        "subfont_24.o",
+        "tounicode_25.o",
+        "utils_26.o",
+        "vfpacket_27.o",
+        "writeenc_28.o",
+        "writefont_29.o",
+        "writeimg_30.o",
+        "writejbig2_31.o",
+        "writejpg_32.o",
+        "writepng_33.o",
+        "writet1_34.o",
+        "writet3_35.o",
+        "writettf_36.o",
+        "writezip_37.o"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "SyncTeX",
+      "license": "LicenseRef-SyncTeX",
+      "staticLinkObligation": "notice",
+      "source": "texlive-source/texk/web2c/synctexdir",
+      "notices": [
+        "LICENSES/SyncTeX.txt"
+      ],
+      "objectCount": 1,
+      "selectedAs": [
+        "synctex_3.o"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "This repository's engine shims (wasm-build/*.c), seeded from WasmTex",
+      "license": "MIT",
+      "staticLinkObligation": "notice",
+      "source": "repo/wasm-build",
+      "notices": [
+        "LICENSE",
+        "LICENSES/WasmTex.txt"
+      ],
+      "objectCount": 3,
+      "selectedAs": [
+        "kpse-hook_41.o",
+        "trace-hook_42.o",
+        "wasm-entry_40.o"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "web2c runtime library (texk/web2c/lib)",
+      "license": "GPL-2.0-or-later",
+      "staticLinkObligation": "gpl-source",
+      "source": "texlive-source/texk/web2c/lib",
+      "notices": [
+        "LICENSES/GPL-2.0.txt"
+      ],
+      "objectCount": 8,
+      "selectedAs": [
+        "eofeoln_8.o",
+        "openclose_12.o",
+        "printversion_13.o",
+        "setupvar_14.o",
+        "uexit_15.o",
+        "usage_16.o",
+        "version_17.o",
+        "zround_18.o"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Xpdf",
+      "version": "4.06",
+      "license": "GPL-2.0-only",
+      "licenseChoice": "Offered as GPL v2 or v3; v2 elected for the combined unit.",
+      "staticLinkObligation": "gpl-source",
+      "source": "texlive-source/libs/xpdf",
+      "notices": [
+        "LICENSES/Xpdf-4.06-GPL-2.0.txt",
+        "LICENSES/Xpdf-4.06-README.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/build/wasm/libs/xpdf/libxpdf.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "zlib",
+      "version": null,
+      "license": "Zlib",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "texlive-source/libs/zlib",
+      "notices": [
+        "LICENSES/zlib.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/build/wasm/libs/zlib/libz.a"
+      ]
+    }
+  ],
+  "requiredNotices": [
+    "LICENSE",
+    "LICENSES/Aladdin-MD5.txt",
+    "LICENSES/Apache-2.0.txt",
+    "LICENSES/Emscripten-3.1.46.txt",
+    "LICENSES/GPL-2.0.txt",
+    "LICENSES/LGPL-2.1.txt",
+    "LICENSES/LLVM-exception.txt",
+    "LICENSES/SyncTeX.txt",
+    "LICENSES/WasmTex.txt",
+    "LICENSES/Xpdf-4.06-GPL-2.0.txt",
+    "LICENSES/Xpdf-4.06-README.txt",
+    "LICENSES/libpng.txt",
+    "LICENSES/musl.txt",
+    "LICENSES/zlib.txt"
+  ]
+}

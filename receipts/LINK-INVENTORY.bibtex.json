@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "family": "bibtex",
+  "combinedTerms": "LicenseRef-BibTeX-Web2C-Notices AND LGPL-2.1-or-later",
+  "combinedTermsReason": "BibTeX links no Xpdf, libpng or zlib. Its only copyleft component is kpathsea (LGPL-2.1-or-later); the BibTeX and web2c sources carry permission notices rather than the GPL.",
+  "modules": [
+    {
+      "name": "wasmtex-bibtex",
+      "wasm": {
+        "bytes": 205813,
+        "sha256": "7ee47f5959d9f2a0d4cbde264be97472b6c1b7a1da2ca58b67baea759b03c3d6"
+      },
+      "archives": 5,
+      "objects": 11
+    }
+  ],
+  "linked": [
+    {
+      "kind": "objects",
+      "component": "BibTeX (texk/web2c)",
+      "license": "LicenseRef-BibTeX-Web2C-Notices",
+      "staticLinkObligation": "notice",
+      "source": "texlive-source/texk/web2c",
+      "notices": [
+        "LICENSES/BibTeX.txt"
+      ],
+      "objectCount": 1,
+      "selectedAs": [
+        "bibtex_0.o"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "compiler-rt",
+      "version": null,
+      "license": "Apache-2.0 WITH LLVM-exception",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Apache-2.0.txt",
+        "LICENSES/LLVM-exception.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libcompiler_rt.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "dlmalloc (via Emscripten)",
+      "version": null,
+      "license": "CC-PDDC",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libdlmalloc.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten libc (musl)",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/musl.txt",
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libc.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "Emscripten syscall stubs",
+      "version": null,
+      "license": "MIT",
+      "licenseChoice": null,
+      "staticLinkObligation": "notice",
+      "source": "toolchain: emscripten/emsdk 3.1.46",
+      "notices": [
+        "LICENSES/Emscripten-3.1.46.txt"
+      ],
+      "relink": null,
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libstubs.a"
+      ]
+    },
+    {
+      "kind": "archive",
+      "component": "kpathsea",
+      "version": null,
+      "license": "LGPL-2.1-or-later",
+      "licenseChoice": null,
+      "staticLinkObligation": "lgpl-relink",
+      "source": "texlive-source/texk/kpathsea",
+      "notices": [
+        "LICENSES/LGPL-2.1.txt"
+      ],
+      "relink": "licensing/RELINK.md",
+      "selectedAs": [
+        "/build/wasm/texk/kpathsea/.libs/libkpathsea.a"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "This repository's engine shims (wasm-build/*.c), seeded from WasmTex",
+      "license": "MIT",
+      "staticLinkObligation": "notice",
+      "source": "repo/wasm-build",
+      "notices": [
+        "LICENSE",
+        "LICENSES/WasmTex.txt"
+      ],
+      "objectCount": 2,
+      "selectedAs": [
+        "bibtex-entry_16.o",
+        "kpse-hook_17.o"
+      ]
+    },
+    {
+      "kind": "objects",
+      "component": "web2c runtime library (texk/web2c/lib)",
+      "license": "GPL-2.0-or-later",
+      "staticLinkObligation": "gpl-source",
+      "source": "texlive-source/texk/web2c/lib",
+      "notices": [
+        "LICENSES/GPL-2.0.txt"
+      ],
+      "objectCount": 8,
+      "selectedAs": [
+        "eofeoln_4.o",
+        "main_15.o",
+        "openclose_8.o",
+        "printversion_9.o",
+        "setupvar_10.o",
+        "uexit_11.o",
+        "usage_12.o",
+        "version_13.o"
+      ]
+    }
+  ],
+  "requiredNotices": [
+    "LICENSE",
+    "LICENSES/Apache-2.0.txt",
+    "LICENSES/BibTeX.txt",
+    "LICENSES/Emscripten-3.1.46.txt",
+    "LICENSES/GPL-2.0.txt",
+    "LICENSES/LGPL-2.1.txt",
+    "LICENSES/LLVM-exception.txt",
+    "LICENSES/WasmTex.txt",
+    "LICENSES/musl.txt"
+  ]
+}
