@@ -87,6 +87,7 @@ Chrome, imports `src/engine/wasmtex-engine.ts` in the page, calls
 over the network from `texlive.corca.ai`. `extract-xetex-format.mjs` and
 `extract-luatex-format.mjs` do the same through `createCompileWorker()`.
 
-We do not use any of it. It is recorded here because the pinned 2026 receipts
-name a `wasmtex-pdftex.fmt` that was produced that way, and because the three
-scripts are still in `scripts/` pending the prune.
+We do not use any of it, and the three scripts have been removed. They are
+described here because the pinned 2026 receipts name a `wasmtex-pdftex.fmt`
+that was produced that way, and `git log` is where they now live if the
+XeTeX and LuaHBTeX equivalents are ever worth porting rather than replacing.

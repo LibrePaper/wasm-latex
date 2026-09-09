@@ -63,9 +63,11 @@ Relevant license texts included here are:
 - [`LICENSES/Xpdf-4.04-README.txt`](LICENSES/Xpdf-4.04-README.txt)
 
 The exact archive-to-component mapping is machine-readable in
-[`scripts/engine-components-2025.json`](scripts/engine-components-2025.json). The
-license gate rejects an archive that is absent from that inventory or matches more
-than one entry.
+[`scripts/engine-components-2026.json`](scripts/engine-components-2026.json). The
+inventory is data, not a gate: upstream's `check-license-compliance.mjs` enforced it
+against a repository layout this one does not have, and was removed rather than kept
+as a check that cannot run. Re-enforcing it is open work — see
+[`docs/licensing.md`](docs/licensing.md).
 
 Corresponding source means the pinned TeX Live source plus the WasmTex glue, patches,
 build scripts, Dockerfiles, and any other material needed to rebuild the distributed

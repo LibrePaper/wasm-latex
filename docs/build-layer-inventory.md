@@ -57,144 +57,70 @@
 - **build-corresponding-source.mjs** — assemble complete corresponding source tar.xz
 - **check-corresponding-source.mjs** — verify completeness of source archive
 
-## KEEP List (Scripts Required for Engine Builds)
+## What scripts/ holds now
 
-| Script | Reason | Imports |
-|--------|--------|---------|
-| `configure-engine-build-mirror.mjs` | All engines: resolve immutable TeX Live mirror | lib/engine-release-components.mjs, engine-release-components.json |
-| `check-annual-engine-source.mjs` | All engines: verify licensing policy | lib/annual-engine-source.mjs |
-| `check-license-compliance.mjs` | All engines: GPL/license compliance | lib/engine-build-receipt.mjs, lib/engine-license-inventory.mjs, lib/engine-release-components.mjs |
-| `gen-engine-build-receipt.mjs` | All engines: record build evidence | lib/engine-build-receipt.mjs, corresponding-source-*.json |
-| `extract-format.mjs` | pdfTeX build: Playwright format extraction | lib/format-input-evidence.mjs, lib/default-texlive-mirrors.mjs, @playwright/test, vite |
-| `extract-xetex-format.mjs` | XeTeX build: Playwright format extraction | lib/format-input-evidence.mjs, lib/default-texlive-mirrors.mjs, @playwright/test, vite |
-| `extract-luatex-format.mjs` | LuaTeX build: Playwright format extraction | lib/format-input-evidence.mjs, lib/default-texlive-mirrors.mjs, @playwright/test, vite |
-| `build-xetex-fromsource.sh` | XeTeX: Docker orchestration + tests | test-xetex-pdf-geometry.mjs, build-xetex-pdf-visual-fixture.mjs |
-| `build-luatex-fromsource.sh` | LuaTeX: Docker orchestration + gates | generate-pdf-compat-fixtures.mjs, probe-luahbtex-pdf-api.lua |
-| `generate-pdf-compat-fixtures.mjs` | LuaTeX gate: generate test fixtures | @playwright/test, vite |
-| `test-xetex-pdf-geometry.mjs` | XeTeX gate: validate PDF geometry | (Node.js only) |
-| `build-xetex-pdf-visual-fixture.mjs` | XeTeX gate: deterministic XDV fixture | (Node.js only) |
-| `gen-asset-manifest.mjs` | Corresponding source: generate release manifest | lib/release-assets.mjs, engine-release-components.json, corresponding-source-*.json |
-| `check-release-notices.mjs` | Corresponding source: verify notices | lib/engine-license-inventory.mjs |
-| `build-corresponding-source.mjs` | Corresponding source: assemble archive | lib/corresponding-source.mjs, lib/engine-build-receipt.mjs, lib/release-assets.mjs, corresponding-source-*.json |
-| `check-corresponding-source.mjs` | Corresponding source: verify completeness | lib/corresponding-source.mjs |
+Upstream shipped 113 files here. Sixteen remain. The rest were removed on
+2026-09-08; `git log` has them if one turns out to be needed.
 
-**Lib files (transitive):**
-- `lib/annual-engine-source.mjs`
-- `lib/corresponding-source.mjs`
-- `lib/default-texlive-mirrors.mjs`
-- `lib/engine-build-receipt.mjs`
-- `lib/engine-license-inventory.mjs`
-- `lib/engine-release-components.mjs`
-- `lib/format-input-evidence.mjs`
-- `lib/release-assets.mjs`
+The test was whether a script can do useful work *in this repository*, which
+holds the engine build layer and nothing else. Most of upstream's tooling
+assumed the full WasmTex application tree — `src/`, `public/wasmtex/<year>/`,
+`.github/workflows/`, a `package.json` with Playwright and Vite — and fails on
+its first file read here. Keeping a check that cannot run is worse than not
+having it: it looks like coverage.
 
-**Config JSON (read at runtime):**
-- `corresponding-source-2025.json`
-- `corresponding-source-2026.json`
-- `engine-release-components.json`
+### Kept
 
-**Test/fixture files used in build gates:**
-- `probe-luahbtex-pdf-api.lua` — embedded in LuaTeX build image
-- `wasm-build/pdf-backend/fixtures/xetex-geometry.expected.json`
-- `wasm-build/pdf-backend/fixtures/xetex-visual.expected.sha256`
-- `wasm-build/pdf-backend/fixtures/luahbtex-repeat-image.tex`
-- `wasm-build/pdf-backend/fixtures/luahbtex-pdf-api.expected.json`
+| File | Why |
+|---|---|
+| `check-annual-engine-source.mjs`, `lib/annual-engine-source.mjs` | Verifies the pinned TeX Live source commit. Runs here today. |
+| `build-corresponding-source.mjs`, `check-corresponding-source.mjs`, `lib/corresponding-source.mjs`, `lib/engine-build-receipt.mjs`, `lib/release-assets.mjs`, `corresponding-source-2026.json` | Assembles and verifies the GPL corresponding-source archive. A real obligation for anything we distribute. |
+| `engine-components-2026.json` | The archive-to-component license mapping cited by `THIRD_PARTY_NOTICES.md`. |
+| `build-xetex-fromsource.sh`, `build-luatex-fromsource.sh`, `build-icu-data.sh` | Docker orchestration for the engines not yet built here. |
+| `test-xetex-pdf-geometry.mjs`, `build-xetex-pdf-visual-fixture.mjs`, `generate-pdf-compat-fixtures.mjs`, `probe-luahbtex-pdf-api.lua` | The PDF-inclusion and pdfe/pdfscanner gates those two builds run. Pure Node and Lua, no browser. |
 
-**Count:** 17 scripts total
-- 14 .mjs (engine orchestration, format extraction, gates, corresponding source)
-- 2 .sh (XeTeX and LuaTeX build orchestration)
-- 1 .lua (LuaTeX PDF API gate probe)
-- Plus 8 lib modules + 3 config JSONs + 4 fixture files (.json, .sha256, .tex)
+Every reference from a kept script resolves to another kept file.
 
-## DROP List (Unrelated to Engine Builds)
+### Removed, by reason
 
-| Script | Reason |
-|--------|--------|
-| `annual-engine-source.test.mjs` | Test only, not invoked in CI |
-| `audit-mirror.mjs` | Manual audit tool, not in CI |
-| `audit-texlive-provenance.mjs` | Manual audit tool |
-| `bench-engines.mjs` | Performance benchmarking, not in CI |
-| `check-annual-engine-source.mjs` | **KEEP** (listed above) |
-| `check-corresponding-source.mjs` | **KEEP** |
-| `check-deployed-completion.mjs` | Editor tool for completion data |
-| `check-dts-exports.mjs` | TypeScript export checker, editor build |
-| `check-engine-license-inventory.mjs` | Inventory checker, not required for builds |
-| `check-engine-performance-budget.mjs` | Performance budget checker |
-| `check-license-compliance.mjs` | **KEEP** |
-| `check-release-notices.mjs` | **KEEP** |
-| `check-texlive-catalog.mjs` | Catalog validation, not in engine builds |
-| `check-tex-semantic-catalog.mjs` | Semantic catalog validation |
-| `check-texlive-provenance.mjs` | Provenance auditing tool |
-| `compress-assets.mjs` | Asset compression (not in workflows) |
-| `corresponding-source.test.mjs` | Test only |
-| `deployed-completion.test.mjs` | Test only |
-| `engine-build-receipt.test.mjs` | Test only |
-| `engine-components-2025.json` | Editor config (not used in builds) |
-| `engine-components-2026.json` | Editor config |
-| `engine-license-inventory.test.mjs` | Test only |
-| `engine-performance-budgets-2025.json` | Config, not loaded by build scripts |
-| `engine-performance-budgets-2026.json` | Config |
-| `engine-release-components.test.mjs` | Test only |
-| `extract-luatex-format.mjs` | **KEEP** |
-| `extract-xetex-format.mjs` | **KEEP** |
-| `extract-format.mjs` | **KEEP** |
-| `gen-asset-manifest.mjs` | **KEEP** |
-| `gen-bloom-filter.mjs` | Editor utility |
-| `gen-bloom-filter.test.mjs` | Test only |
-| `gen-engine-build-receipt.mjs` | **KEEP** |
-| `gen-engine-sbom.mjs` | SBOM generation (not in CI workflows) |
-| `gen-font-scripts.mjs` | Editor utility |
-| `gen-link-inventory.mjs` | Link inventory generation (editor) |
-| `gen-luaotfload-names.mjs` | Editor utility (font data) |
-| `gen-luaotfload-names.test.mjs` | Test only |
-| `gen-luatex-manifest.mjs` | Manifest generation (not in build workflows) |
-| `gen-texlive-catalog.mjs` | Catalog generation |
-| `gen-texlive-provenance.mjs` | Provenance generation |
-| `gen-tex-semantic-catalog.mjs` | Semantic catalog generation |
-| `gen-xetexfontlist.mjs` | Font list generation (editor) |
-| `link-inventory.test.mjs` | Test only |
-| `measure-engine-performance.mjs` | Performance measurement |
-| `node-compile-smoke.mjs` | Quick smoke test (not in CI) |
-| `object-inventory.test.mjs` | Test only |
-| `object-store.test.mjs` | Test only |
-| `prepare-tlnet-snapshot.sh` | Mirror tooling (not in build CI) |
-| `reconcile-deployed-completion.mjs` | Completion reconciliation |
-| `run-tex-semantic-probes.mjs` | Semantic probes (editor) |
-| `snapshot-artifacts.mjs` | Artifact snapshot (not in CI) |
-| `snapshot-artifacts.test.mjs` | Test only |
-| `sync-engine-assets.mjs` | Asset sync from upstream CDN (optional) |
-| `sync-texlive-mirror.sh` | Mirror sync (external tool) |
-| `test-luahbtex-pdf-api-differential.sh` | Differential testing (not in CI) |
-| `test-xetex-pdf-extended.mjs` | Extended testing |
-| `test-xetex-pdf-extended-differential.sh` | Differential testing |
-| `test-xetex-pdf-visual-differential.sh` | Differential testing |
-| `texlive-catalog.test.mjs` | Test only |
-| `texlive-completion-deployment-2025.json` | Deployment config (not in builds) |
-| `texlive-mirror-*.json` | Mirror configs (not read by build scripts) |
-| `texlive-mirror-overrides-*.json` | Mirror overrides (not read) |
-| `texlive-profiles-2026.json` | Profile config (not read by builds) |
-| `texlive-provenance.test.mjs` | Test only |
-| `tex-semantic-catalog.test.mjs` | Test only |
-| `tex-semantic-extractor.test.mjs` | Test only |
-| `tex-semantic-overrides-*.json` | Semantic overrides (not in builds) |
-| `tex-semantic-probe.test.mjs` | Test only |
-| `tlnet-materialization-receipt.mjs` | Mirror materialization (not in CI) |
-| `tlnet-snapshot.test.mjs` | Test only |
+**Needs the application repository** — `check-license-compliance.mjs` (requires
+`public/wasmtex/…`, `docs/license-evidence/…`, `.github/actions/…`),
+`check-engine-license-inventory.mjs`, `check-release-notices.mjs`,
+`gen-asset-manifest.mjs`, `check-dts-exports.mjs`, `compat/`. Each was run
+here and each crashed on a missing path.
 
-**compat/ directory:** All editor-specific compatibility tools (run.mjs, etc.)
+**Replaced by `tools/build-format.mjs`** — `extract-format.mjs`,
+`extract-xetex-format.mjs`, `extract-luatex-format.mjs`,
+`lib/format-input-evidence.mjs`, and with them the Playwright and Vite
+dependencies. See [`format-generation.md`](format-generation.md).
 
-**Count:** ~70+ scripts/configs unrelated to engine builds
+**Tied to upstream's CDN and object store** —
+`configure-engine-build-mirror.mjs`, `lib/default-texlive-mirrors.mjs`,
+`sync-texlive-mirror.sh`, `prepare-tlnet-snapshot.sh`, `verify-object-mirror.mjs`,
+`lib/object-store.mjs`, `sync-engine-assets.mjs`, `audit-mirror.mjs`, and the
+`texlive-mirror-*.json` configs. Our TeX Live inputs come from a signed release
+archive instead ([`texlive-snapshot-2026.md`](texlive-snapshot-2026.md)).
+`gen-engine-build-receipt.mjs` went with them: it refuses to emit a receipt
+without a mirror revision to name.
 
-## npm Dependencies for KEEP Scripts
+**Editor and catalog data generation** — bloom filters, semantic catalogs,
+completion data, font lists, luaotfload names, SBOM and link inventories,
+benchmarks and performance budgets. All of it produces data for the editor
+application, not for an engine build.
 
-From `upstream-package.json` devDependencies:
-- **@playwright/test: ^1.58.2** — Format extraction via browser automation (extract-*.mjs scripts)
-- **vite: ^8.2.0** — Dev server for format extraction (runs pdfTeX/xetex/luatex in browser context)
-- @types/node: ^24.13.2 (implicit, not called directly)
+**Tests of removed code, and tests that need `.github/workflows/`** — every
+`*.test.mjs`. They were run first; they fail here on missing workflow files.
 
-Note: Playwright is essential for format extraction gates in pdfTeX/XeTeX/LuaTeX builds. Vite provides local HTTP server for the WASM engines during format extraction.
+**Superseded 2025 configs** — the pinned release is 2026.
 
-**No production dependencies** are consumed by build scripts.
+### Known gaps this leaves
+
+- No license-compliance gate runs in this repository. The policy in
+  [`licensing.md`](licensing.md) still stands; the enforcement does not, and
+  a replacement needs writing against this layout.
+- No engine build receipts are generated for our own builds; only
+  `tools/compare-receipt.mjs` comparing against upstream's pinned ones.
+- The LuaTeX and XeTeX format extraction has no replacement yet.
 
 ## External References (Hard-Coded URLs)
 

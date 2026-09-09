@@ -4,6 +4,19 @@ This document records the licensing policy WasmTex adopted, why that policy is
 compatible with every component the engines link, and what was done to comply —
 with pointers to the machine-checkable evidence.
 
+> **Status in this repository.** The policy below is inherited and still
+> governs what we may distribute. The tooling that enforced it does not run
+> here: `check-license-compliance.mjs`, `check-engine-license-inventory.mjs`,
+> `check-release-notices.mjs` and `gen-asset-manifest.mjs` all require the
+> WasmTex application tree (`public/wasmtex/<year>/`, `docs/license-evidence/`,
+> `.github/`) and were removed rather than left as checks that cannot run. So
+> every `npm run check:licenses` and `node scripts/check-*` invocation named
+> below describes upstream's gate, not a command available here. Writing a
+> replacement against this repository's layout is open work, and is a
+> precondition for publishing engine artifacts from it. What does exist:
+> `check-annual-engine-source.mjs`, the corresponding-source builder and
+> checker, and the per-format input receipts in `receipts/`.
+
 ## The policy
 
 WasmTex uses a split licensing model:
