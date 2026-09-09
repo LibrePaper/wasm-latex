@@ -22,6 +22,7 @@ the pinned ones. Skip this step when nothing under `wasm-build/` changed.
 
 ## 2. Build the data from the vendored tree
 
+    make biber-build  # Biber WASM, worker, data, link map, source archive and build receipt
     make test         # unit tests, pin check, resolver tests
     make bundles      # font list, per-package bundles, receipt
     make format       # pdfTeX and XeTeX formats, smoked, with receipts
@@ -37,7 +38,7 @@ did.
 
 Everything under `receipts/` that changed is release evidence and is
 committed. `make source` refuses a tree with uncommitted changes under
-`wasm-build/`, `tools/` or `linked-components.json`, because the archive it
+`wasm-build/`, `tools/`, `third-party/`, `Makefile` or `linked-components.json`, because the archive it
 builds is `git archive HEAD` and would not be the source of the artifacts.
 
 ## 4. Publish the source and stage the release
@@ -64,7 +65,7 @@ Tags are never moved. A second release gets a new tag and a new archive.
 This repository builds and deploys the mirror itself; LibrePaper keeps only
 a URL. In this repository:
 
-    make mirror MANIFEST_SHA256=<manifest hash>
+    make mirror                            # reads the hash from staged/MANIFEST.json
 
 which runs `tools/build-mirror.mjs` (verifies the manifest against the hash
 and every payload file against the manifest, then writes the release under
@@ -84,9 +85,10 @@ under the free plan's 20,000-file cap.
 
 LibrePaper then just points at the deployed URL: `librepaper serve --latex
 https://latex.librepaper.workers.dev/`, or its own
-`latex/tools/check-mirror.mjs <url>` to verify it first. The Biber VM is
-LibrePaper's own artefact, hosted separately and named to the server with
-`--biber-vm <url>#<sha256>`; it is not part of a wasm-latex release.
+`latex/tools/check-mirror.mjs <url>` to verify it first. Releases with
+`engines.biber` supply Biber directly through this mirror; no `--biber-vm`
+setting is required. Before deployment, test the app against the generated
+mirror with `node tools/biber-app-browser-check.mjs --mirror mirror --app ../librepaper/web`.
 
 ## What the gate checks
 

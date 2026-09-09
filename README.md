@@ -1,7 +1,7 @@
 # librepaper-wasm-latex
 
 TeX engines built to WebAssembly for LibrePaper's in-browser LaTeX compiler:
-pdfTeX, XeTeX, dvipdfm, BibTeX, BibTeX8 and makeindex, plus the TeX Live
+pdfTeX, XeTeX, dvipdfm, BibTeX, BibTeX8, Biber and makeindex, plus the TeX Live
 packages they load, packed for the browser.
 
 Nothing LibrePaper ships has to be taken on trust from someone else's CDN.
@@ -16,7 +16,7 @@ receipts and notices that let a reader verify that.
     make bundles                 # pack TeX Live into per-package bundles
     make format                  # dump and smoke the pdfTeX and XeTeX formats
     make release TAG=<tag>       # publish the source, stage, gate, print the manifest hash
-    make mirror MANIFEST_SHA256=<hash>  # build the mirror LibrePaper serves
+    make mirror                  # build the mirror LibrePaper serves from staged/
     make push                    # deploy it to Cloudflare (needs CLOUDFLARE_API_TOKEN)
 
 Engines themselves are built with Docker; see [`docs/release.md`](docs/release.md)
@@ -30,7 +30,7 @@ lists every target.
 - [`docs/what-works-in-the-browser.md`](docs/what-works-in-the-browser.md):
   the same seam for authors and agents deciding whether to pair.
 - [`docs/release.md`](docs/release.md): the release runbook.
-- [`docs/biber.md`](docs/biber.md): the pinned TeXlyre Biber build and experimental Docker target.
+- [`docs/biber.md`](docs/biber.md): the pinned TeXlyre Biber build, release packaging and browser checks.
 - [`docs/mirror.md`](docs/mirror.md): the mirror LibrePaper serves -- layout,
   manifest format 1, and the contract `tools/build-mirror.mjs` and
   `tools/check-mirror.mjs` implement.

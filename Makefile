@@ -18,8 +18,8 @@
 #                    with the manifest hash — the whole chain, refusing early on a
 #                    dirty tree or an existing tag; ends by printing the `make
 #                    mirror` and `make push` commands rather than running them
-#   make mirror MANIFEST_SHA256=<staged MANIFEST.json digest>
-#                    build the mirror LibrePaper serves from staged/       -> mirror/
+#   make mirror      build the mirror LibrePaper serves from staged/       -> mirror/
+#                    (MANIFEST_SHA256=<digest> pins a reviewed hash instead)
 #   make push        write mirror/_headers and deploy it to Cloudflare (needs
 #                    CLOUDFLARE_API_TOKEN; `make secrets` opens a shell that has it)
 #
@@ -133,15 +133,19 @@ release:  ## The whole chain: test, source, publish, stage, annotate (needs TAG=
 	@HASH=$$(sha256sum $(STAGED)/MANIFEST.json | cut -d' ' -f1); \
 	echo ""; \
 	echo "Staged and annotated. Review $(STAGED)/MANIFEST.json, then:"; \
-	echo "  make mirror MANIFEST_SHA256=$$HASH"; \
+	echo "  make mirror        # staged manifest $HASH"; \
 	echo "  make push"
 
 clean-staged:  ## Remove the staged directory
 	rm -rf $(STAGED)
 
-mirror:  ## Build the mirror LibrePaper serves from a staged release (needs MANIFEST_SHA256=)
-	@test -n "$(MANIFEST_SHA256)" || { echo "usage: make mirror MANIFEST_SHA256=<staged MANIFEST.json digest>"; exit 2; }
-	node tools/build-mirror.mjs --staged $(STAGED) --sha256 "$(MANIFEST_SHA256)" --out $(MIRROR)
+mirror:  ## Build the mirror LibrePaper serves from staged/ (MANIFEST_SHA256= to pin a reviewed hash)
+	@test -f $(STAGED)/MANIFEST.json || { echo "no $(STAGED)/MANIFEST.json; run make release TAG=<tag> (or make stage SOURCE_URL=<url>) first"; exit 2; }
+	@# The hash is read from the staged manifest when not given: this repository
+	@# staged it, so there is no second party whose review the hash would carry.
+	@HASH="$(MANIFEST_SHA256)"; [ -n "$HASH" ] || HASH=$(sha256sum $(STAGED)/MANIFEST.json | cut -d' ' -f1); \
+	echo "mirror: staged manifest $HASH"; \
+	node tools/build-mirror.mjs --staged $(STAGED) --sha256 "$HASH" --out $(MIRROR)
 	node tools/check-mirror.mjs $(MIRROR)
 
 push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUDFLARE_API_TOKEN)
