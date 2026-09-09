@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "family": "biber",
+  "combinedTerms": "AGPL-3.0-only AND LicenseRef-Packaged-Perl-notices AND LicenseRef-Emscripten-runtime-notices",
+  "combinedTermsReason": "TeXlyre runtime modifications retain AGPL-3.0; Perl-licensed code permits GPLv3. Individual runtime/dependency notices and their preferred source are shipped in full.",
+  "modules": [
+    {
+      "name": "biber",
+      "wasm": {
+        "bytes": 9644474,
+        "sha256": "106bf9221aa6f6337407711943bc5718bb138a20d0e22b17e9b54c13f37648b5"
+      },
+      "archives": 64
+    }
+  ],
+  "linked": [
+    {
+      "component": "Class::XSAccessor 1.19",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Class-XSAccessor",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Class/XSAccessor/XSAccessor.a"
+      ]
+    },
+    {
+      "component": "Clone 0.46",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Clone",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Clone/Clone.a"
+      ]
+    },
+    {
+      "component": "DateTime 1.65",
+      "license": "Artistic-2.0",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/DateTime",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/DateTime/DateTime.a"
+      ]
+    },
+    {
+      "component": "List::MoreUtils::XS 0.430",
+      "license": "Apache-2.0",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/List-MoreUtils-XS",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/List/MoreUtils/XS/XS.a"
+      ]
+    },
+    {
+      "component": "List::SomeUtils::XS 0.58",
+      "license": "Artistic-2.0",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/List-SomeUtils-XS",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/List/SomeUtils/XS/XS.a"
+      ]
+    },
+    {
+      "component": "Package::Stash::XS 0.30",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Package-Stash-XS",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Package/Stash/XS/XS.a"
+      ]
+    },
+    {
+      "component": "Params::Util 1.102",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Params-Util",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Params/Util/Util.a"
+      ]
+    },
+    {
+      "component": "Params::Validate::XS 1.31",
+      "license": "Artistic-2.0",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Params-Validate-XS",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Params/Validate/XS/XS.a"
+      ]
+    },
+    {
+      "component": "PerlIO::utf8_strict 0.010",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/PerlIO-utf8_strict",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/PerlIO/utf8_strict/utf8_strict.a"
+      ]
+    },
+    {
+      "component": "Ref::Util::XS 0.117",
+      "license": "MIT",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Ref-Util-XS",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Ref/Util/XS/XS.a"
+      ]
+    },
+    {
+      "component": "Sort::Key 1.33",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Sort-Key",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Sort/Key/Key.a"
+      ]
+    },
+    {
+      "component": "Sub::Identify 0.14",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Sub-Identify",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Sub/Identify/Identify.a"
+      ]
+    },
+    {
+      "component": "Sub::Name 0.27",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Sub-Name",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Sub/Name/Name.a"
+      ]
+    },
+    {
+      "component": "Text::CSV_XS 1.53",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Text-CSV_XS",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Text/CSV_XS/CSV_XS.a"
+      ]
+    },
+    {
+      "component": "Variable::Magic 0.63",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Variable-Magic",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Variable/Magic/Magic.a"
+      ]
+    },
+    {
+      "component": "XString 0.005",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/XString",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/XString/XString.a"
+      ]
+    },
+    {
+      "component": "autovivification 0.18",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/autovivification",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/autovivification/autovivification.a"
+      ]
+    },
+    {
+      "component": "Text::BibTeX 0.89",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Text-BibTeX",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Text/BibTeX/BibTeX.a"
+      ]
+    },
+    {
+      "component": "Unicode::LineBreak 2019.001",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Unicode-LineBreak",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/Unicode/LineBreak/LineBreak.a"
+      ]
+    },
+    {
+      "component": "XML::LibXML 2.0134",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/XML-LibXML",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/XML/LibXML/LibXML.a"
+      ]
+    },
+    {
+      "component": "Perl 5.38.2, core extensions, Unicode tables and emperl",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/perl",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/build/biber/src/perl/lib/auto/B/B.a",
+        "/build/biber/src/perl/lib/auto/Cwd/Cwd.a",
+        "/build/biber/src/perl/lib/auto/Data/Dumper/Dumper.a",
+        "/build/biber/src/perl/lib/auto/Devel/Peek/Peek.a",
+        "/build/biber/src/perl/lib/auto/Digest/MD5/MD5.a",
+        "/build/biber/src/perl/lib/auto/Digest/SHA/SHA.a",
+        "/build/biber/src/perl/lib/auto/Encode/Byte/Byte.a",
+        "/build/biber/src/perl/lib/auto/Encode/CN/CN.a",
+        "/build/biber/src/perl/lib/auto/Encode/EBCDIC/EBCDIC.a",
+        "/build/biber/src/perl/lib/auto/Encode/Encode.a",
+        "/build/biber/src/perl/lib/auto/Encode/JP/JP.a",
+        "/build/biber/src/perl/lib/auto/Encode/KR/KR.a",
+        "/build/biber/src/perl/lib/auto/Encode/Symbol/Symbol.a",
+        "/build/biber/src/perl/lib/auto/Encode/TW/TW.a",
+        "/build/biber/src/perl/lib/auto/Encode/Unicode/Unicode.a",
+        "/build/biber/src/perl/lib/auto/Fcntl/Fcntl.a",
+        "/build/biber/src/perl/lib/auto/File/Glob/Glob.a",
+        "/build/biber/src/perl/lib/auto/Hash/Util/Util.a",
+        "/build/biber/src/perl/lib/auto/I18N/Langinfo/Langinfo.a",
+        "/build/biber/src/perl/lib/auto/IO/IO.a",
+        "/build/biber/src/perl/lib/auto/List/Util/Util.a",
+        "/build/biber/src/perl/lib/auto/Opcode/Opcode.a",
+        "/build/biber/src/perl/lib/auto/POSIX/POSIX.a",
+        "/build/biber/src/perl/lib/auto/PerlIO/encoding/encoding.a",
+        "/build/biber/src/perl/lib/auto/PerlIO/scalar/scalar.a",
+        "/build/biber/src/perl/lib/auto/PerlIO/via/via.a",
+        "/build/biber/src/perl/lib/auto/SDBM_File/SDBM_File.a",
+        "/build/biber/src/perl/lib/auto/Socket/Socket.a",
+        "/build/biber/src/perl/lib/auto/Storable/Storable.a",
+        "/build/biber/src/perl/lib/auto/Sys/Hostname/Hostname.a",
+        "/build/biber/src/perl/lib/auto/Time/HiRes/HiRes.a",
+        "/build/biber/src/perl/lib/auto/Time/Piece/Piece.a",
+        "/build/biber/src/perl/lib/auto/Unicode/Collate/Collate.a",
+        "/build/biber/src/perl/lib/auto/Unicode/Normalize/Normalize.a",
+        "/build/biber/src/perl/lib/auto/WebPerl/WebPerl.a",
+        "/build/biber/src/perl/lib/auto/attributes/attributes.a",
+        "/build/biber/src/perl/lib/auto/mro/mro.a",
+        "/build/biber/src/perl/lib/auto/re/re.a",
+        "/build/biber/src/perl/libperl.a"
+      ]
+    },
+    {
+      "component": "Biber 2.22",
+      "license": "Artistic-2.0",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/biber",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": []
+    },
+    {
+      "component": "libxml2 (merged into XML::LibXML)",
+      "license": "MIT",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/libxml2",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": []
+    },
+    {
+      "component": "sombok (merged into Unicode::LineBreak)",
+      "license": "GPL-1.0-or-later OR Artistic-1.0-Perl",
+      "source": "BIBER-SOURCE.tar.gz:biber/src/Unicode-LineBreak/sombok",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": []
+    },
+    {
+      "component": "TeXlyre Perl patches and browser pre-run",
+      "license": "AGPL-3.0-only",
+      "source": "BIBER-SOURCE.tar.gz:biber/repo/third-party/texlyre-biber",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": []
+    },
+    {
+      "component": "Emscripten runtime, libc, compiler-rt and LZ4",
+      "license": "LicenseRef-Emscripten-runtime-notices",
+      "source": "BIBER-SOURCE.tar.gz:biber/emscripten",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": [
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libc-debug.a",
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libcompiler_rt.a",
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libdlmalloc-debug.a",
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libsockets.a",
+        "/emsdk/upstream/emscripten/cache/sysroot/lib/wasm32-emscripten/libstubs-debug.a"
+      ]
+    },
+    {
+      "component": "Packaged pure Perl dependencies and data (per-file terms retained)",
+      "license": "LicenseRef-Packaged-Perl-notices",
+      "source": "BIBER-SOURCE.tar.gz:biber/host-perl5",
+      "staticLinkObligation": "source-and-notices",
+      "notices": [
+        "biber-notices/NOTICE"
+      ],
+      "selectedAs": []
+    }
+  ],
+  "requiredNotices": [
+    "biber-notices/NOTICE",
+    "third-party/texlyre-biber/LICENSE"
+  ]
+}
