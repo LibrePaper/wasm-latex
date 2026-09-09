@@ -290,6 +290,54 @@ test('build-bundles: end-to-end determinism and grouping', async () => {
   fs.rmSync(tmp, { recursive: true, force: true })
 })
 
+test('build-bundles: --extra adds a file outside the trees, grouped and receipted like a tree file', () => {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-test-extra-'))
+  const texmfDist = path.join(tmp, 'texmf-dist')
+  const texmfVar = path.join(tmp, 'texmf-var')
+  const out = path.join(tmp, 'out')
+  mkTree(texmfDist)
+  mkVarTree(texmfVar)
+
+  const extraFile = path.join(tmp, 'xetexfontlist.txt')
+  fs.writeFileSync(extraFile, '0\nsomefont.otf\n0\n1\nSome Font\n')
+
+  const stdout = runBuilder(texmfDist, texmfVar, out, [
+    '--extra', `tex/xetex/fontlist/xetexfontlist.txt=${extraFile}`,
+  ])
+  assert.match(stdout, /^[0-9a-f]{64}$/)
+
+  const index = JSON.parse(fs.readFileSync(path.join(out, 'bundles.json'), 'utf8'))
+  // Groups via the existing tex/<fmt>/<pkg> rule, same as any tree file.
+  assert.equal(index.files['tex/xetex/fontlist/xetexfontlist.txt'], 'tex/xetex/fontlist')
+  assert.ok('tex/xetex/fontlist' in index.bundles)
+  assert.equal(index.bundles['tex/xetex/fontlist'].files, 1)
+
+  // Member is really in the tar, with the right content.
+  const bundleUrl = index.bundles['tex/xetex/fontlist'].url
+  const buf = fs.readFileSync(path.join(out, bundleUrl))
+  const entries = readTar(buf)
+  const member = entries.find((e) => e.name === 'tex/xetex/fontlist/xetexfontlist.txt')
+  assert.ok(member, 'extra file should be a tar member')
+  assert.deepEqual(member.data, fs.readFileSync(extraFile))
+
+  // In RECEIPT-FILES.json.gz, like any other member.
+  const receipt = JSON.parse(gunzipSync(fs.readFileSync(path.join(out, 'RECEIPT-FILES.json.gz'))).toString('utf8'))
+  const receiptEntry = receipt.find((r) => r.path === 'tex/xetex/fontlist/xetexfontlist.txt')
+  assert.ok(receiptEntry, 'extra file should be in RECEIPT-FILES.json.gz')
+  assert.equal(receiptEntry.bundle, 'tex/xetex/fontlist')
+  assert.equal(receiptEntry.sha256, sha256File(extraFile))
+
+  // A collision with a tree path is a fatal error.
+  const collidingFile = path.join(tmp, 'colliding-amsmath.sty')
+  fs.writeFileSync(collidingFile, '% not the real amsmath\n')
+  const out2 = path.join(tmp, 'out2')
+  assert.throws(() => runBuilder(texmfDist, texmfVar, out2, [
+    '--extra', `tex/latex/amsmath/amsmath.sty=${collidingFile}`,
+  ]))
+
+  fs.rmSync(tmp, { recursive: true, force: true })
+})
+
 test('build-bundles: --include-latex-dev re-enables latex-dev', () => {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'bundle-test-dev-'))
   const texmfDist = path.join(tmp, 'texmf-dist')

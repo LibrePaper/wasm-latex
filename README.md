@@ -46,16 +46,32 @@ The texmf tree comes from the official TeX Live release archive, verified
 against TUG's signed hash: [`docs/texlive-snapshot-2026.md`](docs/texlive-snapshot-2026.md).
 
 **Build the package bundles.** `tools/build-bundles.mjs` packs the same tree
-into one tar per package directory, 5,503 bundles and 3.5 GB for 2026, indexed
+into one tar per package directory, 5,501 bundles and 3.5 GB for 2026, indexed
 by `bundles.json`, so the browser fetches a package in one request instead of
 one request per file. Deterministic, receipted, and never bundles what a browser
-engine cannot read. See [`docs/bundles.md`](docs/bundles.md).
+engine cannot read; a bundle over 20 MiB of tar bytes is split into parts so
+every static asset stays under the platform's 25 MiB limit, and both
+`RECEIPT-FILES.json.gz` and XeTeX's ICU data ship gzipped for the same reason.
+`xetexfontlist.txt`, the by-name font database XeTeX's fontconfig shim reads
+(kpse format 26, no counterpart in TeX Live), is generated with `otfinfo` and
+added to the bundle set as `tex/xetex/fontlist` — see below. See
+[`docs/bundles.md`](docs/bundles.md).
 
     node tools/build-bundles.mjs \
       --texmf vendor/texlive-2026/texlive-20260301-texmf/texmf-dist \
       --texmf vendor/texlive-2026/texmf-var \
       --out wasm-build/dist/bundles \
-      --evidence receipts/BUNDLE-RECEIPT.texlive-2026.json
+      --evidence receipts/BUNDLE-RECEIPT.texlive-2026.json \
+      --extra tex/xetex/fontlist/xetexfontlist.txt=wasm-build/dist/xetexfontlist.txt
+
+The font list itself comes from `tools/xetex-fontlist.mjs`, the same builder
+`tools/build-format.mjs --engine xetex` uses in-process to answer its own
+format-build request:
+
+    node tools/xetex-fontlist.mjs \
+      --texmf vendor/texlive-2026/texlive-20260301-texmf/texmf-dist \
+      --texmf vendor/texlive-2026/texmf-var \
+      --out wasm-build/dist/xetexfontlist.txt
 
 `tools/build-format.mjs --bundles wasm-build/dist/bundles --expect-inputs
 receipts/FORMAT-RECEIPT.pdftex-2026.json` builds the format through the
@@ -69,27 +85,50 @@ document both by family name and by file name and feeds the result through
 
 **Prepare a distributable release.** The engines are GPL, so publishing them
 carries obligations: notices, complete corresponding source, and a working
-relink path for the LGPL library inside them. Four commands discharge and then
-check every obligation this repository can check —
-[`docs/licensing.md`](docs/licensing.md) explains each:
+relink path for the LGPL library inside them. The root `Makefile` names every
+step and chains them; `tools/release.sh` does the one step that publishes.
+Run the pipeline up through the artifacts:
 
-    node tools/link-inventory.mjs --family pdftex --out receipts/LINK-INVENTORY.pdftex.json
-    node tools/build-corresponding-source.mjs --dist wasm-build/dist --out dist-source/
-    node tools/stage-release.mjs --dist wasm-build/dist --bundles wasm-build/dist/bundles --out staged/ --source-url <published URL>
-    node tools/check-release.mjs --dir staged/
+    make test        # every check that runs without Docker or network
+    make bundles      # pack the vendored texmf tree            -> wasm-build/dist/bundles
+    make format       # dump the pdfTeX and XeTeX formats       -> wasm-build/dist/wasmtex-*.fmt
+    make inventory    # what the linker put in every engine     -> receipts/LINK-INVENTORY.*.json
+    make source       # the corresponding-source archive        -> dist-source/
 
-Staging also runs the release gate. When it passes, `MANIFEST.json` records
+then either run the whole publish-and-stage chain in one shot:
+
+    make release TAG=engines-2026.1
+
+or drive its individual steps yourself:
+
+    make publish-source TAG=engines-2026.1
+    make stage SOURCE_URL=https://github.com/.../releases/download/<tag>/<archive>
+    make check
+
+`make release` refuses early rather than doing anything partial: a dirty
+working tree, a tag that already exists (locally or on the remote), or `gh`
+not signed in all stop it before it tags HEAD or touches GitHub —
+`tools/release.sh preflight` is what checks. `make publish-source` tags HEAD,
+creates a GitHub Release, and uploads the corresponding-source archive; `make
+stage` assembles `staged/` and runs the release gate; `make release` also
+annotates the finished GitHub Release with the staged manifest's SHA-256, via
+`tools/release.sh annotate`.
+
+Staging runs the release gate. When it passes, `MANIFEST.json` records
 `releaseGate: "passed"`, lists hashes and sizes for the entire payload (including
 notices and receipts), and the command prints the manifest's SHA-256. LibrePaper
 imports that directory with `make latex-mirror LATEX_RELEASE=<staged directory>
-LATEX_RELEASE_SHA256=<reviewed manifest hash>`. No build or source checkout is
-needed by the importer. An incomplete stage has no passing marker and cannot be
-imported. `node tools/stage-release.test.mjs` tests this contract without building
-engines or accessing the network.
+LATEX_RELEASE_SHA256=<reviewed manifest hash>` — the hash `make release` printed
+and annotated onto the GitHub Release is what a reviewer checks before pasting
+it into that command. No build or source checkout is needed by the importer.
+An incomplete stage has no passing marker and cannot be imported. `node
+tools/stage-release.test.mjs` tests this contract without building engines or
+accessing the network.
 
-`check-release.mjs` fails closed. Until the source archive is published
-somewhere and named with `--source-url`, it refuses the release, which is the
-correct answer: a GPL binary without its source is not distributable.
+`check-release.mjs` (`make check`) fails closed. Until the source archive is
+published somewhere and named with `--source-url`, it refuses the release,
+which is the correct answer: a GPL binary without its source is not
+distributable.
 
 **Know what the workers can reach.** The JavaScript we ship alongside the wasm
 contains no dynamic code and no embedded endpoint — every URL it builds comes
@@ -99,8 +138,12 @@ network policy too: [`docs/audit-worker-js.md`](docs/audit-worker-js.md).
 ## What is not done yet
 
 - pdfTeX, BibTeX, BibTeX8, makeindex, XeTeX and dvipdfm are built here, with
-  ICU data for XeTeX. XeTeX boots but has no format file and has compiled no
-  document yet. LuaHBTeX has its Dockerfile and gates but has never been run.
+  ICU data for XeTeX. XeTeX now has a dumped format, compiles a fontspec
+  document (by font name and by file name) through dvipdfm to a PDF, and
+  returns SyncTeX. No document has been compiled by XeTeX in a browser yet,
+  and LibrePaper still needs to wire XeTeX into its own compile path — see the
+  LibrePaper item below. LuaHBTeX has its Dockerfile and gates but has never
+  been run.
 - The engine Dockerfiles still clone TeX Live source from GitHub rather than
   using a vendored tarball.
 - Compliance is established for every engine built. LuaHBTeX has no link
@@ -113,9 +156,9 @@ network policy too: [`docs/audit-worker-js.md`](docs/audit-worker-js.md).
 - LibrePaper's shipped mirror still points at the pinned WasmTex package
   snapshot until a release built here, with bundles, is imported. The
   importer, the controller's bundle mode, and the failure message that names
-  a missing package are in LibrePaper; the release is not published.
-- Only the pdfTeX worker resolves through bundles. The XeTeX, LuaTeX and
-  dvipdfm workers still resolve one file at a time.
+  a missing package are in LibrePaper; the release is not published. LibrePaper
+  also still sends the bundle index to pdfTeX only and does not hand XeTeX its
+  ICU data through `loadicudata`.
 
 The product plan these serve, and where the browser stops and the paired local
 app begins, is [`SPEC-latex.md`](SPEC-latex.md); the user-facing version is

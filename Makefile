@@ -1,8 +1,11 @@
 # The release pipeline, one target per step, in the order they run.
 #
 #   make test        every check that runs without Docker or network
-#   make bundles     pack the vendored texmf tree            -> wasm-build/dist/bundles
-#   make format      dump the pdfTeX format from the tree    -> wasm-build/dist/wasmtex-pdftex.fmt
+#   make fontlist    generate xetexfontlist.txt with otfinfo  -> $(DIST)/xetexfontlist.txt
+#   make bundles     pack the vendored texmf tree, plus the
+#                    font list, into per-package bundles       -> wasm-build/dist/bundles
+#   make format      dump the pdfTeX and XeTeX formats from
+#                    the tree                                  -> wasm-build/dist/wasmtex-{pdftex,xetex}.fmt
 #   make inventory   what the linker put in every engine    -> receipts/LINK-INVENTORY.*.json
 #   make source      the corresponding-source archive        -> dist-source/
 #   make publish-source TAG=engines-2026.1
@@ -27,7 +30,7 @@ IMAGE       ?= librepaper-pdftex-wasm
 FAMILIES    ?= pdftex bibtex bibtex8 makeindex xetex dvipdfm
 TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
 
-.PHONY: help test bundles format inventory source publish-source stage check release clean-staged
+.PHONY: help test fontlist bundles format inventory source publish-source stage check release clean-staged
 
 help:  ## List targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*## /  /'
@@ -37,18 +40,24 @@ test:  ## Unit tests, pin check, and the resolver test
 	node tools/stage-release.test.mjs
 	node tools/build-bundles.test.mjs
 	node wasm-build/kpse-resolve.test.cjs
-	@[ -f wasm-build/bundle-mode.test.cjs ] && node wasm-build/bundle-mode.test.cjs || true
+	node wasm-build/bundle-mode.test.cjs
 
-bundles:  ## Pack the texmf tree into per-package bundles, with a receipt
+fontlist:  ## Generate xetexfontlist.txt (otfinfo over every OpenType/TrueType font)
+	node tools/xetex-fontlist.mjs $(TEXMF_ARGS) --out $(DIST)/xetexfontlist.txt
+
+bundles: fontlist  ## Pack the texmf tree, plus the font list, into per-package bundles, with a receipt
 	node tools/build-bundles.mjs $(TEXMF_ARGS) --out $(BUNDLES) \
-	  --evidence receipts/BUNDLE-RECEIPT.texlive-2026.json
+	  --evidence receipts/BUNDLE-RECEIPT.texlive-2026.json \
+	  --extra tex/xetex/fontlist/xetexfontlist.txt=$(DIST)/xetexfontlist.txt
 	node tools/prune-bundles.mjs --dir $(BUNDLES)
 
-format:  ## Dump the pdfTeX format, smoke it, and check the bundle path resolves the same inputs
+format:  ## Dump the pdfTeX and XeTeX formats, smoke them, and check the bundle path resolves the same pdfTeX inputs
 	node tools/build-format.mjs $(TEXMF_ARGS) --out $(DIST)/wasmtex-pdftex.fmt \
 	  --evidence receipts/FORMAT-RECEIPT.pdftex-2026.json --smoke
 	node tools/build-format.mjs $(TEXMF_ARGS) --bundles $(BUNDLES) --out /dev/null \
 	  --expect-inputs receipts/FORMAT-RECEIPT.pdftex-2026.json --smoke
+	node tools/build-format.mjs $(TEXMF_ARGS) --engine xetex --out $(DIST)/wasmtex-xetex.fmt \
+	  --evidence receipts/FORMAT-RECEIPT.xetex-2026.json --smoke-both
 
 inventory:  ## Link inventories for every built family
 	@for f in $(FAMILIES); do \

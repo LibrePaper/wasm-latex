@@ -379,6 +379,13 @@ Done in this repository:
   the corresponding-source archive to a GitHub Release and annotates it with
   the staged manifest hash.
 - `docs/bundles.md` and `docs/what-works-in-the-browser.md`.
+- OpenType font lookup by name, as far as this repository ships it:
+  `tools/xetex-fontlist.mjs` (extracted from `tools/build-format.mjs`, which
+  now imports it) builds `xetexfontlist.txt` with `otfinfo`, and
+  `tools/build-bundles.mjs --extra` adds it to the bundle set as
+  `tex/xetex/fontlist`, so a browser resolver answering format-26 requests
+  from the bundle index can serve it like any other file. The XeTeX worker
+  reading it, and LibrePaper handing XeTeX its ICU data, remain below.
 
 Done in LibrePaper:
 
@@ -391,11 +398,10 @@ Done in LibrePaper:
 
 Not done:
 
-- OpenType font lookup by name in the browser: the harness generates
-  `xetexfontlist.txt` with `otfinfo` at build time; the release should ship
-  that list as an artifact and the XeTeX worker should read it, which is not
-  wired. LibrePaper also still sends the bundle index to pdfTeX only, and does
-  not hand XeTeX its ICU data through `loadicudata`.
+- OpenType font lookup by name in the browser: `xetexfontlist.txt` ships in a
+  bundle now (`tex/xetex/fontlist`, see above), but the XeTeX worker does not
+  yet read it, LibrePaper still sends the bundle index to pdfTeX only, and it
+  does not hand XeTeX its ICU data through `loadicudata`.
 - LuaTeX's timeout; its engine is still unbuilt.
 - The local tier: platform confinement, the shell-escape policy, stored
   renderings, and doctor output for agents. All of it is Rust in LibrePaper

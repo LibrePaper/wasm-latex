@@ -63,8 +63,8 @@
     "tex/latex/url"
   ],
   "index": {
-    "bytes": 14470608,
-    "sha256": "b04c80396d22e085505846991f7144f04a14daf58be094ee764ecfe5472aded8"
+    "bytes": 14470938,
+    "sha256": "ce1794d4dc0987d7914a9ef1147ad6b042572a7eb88b8026262e4c308eb0e956"
   },
   "bundles": [
     {
@@ -38512,6 +38512,13 @@
       "files": 1
     },
     {
+      "name": "tex/xetex/fontlist",
+      "url": "b/ac344f2dac92783e969cc7d08299a759f3650f5990f94a626cb232e038fa7b8b/tex-xetex-fontlist.tar",
+      "size": 419328,
+      "sha256": "ac344f2dac92783e969cc7d08299a759f3650f5990f94a626cb232e038fa7b8b",
+      "files": 1
+    },
+    {
       "name": "tex/xetex/unimath-plain-xetex",
       "url": "b/6ac911fb38f49f5024206028a9289084aa3a0e73ce486dc3601a605909db272f/tex-xetex-unimath-plain-xetex.tar",
       "size": 31232,
@@ -38569,8 +38576,8 @@
     }
   ],
   "totals": {
-    "bundles": 5500,
-    "files": 159000,
-    "bytes": 3491581440
+    "bundles": 5501,
+    "files": 159001,
+    "bytes": 3492000768
   }
 }

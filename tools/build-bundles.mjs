@@ -12,7 +12,18 @@
 //
 //   node tools/build-bundles.mjs --texmf <texmf-dist> [--texmf <texmf-var>] \
 //     --out <dir> [--evidence <file>] [--epoch N] [--core <file>] \
-//     [--include-latex-dev] [--split-bytes N] [--quiet]
+//     [--include-latex-dev] [--split-bytes N] [--quiet] \
+//     [--extra <texmf-relative-path>=<file> ...]
+//
+// --extra adds a file from outside the texmf trees to the index under the
+// given texmf-relative path, as if it were one more file the trees walk had
+// found: it goes through bundleFor() for grouping, the core merge, the
+// receipt and RECEIPT-FILES.json.gz, and the same determinism and idempotence
+// as any tree file. A path also present in a texmf tree is a fatal collision,
+// same as a collision between two trees. Repeatable. Used to add
+// xetexfontlist.txt (built by tools/xetex-fontlist.mjs, which has no
+// counterpart in TeX Live) to the index under
+// tex/xetex/fontlist/xetexfontlist.txt.
 //
 // Determinism: every tar is ustar with members sorted by path, mode 0644,
 // uid/gid 0, mtime fixed at SOURCE_DATE_EPOCH, and no compression (the HTTP
@@ -48,6 +59,7 @@ function arg(name, fallback) {
 }
 
 const texmfDirs = argAll('texmf').filter(Boolean).map((d) => path.resolve(d))
+const extraArgs = argAll('extra').filter(Boolean)
 const outDir = path.resolve(arg('out', 'wasm-build/dist/bundles'))
 const evidencePath = arg('evidence', null)
 const epoch = Number(arg('epoch', process.env.SOURCE_DATE_EPOCH ?? DEFAULT_EPOCH))
@@ -58,9 +70,24 @@ const corePath = arg('core', null)
 const log = (...a) => { if (!quiet) console.error(...a) }
 
 if (!texmfDirs.length || texmfDirs.some((d) => !fs.existsSync(d))) {
-  console.error('usage: node tools/build-bundles.mjs --texmf <dir> [--texmf <dir>...] --out <dir> [--evidence file]')
+  console.error('usage: node tools/build-bundles.mjs --texmf <dir> [--texmf <dir>...] --out <dir> [--evidence file] [--extra <relpath>=<file>...]')
   process.exit(2)
 }
+
+const extras = extraArgs.map((spec) => {
+  const eq = spec.indexOf('=')
+  if (eq <= 0) {
+    console.error(`fatal: --extra must be <texmf-relative-path>=<file>, got: ${spec}`)
+    process.exit(2)
+  }
+  const rel = spec.slice(0, eq)
+  const abs = path.resolve(spec.slice(eq + 1))
+  if (!fs.existsSync(abs)) {
+    console.error(`fatal: --extra file not found: ${abs}`)
+    process.exit(1)
+  }
+  return { rel, abs }
+})
 
 const coreList = corePath
   ? JSON.parse(fs.readFileSync(corePath, 'utf8'))
@@ -153,6 +180,18 @@ texmfDirs.forEach((root, treeIndex) => {
   })
 })
 log(`indexed ${relToAbs.size} files`)
+
+if (extras.length) {
+  log(`adding ${extras.length} extra file(s)`)
+  for (const { rel, abs } of extras) {
+    if (relToAbs.has(rel)) {
+      console.error(`fatal: --extra path collides with a texmf tree path: ${rel}`)
+      process.exit(1)
+    }
+    relToAbs.set(rel, abs)
+    log(`  + ${rel} (extra, ${abs})`)
+  }
+}
 
 // --- group into bundles --------------------------------------------------------
 // bundleName -> array of relPaths (unsorted at this point)

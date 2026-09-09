@@ -37,6 +37,12 @@ tree:
   arrive together.
 - `bibtex/bst/<package>`, `bibtex/bib/<package>`, `makeindex/<package>`,
   `web2c`, and `scripts/<package>` for Lua files only.
+- `tex/xetex/fontlist`: `xetexfontlist.txt`, the by-name font database
+  XeTeX's fontconfig shim reads (kpse format 26). It has no counterpart in
+  TeX Live; `tools/xetex-fontlist.mjs` generates it with `otfinfo` and
+  `tools/build-bundles.mjs --extra` adds it to the index under
+  `tex/xetex/fontlist/xetexfontlist.txt`, where the existing `tex/<fmt>/<pkg>`
+  rule groups it like any other file.
 - `core` merges the kernel and what nearly every pdfLaTeX document loads before
   its preamble: `tex/latex/base`, l3kernel, l3backend, amsmath, graphics,
   hyperref, geometry, babel, the small generic helpers, and the Computer Modern
