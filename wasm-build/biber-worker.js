@@ -19,11 +19,17 @@ self.onmessage = async ({ data: job }) => {
     for (const name of Object.keys(job.files || {})) projectPath(name);
     glueURL = URL.createObjectURL(new Blob([job.glue], { type: 'text/javascript' }));
     importScripts(glueURL);
+    // This upstream LZ4 loader ignores getPreloadedPackage and owns an IDB
+    // cache. Disable that cache and serve only the host-verified data in this
+    // isolated worker, so no unverified cached bytes or network can enter.
+    Object.defineProperty(self, 'indexedDB', { value: undefined, configurable: true });
+    self.fetch = async url => {
+      if (url !== 'biber-verified.data') throw new Error('Unexpected Biber fetch: ' + url);
+      return new Response(job.data);
+    };
     const module = await self.biber({
       noInitialRun: true,
-      // Bypass Emscripten's independently cached data: these bytes have already
-      // been verified by the application's release cache.
-      getPreloadedPackage: () => job.data,
+      locateFile: name => name === 'biber.data' ? 'biber-verified.data' : name,
       instantiateWasm(imports, done) {
         const instance = new WebAssembly.Instance(job.wasm, imports);
         done(instance, job.wasm);

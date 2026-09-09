@@ -40,6 +40,7 @@ try {
   latex.configure({project:'biber-browser-integration',settings:{engine:'pdflatex'}});
   const tree={main:'main.tex',texts:{'main.tex':input.tex,'refs.bib':input.bib},assets:{}};
   const first=await latex.compile(tree);
+  if (!first.ok) throw Error(JSON.stringify(first));
   const second=await latex.compile({...tree,texts:{...tree.texts,'main.tex':input.tex.replace('Unicode bibliography:','Edited prose:')}});
   // Nested project paths must not be flattened when sent to Biber.
   latex.configure({project:'biber-nested-integration',settings:{engine:'pdflatex'}});
