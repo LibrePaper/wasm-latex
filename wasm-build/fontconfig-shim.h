@@ -1,5 +1,5 @@
 /* =============================================================================
- * fontconfig-shim.h — WasmTex's OWN minimal fontconfig API for XeTeX (WASM) [#52]
+ * fontconfig-shim.h — LibrePaper's own minimal fontconfig API for XeTeX (WASM) [#52]
  * =============================================================================
  *
  * Drop-in for `<fontconfig/fontconfig.h>` when building XeTeX from texlive-source
@@ -13,8 +13,8 @@
  * unpatched XeTeXFontMgr_FC.cpp links against them. Built into the include path as
  * `fontconfig/fontconfig.h` by build-xetex2.sh.
  * ========================================================================== */
-#ifndef WASMTEX_FONTCONFIG_SHIM_H
-#define WASMTEX_FONTCONFIG_SHIM_H
+#ifndef LIBREPAPER_FONTCONFIG_SHIM_H
+#define LIBREPAPER_FONTCONFIG_SHIM_H
 
 #include <stdarg.h>
 
@@ -86,4 +86,4 @@ FcResult FcPatternGetInteger(const FcPattern *p, const char *object, int n, int 
 }
 #endif
 
-#endif /* WASMTEX_FONTCONFIG_SHIM_H */
+#endif /* LIBREPAPER_FONTCONFIG_SHIM_H */

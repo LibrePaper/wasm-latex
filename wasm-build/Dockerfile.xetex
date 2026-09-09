@@ -55,7 +55,7 @@ RUN test -n "${TEXLIVE_REF}" || { echo "TEXLIVE_REF build-arg is required"; exit
 
 RUN mkdir -p /build/native /build/wasm /dist
 
-# Apply only the audited WasmTex integration patch to the exact pinned source.
+# Apply only the audited PDF-backend integration patch to the exact pinned source.
 # Regenerate web2c's configure/Makefile.in because the patch changes its
 # autoconf and automake inputs. A TeX Live upgrade must fail here, not apply with
 # fuzz or silently restore the old PDF backend.

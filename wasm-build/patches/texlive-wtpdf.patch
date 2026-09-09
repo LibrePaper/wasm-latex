@@ -1558,8 +1558,8 @@ index ec7a675c5..f02cd839e 100644
  	luatexdir/luamd5/md5.c \
  	luatexdir/luamd5/luamd5.h \
  	luatexdir/luamd5/md5lib.c \
-+	luatexdir/luamd5/wasmtex-sha2.c \
-+	luatexdir/luamd5/wasmtex-sha2.h \
++	luatexdir/luamd5/librepaper-sha2.c \
++	luatexdir/luamd5/librepaper-sha2.h \
  	luatexdir/luapeg/lpeg.c \
  	luatexdir/luapeg/lpeg.h \
  	luatexdir/luazip/src/luazip.c \
@@ -3815,7 +3815,7 @@ index db112659a..5510a499e 100644
  /* We could use a different file but this is as easy. */
  
 -#include "utilsha.h"
-+#include "wasmtex-sha2.h"
++#include "librepaper-sha2.h"
  
  static int sha2_256(lua_State * L)
  {
@@ -3826,7 +3826,7 @@ index db112659a..5510a499e 100644
          const char *data = lua_tolstring(L,1,&size);
 -        sha256_digest(data,size,result,SHA_BYTES);
 -        lua_pushlstring(L,(const char *)result,SHA256_DIGEST_LENGTH);
-+        wasmtex_sha256(data,size,result);
++        librepaper_sha256(data,size,result);
 +        lua_pushlstring(L,(const char *)result,sizeof(result));
          return 1;
      }
@@ -3840,7 +3840,7 @@ index db112659a..5510a499e 100644
          const char *data = lua_tolstring(L,1,&size);
 -        sha384_digest(data,size,result,SHA_BYTES);
 -        lua_pushlstring(L,(const char *)result,SHA384_DIGEST_LENGTH);
-+        wasmtex_sha384(data,size,result);
++        librepaper_sha384(data,size,result);
 +        lua_pushlstring(L,(const char *)result,sizeof(result));
          return 1;
      }
@@ -3855,7 +3855,7 @@ index db112659a..5510a499e 100644
          const char *data = lua_tolstring(L,1,&size);
 -        sha512_digest(data,size,result,SHA_BYTES);
 -        lua_pushlstring(L,(const char *)result,SHA512_DIGEST_LENGTH);
-+        wasmtex_sha512(data,size,result);
++        librepaper_sha512(data,size,result);
 +        lua_pushlstring(L,(const char *)result,sizeof(result));
          return 1;
      }

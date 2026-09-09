@@ -45,13 +45,13 @@ emconfigure "$SRC/configure" \
 
 echo "=== Phase 2a.1: SHA-2 WebAssembly smoke test ==="
 emcc -O2 -std=c99 \
-  "$GLUE/sha2/wasmtex-sha2.c" \
-  "$GLUE/sha2/wasmtex-sha2-smoke.c" \
-  -sEXIT_RUNTIME=1 -o /tmp/wasmtex-sha2-smoke.js || {
+  "$GLUE/sha2/librepaper-sha2.c" \
+  "$GLUE/sha2/librepaper-sha2-smoke.c" \
+  -sEXIT_RUNTIME=1 -o /tmp/librepaper-sha2-smoke.js || {
     echo "SHA-2 WebAssembly smoke-test build failed"
     exit 1
   }
-node /tmp/wasmtex-sha2-smoke.js || {
+node /tmp/librepaper-sha2-smoke.js || {
   echo "SHA-2 WebAssembly smoke test failed"
   exit 1
 }

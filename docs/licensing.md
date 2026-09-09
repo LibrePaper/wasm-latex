@@ -3,8 +3,8 @@
 What this repository may distribute, on what terms, and what has to be true
 before it does. Scoped to what it actually builds: pdfTeX, BibTeX, BibTeX8,
 makeindex, XeTeX and dvipdfm, each with its own link inventory under
-`receipts/`. LuaHBTeX is not built and has no terms established; WasmTex's
-version of this document, in git history, is where its policy would start.
+`receipts/`. LuaHBTeX is not built and has no terms established; the seed
+project's version of this document, in git history, is where its policy would start.
 
 Nothing here is legal advice. It is a record of the obligations we identified,
 the reasoning, and where the evidence lives.
@@ -45,7 +45,7 @@ engine's. Every input is recorded with its hash in
 `receipts/FORMAT-RECEIPT.*.json`.
 
 **The MIT boundary.** This repository's own code — build glue, shims, `tools/` —
-is MIT (`LICENSE`), and so is the WasmTex layer it was seeded from
+is MIT (`LICENSE`), and so is the build layer it was seeded from
 (`LICENSES/WasmTex.txt`). That MIT never describes an engine artifact. npm
 metadata, package labels and repository badges must not be allowed to imply it
 does; the engines are GPL and are separately delivered.
@@ -120,7 +120,7 @@ SPEC-latex.md's implementation status lists the gaps in the work generally. Thes
 the ones specific to the obligations:
 
 - **Terms for LuaHBTeX.** It has no link inventory, and its `pplib` question
-  has to be settled against artifacts we built; WasmTex's evidence for that
+  has to be settled against artifacts we built; the seed project's evidence for that
   was never seeded here (see `THIRD_PARTY_NOTICES.md`).
 - **BibTeX8's notice text.** Its sources are GPL-1.0-or-later and the shipped
   notice is the GPL-2.0 text, which the "or later" permits; a GPL-1.0 text is

@@ -93,7 +93,7 @@ differ, all confined to the XHR shim and the smoke step:
   that hands the engine format bytes directly; xetex-worker.js has no such
   command. The engine fetches its own format through the *same* kpse hook as
   every other file, under the bare name `--fmt=` was given in
-  `xetex-entry.c` (`wasmtex-xetex`), kpathsea format 10. The harness registers
+  `xetex-entry.c` (`xetex`), kpathsea format 10. The harness registers
   the format bytes it just dumped under that name before running the smoke
   compile, so the fetch is served from memory instead of the disk.
 - **Fonts.** `\setmainfont{lmroman10-regular.otf}` (by file name) resolves

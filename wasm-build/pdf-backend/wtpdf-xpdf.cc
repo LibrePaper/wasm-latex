@@ -156,7 +156,7 @@ GString *make_password(const char *password) {
 
 bool ensure_global_params() {
   /*
-   * Xpdf 4.04 exposes process-global parser configuration. WasmTex runs one
+   * Xpdf 4.04 exposes process-global parser configuration. LibrePaper runs one
    * engine per Worker, so retaining this object for that Worker's lifetime
    * avoids invalidating live documents and mirrors the engine process model.
    */

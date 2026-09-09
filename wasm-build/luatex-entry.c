@@ -1,5 +1,5 @@
 /* =============================================================================
- * luatex-entry.c — WASM entry points for the WasmTex worker protocol (LuaHBTeX)
+ * luatex-entry.c — WASM entry points for the LibrePaper worker protocol (LuaHBTeX)
  * =============================================================================
  *
  * Mirrors wasm-entry.c (pdfTeX): wraps luatex's main() with a constructed argv so
@@ -30,7 +30,7 @@ int compileLaTeX(void) {
         PROG,
         "-interaction=nonstopmode",
         "-recorder",
-        "--fmt=wasmtex-luatex",
+        "--fmt=luatex",
         main_entry,
         NULL
     };

@@ -37,27 +37,27 @@ echo "Building xetex from texlive-source ($TEXLIVE_REF) ..."
 docker build -f wasm-build/Dockerfile.xetex --platform linux/amd64 \
   --build-arg TEXLIVE_REF="$TEXLIVE_REF" \
   --build-arg TEXLIVE_YEAR="${TEXLIVE_YEAR:-2025}" \
-  -t wasmtex-xetex-wasm wasm-build/
+  -t librepaper-xetex-wasm wasm-build/
 
 echo "Checking XeTeX PDF inclusion geometry ..."
 docker run --rm --platform linux/amd64 \
   -v "$REPO_ROOT/wasm-build/test-xetex-pdf-geometry.mjs:/test-xetex-pdf-geometry.mjs:ro" \
   -v "$REPO_ROOT/wasm-build/pdf-backend/fixtures/xetex-geometry.expected.json:/xetex-geometry.expected.json:ro" \
-  --entrypoint node wasmtex-xetex-wasm \
+  --entrypoint node librepaper-xetex-wasm \
   /test-xetex-pdf-geometry.mjs /build/native/texk/web2c/xetex /xetex-geometry.expected.json
 
 echo "Checking deterministic XeTeX PDF inclusion XDV ..."
 docker run --rm --platform linux/amd64 --tmpfs /work \
   -v "$REPO_ROOT/wasm-build/build-xetex-pdf-visual-fixture.mjs:/fixture.mjs:ro" \
   -v "$REPO_ROOT/wasm-build/pdf-backend/fixtures/xetex-visual.expected.sha256:/expected.sha256:ro" \
-  --entrypoint sh wasmtex-xetex-wasm -c '
+  --entrypoint sh librepaper-xetex-wasm -c '
     set -eu
     node /fixture.mjs /build/native/texk/web2c/xetex /work
     cd /work
     sha256sum -c /expected.sha256
   '
 
-docker run --rm --platform linux/amd64 -v "$OUT_ABS:/dist" wasmtex-xetex-wasm
+docker run --rm --platform linux/amd64 -v "$OUT_ABS:/dist" librepaper-xetex-wasm
 [ -f "$OUT_DIR/xetex.wasm" ] || { echo "xetex build produced no wasm"; exit 1; }
 echo "Built: $(wc -c < "$OUT_DIR/xetex.js") + $(wc -c < "$OUT_DIR/xetex.wasm") bytes"
 
@@ -69,7 +69,7 @@ echo "Built: $(wc -c < "$OUT_DIR/xetex.js") + $(wc -c < "$OUT_DIR/xetex.wasm") b
 # =============================================================================
 echo "Building dvipdfm from texlive-source ..."
 docker run --rm --platform linux/amd64 --entrypoint bash \
-  -v "$REPO_ROOT/wasm-build:/glue:ro" -v "$OUT_ABS:/dist" wasmtex-xetex-wasm -c '
+  -v "$REPO_ROOT/wasm-build:/glue:ro" -v "$OUT_ABS:/dist" librepaper-xetex-wasm -c '
     set -euo pipefail
     cp /glue/dvipdfm-entry.c /glue/dvipdfm-stubs.c /glue/kpse-hook.c \
        /glue/build-dvipdfm2.sh /glue/dvipdfm-worker.js \

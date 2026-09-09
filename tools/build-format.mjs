@@ -2,9 +2,9 @@
 // Build a pdfTeX or XeTeX format (.fmt) from a built engine and a local texmf tree.
 //
 // Upstream dumps the format out of a Playwright-driven browser page that imports
-// the WasmTex TypeScript host and pulls every input from a CDN over synchronous
-// XHR (scripts/extract-format.mjs). That needs a browser, a Vite server, the
-// whole application repository, and a network the build has to trust.
+// LibrePaper's former TypeScript host and pulls every input from a CDN over
+// synchronous XHR (scripts/extract-format.mjs). That needs a browser, a Vite
+// server, the whole application repository, and a network the build has to trust.
 //
 // None of it is necessary. The engine worker in wasm-build/ is self-contained:
 // it speaks a postMessage protocol and asks for TeX files through one function.
@@ -503,16 +503,16 @@ const sha = createHash('sha256').update(fmt).digest('hex')
 
 // XeTeX only: no `loadformat` message exists in xetex-worker.js — the engine
 // fetches its own format through the ordinary kpse hook, under the bare name
-// given to `--fmt=` in xetex-entry.c's compileLaTeX() ("wasmtex-xetex"), as
+// given to `--fmt=` in xetex-entry.c's compileLaTeX() ("xetex"), as
 // kpathsea format 10 (fmt). Register the bytes we just dumped under every name
 // the request could plausibly arrive as, so the smoke compile below (and any
 // later compile in this same process) is served from memory, not the disk.
 let engineFmtGz = null
 if (engine === 'xetex') {
-  // xetex-entry.c hardcodes `--fmt=wasmtex-xetex` regardless of --out; that is
+  // xetex-entry.c hardcodes `--fmt=xetex` regardless of --out; that is
   // the bare name kpathsea (format 10, fmt) will ask for, with or without the
   // .fmt extension depending on how the request reaches kpse_find_file_impl.
-  const base = `wasmtex-${engine}`
+  const base = `${engine}`
   for (const name of [base, `${base}.fmt`]) extraFiles.set(`10/${name}`, fmt)
   engineFmtGz = gzipSync(fmt)
   const gzPath = `${outPath}.gz`

@@ -14,7 +14,7 @@
 #   wasm-build/build-icu-data.sh                 # build icudt68l.dat into /tmp/icu-data/
 #
 # Publishing it is deliberately not this script's job. It previously uploaded to a
-# Cloudflare R2 bucket, defaulting to WasmTex's own `corca-texlive-production` —
+# Cloudflare R2 bucket, defaulting to a project-specific `corca-texlive-production` —
 # infrastructure that is not ours, named as the destination of an `--upload` flag.
 # Serving the asset belongs with whatever serves the engines; the worker fetches it
 # from ${texlive_endpoint}icudt68l.dat, gzipped, with a long immutable cache header.

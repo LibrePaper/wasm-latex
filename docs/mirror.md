@@ -102,7 +102,7 @@ bundled `tex/latex/biblatex/biblatex.sty` (`\blx@bcfversion`,
 `\ProvidesPackage` version and date), found via `bundles.json`'s own `files`
 map and unpacked with the tar reader in `wasm-build/kpse-resolve.cjs`
 (`readTar`) -- the same reader the browser resolver uses. This needs no
-network: WasmTex's old CDN fetch of `biblatex.sty` at import time is gone,
+network: the former importer's old CDN fetch of `biblatex.sty` at import time is gone,
 because the file is already part of the staged release's `core` bundle.
 
 `vm` is always `null`. The field survives from the time the Biber VM was

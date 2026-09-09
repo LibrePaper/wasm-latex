@@ -56,7 +56,7 @@ docker run --rm --platform linux/amd64 --tmpfs /work \
           tail -30 repeat-image.out
           echo "repeat-image gate failed (attempt $attempt)"; exit 1
         }
-      grep -q WASMTEX_REPEAT_IMAGE_OK repeat-image.out || {
+      grep -q LIBREPAPER_REPEAT_IMAGE_OK repeat-image.out || {
         tail -30 repeat-image.out
         echo "repeat-image gate: missing OK marker (attempt $attempt)"; exit 1
       }

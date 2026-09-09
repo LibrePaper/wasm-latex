@@ -4,7 +4,7 @@
 // MANIFEST.json.
 //
 // This is the repository-owned replacement for the release-import half of
-// LibrePaper's `latex/tools/wasmtex.mjs` (`mirrorRelease`, `bundlesEntry`,
+// LibrePaper's former importer (`mirrorRelease`, `bundlesEntry`,
 // `bibliographyIdentity`): LibrePaper used to build and hold the mirror
 // itself; now this repository builds it and LibrePaper just points a URL at
 // it (SPEC-latex.md, "Hosting"). The layout and manifest shape are unchanged
@@ -13,7 +13,7 @@
 // addition, a top-level `"format": 1` on manifest.json, and one omission:
 // this repository ships bundles only, so there is no legacy per-file
 // `texlive` snapshot section and no bloom filter. `bibliographyIdentity`
-// used to fetch `biblatex.sty` from the WasmTex CDN at import time; here it
+// used to fetch `biblatex.sty` from a CDN at import time; here it
 // is read straight out of the bundle tar the release already staged, so
 // building the mirror needs no network at all.
 //
@@ -42,6 +42,10 @@ const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex')
 // below -- which is the mechanism that keeps luatex (unbuilt here, so never
 // complete) out of `engines` without special-casing it.
 export const ENGINE_FILE_SETS = {
+  biber: {
+    worker: 'biber.worker.js',
+    files: ['biber.worker.js', 'biber.js', 'biber.wasm', 'biber.data', 'biber.build.json'],
+  },
   pdftex: {
     worker: 'pdftex.worker.js',
     format: 'pdftex.fmt',
@@ -183,7 +187,7 @@ export function readRelease(directory, expectedDigest) {
 /* ------------------------------------------------------------ canonicalDigest */
 // sha256 of a JSON object's canonical form: keys sorted at every level, so
 // the digest depends on content and not on insertion order or formatting.
-// Same construction as LibrePaper's wasmtex.mjs, so a release entry's digest
+// Same construction as LibrePaper's former importer, so a release entry's digest
 // means the same thing on both sides.
 function canonicalDigest(value) {
   const canon = (v) => {
@@ -216,7 +220,7 @@ function sizeOf(files, names) {
 }
 
 /* --------------------------------------------------------------- bundlesEntry */
-// Ported from LibrePaper's wasmtex.mjs bundlesEntry: reshapes
+// Ported from LibrePaper's former importer's bundlesEntry: reshapes
 // staged.bundles ({ index, sha256, snapshot, count, bytes, receipt }, already
 // verified byte-for-byte by readRelease above since bundles/bundles.json is
 // one of manifest.files) into what the mirror manifest keeps per release --
@@ -239,8 +243,8 @@ export function bundlesEntry(staged, files) {
 }
 
 /* ---------------------------------------------------------- bibliographyIdentity */
-// Ported from LibrePaper's wasmtex.mjs bibliographyIdentity, changed to need
-// no network: the WasmTex CDN fetch of biblatex.sty is replaced by reading
+// Ported from LibrePaper's former importer's bibliographyIdentity, changed to need
+// no network: the CDN fetch of biblatex.sty is replaced by reading
 // tex/latex/biblatex/biblatex.sty straight out of the bundle tar the release
 // already staged, found via bundles.json's own `files` map (readTar comes
 // from wasm-build/kpse-resolve.cjs, the same reader the browser resolver
@@ -275,7 +279,11 @@ export function bibliographyIdentity(payload) {
   // original: this is an inference from an unchanged control-file version,
   // not an independently re-verified CTAN pairing for this exact point
   // release.
-  const compatible = bcf === '3.11' ? ['2.21'] : []
+  const biberBuild = payload.has('biber.build.json') ? JSON.parse(payload.get('biber.build.json')) : null
+  if (biberBuild && biberBuild.controlFile !== bcf) {
+    throw new Error(`Biber ${biberBuild.version} requires BCF ${biberBuild.controlFile}, but bundled biblatex ${version} writes ${bcf}`)
+  }
+  const compatible = biberBuild ? [biberBuild.version] : bcf === '3.11' ? ['2.21'] : []
   const incompatible_hint =
     bcf === '3.11'
       ? `biblatex ${version} (bcf ${bcf}) is inferred compatible with Biber 2.21 (the documented pairing for` +
@@ -283,7 +291,9 @@ export function bibliographyIdentity(payload) {
         ' re-verified against a CTAN changelog for this exact biblatex point release.'
       : `biblatex ${version} uses control file ${bcf}, not the 3.11 this pinning was checked against; ` +
         're-derive the Biber pairing before trusting it.'
-  return { bibtex: '0.99e', biblatex: version, control_file: bcf, biber: { compatible, incompatible_hint }, biblatex_date: date }
+  return { bibtex: '0.99e', biblatex: version, control_file: bcf,
+    biber: { compatible, ...(biberBuild ? { version: biberBuild.version } : {}),
+      incompatible_hint: biberBuild ? `Built Biber ${biberBuild.version} and biblatex ${version} use BCF ${bcf}.` : incompatible_hint }, biblatex_date: date }
 }
 
 /* --------------------------------------------------------------- buildMirror */

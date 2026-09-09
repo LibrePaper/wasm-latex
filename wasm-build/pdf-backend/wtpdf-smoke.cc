@@ -83,7 +83,7 @@ std::string make_fixture() {
       "/CropBox [1 2 90 180] >>",
       "<< /Length 11 /Filter /ASCIIHexDecode >>\n"
       "stream\n68656c6c6f>\nendstream",
-      "<< /Producer (WasmTex) >>",
+      "<< /Producer (LibrePaper) >>",
   };
 
   for (size_t index = 1; index < offsets.size(); ++index) {
@@ -367,7 +367,7 @@ void check_object_model(wtpdf_document *document, size_t input_size) {
       info, reinterpret_cast<const unsigned char *>("Producer"), 8,
       WTPDF_LOOKUP_RESOLVE_REFERENCE, &status);
   require(value && wtpdf_value_get_string(value, &bytes, &size) == WTPDF_STATUS_OK &&
-              std::string(reinterpret_cast<const char *>(bytes), size) == "WasmTex",
+              std::string(reinterpret_cast<const char *>(bytes), size) == "LibrePaper",
           "Info string changed");
   wtpdf_value_destroy(value);
   wtpdf_value_destroy(info);

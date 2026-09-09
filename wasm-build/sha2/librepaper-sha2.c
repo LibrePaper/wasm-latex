@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: MIT */
-#include "wasmtex-sha2.h"
+#include "librepaper-sha2.h"
 
 #include <string.h>
 
@@ -8,14 +8,14 @@ typedef struct {
     uint64_t total;
     uint8_t buffer[64];
     size_t buffered;
-} wasmtex_sha256_state;
+} librepaper_sha256_state;
 
 typedef struct {
     uint64_t state[8];
     uint64_t total;
     uint8_t buffer[128];
     size_t buffered;
-} wasmtex_sha512_state;
+} librepaper_sha512_state;
 
 static const uint32_t sha256_constants[64] = {
     0x428a2f98U, 0x71374491U, 0xb5c0fbcfU, 0xe9b5dba5U,
@@ -114,7 +114,7 @@ static void store64be(uint8_t *target, uint64_t value)
     store32be(target + 4, (uint32_t) value);
 }
 
-static void sha256_transform(wasmtex_sha256_state *state, const uint8_t block[64])
+static void sha256_transform(librepaper_sha256_state *state, const uint8_t block[64])
 {
     uint32_t words[64];
     uint32_t a, b, c, d, e, f, g, h;
@@ -149,7 +149,7 @@ static void sha256_transform(wasmtex_sha256_state *state, const uint8_t block[64
     state->state[6] += g; state->state[7] += h;
 }
 
-static void sha512_transform(wasmtex_sha512_state *state, const uint8_t block[128])
+static void sha512_transform(librepaper_sha512_state *state, const uint8_t block[128])
 {
     uint64_t words[80];
     uint64_t a, b, c, d, e, f, g, h;
@@ -184,7 +184,7 @@ static void sha512_transform(wasmtex_sha512_state *state, const uint8_t block[12
     state->state[6] += g; state->state[7] += h;
 }
 
-static void sha256_update(wasmtex_sha256_state *state, const uint8_t *data, size_t size)
+static void sha256_update(librepaper_sha256_state *state, const uint8_t *data, size_t size)
 {
     state->total += size;
     while (size != 0) {
@@ -201,7 +201,7 @@ static void sha256_update(wasmtex_sha256_state *state, const uint8_t *data, size
     }
 }
 
-static void sha512_update(wasmtex_sha512_state *state, const uint8_t *data, size_t size)
+static void sha512_update(librepaper_sha512_state *state, const uint8_t *data, size_t size)
 {
     state->total += size;
     while (size != 0) {
@@ -218,7 +218,7 @@ static void sha512_update(wasmtex_sha512_state *state, const uint8_t *data, size
     }
 }
 
-static void sha256_final(wasmtex_sha256_state *state, uint8_t digest[32])
+static void sha256_final(librepaper_sha256_state *state, uint8_t digest[32])
 {
     uint64_t bit_length = state->total * UINT64_C(8);
     size_t index;
@@ -236,7 +236,7 @@ static void sha256_final(wasmtex_sha256_state *state, uint8_t digest[32])
     }
 }
 
-static void sha512_final(wasmtex_sha512_state *state, uint8_t *digest, size_t words)
+static void sha512_final(librepaper_sha512_state *state, uint8_t *digest, size_t words)
 {
     uint64_t bit_length = state->total * UINT64_C(8);
     size_t index;
@@ -255,9 +255,9 @@ static void sha512_final(wasmtex_sha512_state *state, uint8_t *digest, size_t wo
     }
 }
 
-void wasmtex_sha256(const void *data, size_t size, uint8_t digest[32])
+void librepaper_sha256(const void *data, size_t size, uint8_t digest[32])
 {
-    wasmtex_sha256_state state = {
+    librepaper_sha256_state state = {
         { 0x6a09e667U, 0xbb67ae85U, 0x3c6ef372U, 0xa54ff53aU,
           0x510e527fU, 0x9b05688cU, 0x1f83d9abU, 0x5be0cd19U },
         0, { 0 }, 0
@@ -266,9 +266,9 @@ void wasmtex_sha256(const void *data, size_t size, uint8_t digest[32])
     sha256_final(&state, digest);
 }
 
-void wasmtex_sha384(const void *data, size_t size, uint8_t digest[48])
+void librepaper_sha384(const void *data, size_t size, uint8_t digest[48])
 {
-    wasmtex_sha512_state state = {
+    librepaper_sha512_state state = {
         { UINT64_C(0xcbbb9d5dc1059ed8), UINT64_C(0x629a292a367cd507),
           UINT64_C(0x9159015a3070dd17), UINT64_C(0x152fecd8f70e5939),
           UINT64_C(0x67332667ffc00b31), UINT64_C(0x8eb44a8768581511),
@@ -279,9 +279,9 @@ void wasmtex_sha384(const void *data, size_t size, uint8_t digest[48])
     sha512_final(&state, digest, 6);
 }
 
-void wasmtex_sha512(const void *data, size_t size, uint8_t digest[64])
+void librepaper_sha512(const void *data, size_t size, uint8_t digest[64])
 {
-    wasmtex_sha512_state state = {
+    librepaper_sha512_state state = {
         { UINT64_C(0x6a09e667f3bcc908), UINT64_C(0xbb67ae8584caa73b),
           UINT64_C(0x3c6ef372fe94f82b), UINT64_C(0xa54ff53a5f1d36f1),
           UINT64_C(0x510e527fade682d1), UINT64_C(0x9b05688c2b3e6c1f),

@@ -1,5 +1,5 @@
 /* =============================================================================
- * xetex-entry.c — WASM entry points for the WasmTex worker protocol (XeTeX)  [#52]
+ * xetex-entry.c — WASM entry points for the LibrePaper worker protocol (XeTeX)  [#52]
  * =============================================================================
  *
  * Mirrors luatex-entry.c / wasm-entry.c: wraps texlive-source xetex's standard
@@ -8,9 +8,9 @@
  *
  * XeTeX emits XDV (`-no-pdf`); the second dvipdfmx stage makes the PDF. The format
  * is dumped by `xetex -ini *xelatex.ini` (jobname xelatex -> xelatex.fmt), then the
- * glue re-injects those bytes as `wasmtex-xetex.fmt`; compileLaTeX loads it with
- * `--fmt=wasmtex-xetex` (the file's name need not match its dump jobname). This
- * mirrors luatex-entry.c (lualatex.ini dump -> --fmt=wasmtex-luatex load).
+ * glue re-injects those bytes as `xetex.fmt`; compileLaTeX loads it with
+ * `--fmt=xetex` (the file's name need not match its dump jobname). This
+ * mirrors luatex-entry.c (lualatex.ini dump -> --fmt=luatex load).
  * restoreHeapMemory() in the glue resets globals between calls so main() is
  * re-callable.
  *
@@ -35,7 +35,7 @@ int compileLaTeX(void) {
    * but nothing turned it on. Mirrors pdftex-worker.js, which always passes
    * -synctex=1 and returns the .synctex(.gz) bytes on the compile reply. */
   char *argv[] = {PROG, "-no-pdf", "-interaction=nonstopmode", "-recorder",
-                  "-synctex=1", "--fmt=wasmtex-xetex", main_entry, NULL};
+                  "-synctex=1", "--fmt=xetex", main_entry, NULL};
   return main(7, argv);
 }
 

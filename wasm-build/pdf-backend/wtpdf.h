@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: MIT */
-#ifndef WASMTEX_WTPDF_H
-#define WASMTEX_WTPDF_H
+#ifndef LIBREPAPER_WTPDF_H
+#define LIBREPAPER_WTPDF_H
 
 #include <stddef.h>
 

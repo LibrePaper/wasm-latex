@@ -14,7 +14,7 @@
  * exit(); the glue's runEngine() catches the emscripten ExitStatus.
  *
  * `-f pdftex.map`: TeX Live's dvipdfmx normally learns its font map(s) from
- * dvipdfmx.cfg (`f dvipdfmx.map`), but that cfg isn't on the WasmTex CDN, so
+ * dvipdfmx.cfg (`f dvipdfmx.map`), but that cfg isn't in our source tree, so
  * read_config_file() finds nothing and traditional (TFM/Type1) fonts like cmmi10
  * have no physical-font mapping ("Cannot proceed without .vf or physical font").
  * We load pdftex.map explicitly — the combined updmap map maps cmmi10 ->

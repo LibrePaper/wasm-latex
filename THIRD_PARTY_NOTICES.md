@@ -31,6 +31,23 @@ and it remains under its own copyright and notice.
 Retaining that notice is a condition of the MIT license and applies to any
 distribution of this repository or a work derived from it.
 
+## TeXlyre Biber build
+
+`third-party/texlyre-biber/` contains selected, unmodified files from
+TeXlyre's build repository at commit
+`f544a51a99e7d3978bb70608e927a9a23f96d4a7`.
+
+- Copyright: 2026 Fares Abawi; original BusyTeX work retains its upstream terms.
+- License: AGPL-3.0 for TeXlyre's build pipeline and modifications.
+- License text: [`third-party/texlyre-biber/LICENSE`](third-party/texlyre-biber/LICENSE)
+- Upstream notice: [`third-party/texlyre-biber/NOTICE`](third-party/texlyre-biber/NOTICE)
+- File hashes and source: [`third-party/texlyre-biber/UPSTREAM.json`](third-party/texlyre-biber/UPSTREAM.json)
+
+These files are not covered by this repository's MIT license. The experimental
+Biber output is not included in the engine release. Its runtime patches,
+JavaScript, Perl modules and native dependencies require an artifact-specific
+license inventory before distribution; see [`docs/biber.md`](docs/biber.md).
+
 ## SyncTeX
 
 The engines are built with SyncTeX support: `wasm-build/Makefile` compiles
@@ -47,7 +64,7 @@ pdfTeX unit, under renamed symbols. The code is by Jérôme Laurens.
 The engine build is pinned to TeX Live source commit
 `fb6158926661cb7a7246b3a94a0cb170a9624d5a` (`wasm-build/texlive-source-2026.ref`). The generated JavaScript, WebAssembly,
 worker, and format files a build writes to `wasm-build/dist/` are
-not covered solely by the WasmTex MIT license.
+not covered solely by the seed project's MIT license.
 
 | Artifact family | Principal upstream terms |
 | --- | --- |
@@ -82,7 +99,7 @@ Upstream published its own component inventory with its release. It is theirs to
 distribute and is not carried here; the mapping above is ours, derived from the
 link maps of the binaries this repository produces.
 
-Corresponding source means the pinned TeX Live source plus the WasmTex glue, patches,
+Corresponding source means the pinned TeX Live source plus the seed project's glue, patches,
 build scripts, Dockerfiles, and any other material needed to rebuild the distributed
 object code. The build inputs are described in `wasm-build/` and
 `wasm-build/texlive-source-2026.ref`. A distributor must make a complete source bundle
@@ -102,7 +119,7 @@ SHA-256. Do not distribute MakeIndex while that field is empty or inaccessible.
 
 Legacy LuaHBTeX and XeTeX artifacts included `pplib`. The pinned TeX Live copy and
 the public pplib repository do not contain a standalone license grant that is
-sufficient for WasmTex to record exact redistribution terms. Inclusion in TeX Live
+sufficient for the seed project to record exact redistribution terms. Inclusion in TeX Live
 is useful context, but it is not a replacement for a license notice from the
 copyright holder.
 
@@ -120,7 +137,7 @@ Upstream reported that its WTPDF/Xpdf XeTeX and LuaHBTeX candidates no longer co
 this dependency, in build-evidence documents (`xetex-wtpdf-23f2ce1.md`,
 `luahbtex-wtpdf-666663b.md`) that were not seeded into this repository. Neither engine
 has been built here yet. Treat the blocker as standing for anything built here until
-a link audit of our own XeTeX and LuaHBTeX artifacts is recorded — a WasmTex claim
+a link audit of our own XeTeX and LuaHBTeX artifacts is recorded — an upstream claim
 whose evidence we do not hold is not our evidence. Linked
 component notices, license selections, and the relink method are now recorded in the
 machine-readable inventory; the corresponding-source, security, compatibility, and
@@ -154,7 +171,7 @@ build actually compiles: `libs/xpdf/xpdf-src` reports `xpdfVersion "4.06"`, and 
 `COPYING`, `COPYING3`, and `README` are byte-identical to
 `LICENSES/Xpdf-4.06-GPL-2.0.txt`, `LICENSES/GPL-3.0.txt`, and
 `LICENSES/Xpdf-4.06-README.txt`. The 4.04 texts have been removed;
-WasmTex's `ENGINE-COMPONENTS.json` already recorded 4.06. The alternative
+the seed project's `ENGINE-COMPONENTS.json` already recorded 4.06. The alternative
 FreeType License is retained for provenance in
 [`LICENSES/FreeType.txt`](LICENSES/FreeType.txt), but is not the selected license for
 that combined binary.
@@ -186,7 +203,7 @@ The separately operated versioned CDN mirrors the full official TeX Live 2025
 distribution. TeX Live is an aggregation: individual packages and fonts can use
 LPPL, SIL OFL, GPL, permissive, public-domain, or other terms. Generated `.fmt` files
 are compiled works whose source inputs retain their own terms. None of these files is
-licensed by WasmTex under MIT.
+licensed under the seed project's MIT license.
 
 The LaTeX kernel and many base packages use LPPL 1.3c. The authoritative license
 text is available from the LaTeX Project at
@@ -196,7 +213,7 @@ that every TeX Live file uses LPPL.
 
 The full mirror must preserve the official distribution's copying information and
 the license/source materials shipped for its packages. A package-by-package manual
-override database is not a WasmTex engine-release gate. The exact inputs and creation
+override database is not an engine-release gate. The exact inputs and creation
 procedure for `.fmt` files distributed with an engine release remain part of that
 release's evidence. See <https://tug.org/texlive/copying.html> and the scope in
 [`docs/licensing.md`](docs/licensing.md).

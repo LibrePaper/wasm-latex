@@ -7,8 +7,8 @@
     {
       "name": "xetex",
       "wasm": {
-        "bytes": 3494352,
-        "sha256": "7f2a1efa54cdc67f570c4547ee372ee9b56f40a0eceaee57647ee9057cc84963"
+        "bytes": 3494333,
+        "sha256": "e1b80dd5cb8d53f155ca09075f8a3fe81cff85b772774919956485f51ba0d4d3"
       },
       "archives": 19,
       "objects": 9

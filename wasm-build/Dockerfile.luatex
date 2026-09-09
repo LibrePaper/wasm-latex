@@ -59,17 +59,17 @@ COPY patches/texlive-wtpdf-2026.patch /src/patches/texlive-wtpdf-2026.patch
 COPY pdf-backend/wtpdf.h /src/pdf-backend/wtpdf.h
 COPY pdf-backend/wtpdf-xpdf.cc /src/pdf-backend/wtpdf-xpdf.cc
 COPY pdf-backend/wtpdf-smoke.cc /src/pdf-backend/wtpdf-smoke.cc
-COPY sha2/wasmtex-sha2.h /src/sha2/wasmtex-sha2.h
-COPY sha2/wasmtex-sha2.c /src/sha2/wasmtex-sha2.c
-COPY sha2/wasmtex-sha2-smoke.c /src/sha2/wasmtex-sha2-smoke.c
+COPY sha2/librepaper-sha2.h /src/sha2/librepaper-sha2.h
+COPY sha2/librepaper-sha2.c /src/sha2/librepaper-sha2.c
+COPY sha2/librepaper-sha2-smoke.c /src/sha2/librepaper-sha2-smoke.c
 COPY pdf-backend/wtpdf.h /src/texlive-source/texk/web2c/luatexdir/image/wtpdf.h
 COPY pdf-backend/wtpdf-xpdf.cc /src/texlive-source/texk/web2c/luatexdir/image/wtpdf-xpdf.cc
-COPY sha2/wasmtex-sha2.h /src/texlive-source/texk/web2c/luatexdir/luamd5/wasmtex-sha2.h
-COPY sha2/wasmtex-sha2.c /src/texlive-source/texk/web2c/luatexdir/luamd5/wasmtex-sha2.c
+COPY sha2/librepaper-sha2.h /src/texlive-source/texk/web2c/luatexdir/luamd5/librepaper-sha2.h
+COPY sha2/librepaper-sha2.c /src/texlive-source/texk/web2c/luatexdir/luamd5/librepaper-sha2.c
 RUN cc -std=c99 -Wall -Wextra -Werror -pedantic \
-        /src/sha2/wasmtex-sha2.c /src/sha2/wasmtex-sha2-smoke.c \
-        -o /tmp/wasmtex-sha2-smoke-native && \
-    /tmp/wasmtex-sha2-smoke-native
+        /src/sha2/librepaper-sha2.c /src/sha2/librepaper-sha2-smoke.c \
+        -o /tmp/librepaper-sha2-smoke-native && \
+    /tmp/librepaper-sha2-smoke-native
 RUN cd /src/texlive-source && \
     if [ "$TEXLIVE_YEAR" = 2026 ]; then \
       git apply --check --exclude=texk/web2c/ac/web2c.ac --exclude=texk/web2c/luatexdir/am/luatex.am /src/patches/texlive-wtpdf.patch && \

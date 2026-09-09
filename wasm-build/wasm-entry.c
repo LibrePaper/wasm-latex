@@ -1,5 +1,5 @@
 /* =============================================================================
- * wasm-entry.c — Custom WASM entry points for the WasmTex worker protocol
+ * wasm-entry.c — Custom WASM entry points for the LibrePaper worker protocol
  * =============================================================================
  *
  * Defines the C functions exported to JavaScript via Emscripten:

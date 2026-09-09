@@ -1,5 +1,5 @@
 /* =============================================================================
- * fontconfig-shim.c — WasmTex's OWN fontconfig + FT_New_Face shims for XeTeX [#52]
+ * fontconfig-shim.c — LibrePaper's own fontconfig + FT_New_Face shims for XeTeX [#52]
  * =============================================================================
  *
  * Implements the slice of fontconfig that XeTeX's unpatched XeTeXFontMgr_FC.cpp

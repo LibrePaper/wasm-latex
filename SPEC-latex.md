@@ -93,7 +93,7 @@ Pairing, tool discovery and native compilation exist in LibrePaper under
 
 ### The problem
 
-The worker inherited WasmTex's delivery model: kpathsea asks for a
+The worker inherited the seed project's delivery model: kpathsea asks for a
 (format, name) pair, `tryFetch` in `wasm-build/pdftex-worker.js` issues one
 synchronous `XMLHttpRequest` to `<endpoint>/pdftex/<format>/<name>`, and a
 bloom filter suppresses requests for names the mirror does not have. Every

@@ -156,6 +156,7 @@ COPY library.js /src/library.js
 COPY trace-hook.c /src/trace-hook.c
 COPY bibtex-entry.c /src/bibtex-entry.c
 COPY bibtex-worker.js /src/bibtex-worker.js
+COPY bundle-mode.js /src/bundle-mode.js
 
 RUN chmod +x /src/build.sh
 

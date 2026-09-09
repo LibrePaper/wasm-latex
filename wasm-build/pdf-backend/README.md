@@ -1,6 +1,6 @@
 # WTPDF adapter
 
-WTPDF is WasmTex's small, independently designed C ABI between TeX engines and
+WTPDF is LibrePaper's small, independently designed C ABI between TeX engines and
 a read-only PDF parser. It does not implement or emulate `pplib`'s public API,
 names, data structures, or ownership rules.
 
@@ -139,7 +139,7 @@ macro shim for the old parser.
 
 ## Licensing boundary
 
-`wtpdf.h` and `wtpdf-xpdf.cc` are WasmTex-authored MIT-licensed source. The Xpdf
+`wtpdf.h` and `wtpdf-xpdf.cc` are LibrePaper-authored MIT-licensed source. The Xpdf
 backend links to the TeX Live copy of Xpdf 4.04, which is offered under GPL v2 or
 GPL v3. A linked engine artifact containing Xpdf is distributed under its
 applicable GPL terms; the MIT notice for the adapter remains in the corresponding
