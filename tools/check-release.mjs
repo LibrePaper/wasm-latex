@@ -84,7 +84,11 @@ if (!manifest.correspondingSource?.url) {
   if (receipt.sha256 !== manifest.correspondingSource.sha256) {
     fail('the source hash in MANIFEST.json does not match SOURCE-RECEIPT.json')
   }
-  if (receipt.dirty) fail('the corresponding source was built from a dirty working tree; commit and rebuild it')
+  if (receipt.dirty) {
+    const paths = (receipt.uncommittedBuildPaths ?? []).join(', ')
+    fail('the corresponding source was built with uncommitted changes under a path that feeds ' +
+         `the build (${paths}), so it is not the source these binaries came from; commit and rebuild it`)
+  }
   const binaries = new Set(receipt.correspondsTo?.map((a) => `${a.name}:${a.sha256}`) ?? [])
   for (const a of manifest.artifacts) {
     if (!a.name.endsWith('.fmt') && !binaries.has(`${a.name}:${a.sha256}`)) {

@@ -40,16 +40,29 @@ const sh = (cmd, args, opts = {}) =>
   execFileSync(cmd, args, { encoding: 'utf8', maxBuffer: 1 << 30, ...opts })
 
 const commit = sh('git', ['rev-parse', 'HEAD']).trim()
-const dirty = sh('git', ['status', '--porcelain']).trim().length > 0
+
+// Dirty in the sense that matters: the archive's content comes from `git archive
+// HEAD`, so the question is not whether the tree is tidy but whether anything
+// that feeds a build differs from HEAD. A rewritten document cannot change a
+// binary; an edited Makefile, shim or tool can, and then the archive would not
+// be the source these artifacts came from.
+const BUILD_PATHS = ['wasm-build/', 'tools/', 'licensing/', 'scripts/']
+const changed = sh('git', ['status', '--porcelain'])
+  .split('\n').filter(Boolean).map((l) => l.slice(3).trim())
+const buildChanges = changed.filter((f) => BUILD_PATHS.some((p) => f.startsWith(p)))
+const dirty = buildChanges.length > 0
 const texliveRef = fs.readFileSync('wasm-build/texlive-source-2026.ref', 'utf8').trim()
 const release = `${commit.slice(0, 12)}${dirty ? '-dirty' : ''}`
 const stem = `librepaper-wasm-latex-${release}-source`
 const staging = path.join(outDir, stem)
 
 if (dirty) {
-  log('WARNING: the working tree has uncommitted changes. The archive will carry')
-  log('         them, but "-dirty" in its name is the only record of what they were.')
-  log('         Commit first if this archive accompanies a real release.')
+  log('WARNING: uncommitted changes under a path that feeds the build:')
+  for (const f of buildChanges) log(`           ${f}`)
+  log('         The archive carries HEAD, so it would not be the source these')
+  log('         artifacts were built from. Commit first.')
+} else if (changed.length) {
+  log(`note     ${changed.length} uncommitted change(s), none under ${BUILD_PATHS.join(', ')}`)
 }
 
 fs.rmSync(staging, { recursive: true, force: true })
@@ -102,7 +115,7 @@ const inventories = fs.existsSync('receipts')
 const manifest = {
   schemaVersion: 1,
   producedBy: 'tools/build-corresponding-source.mjs',
-  repository: { commit, dirty },
+  repository: { commit, dirty, uncommittedBuildPaths: buildChanges, uncommittedOther: changed.length - buildChanges.length },
   texliveSource: { commit: texliveRef, repository: 'https://github.com/TeX-Live/texlive-source.git', path: 'texlive-source/' },
   toolchain: {
     emscripten: '3.1.46',
@@ -163,6 +176,7 @@ const receipt = {
   sha256: sha,
   repositoryCommit: commit,
   dirty,
+  uncommittedBuildPaths: buildChanges,
   texliveSourceCommit: texliveRef,
   correspondsTo: artifacts,
 }

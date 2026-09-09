@@ -12,8 +12,8 @@ engine may be distributed at all.
 
 ## What you receive
 
-The corresponding-source archive (`tools/build-corresponding-source.mjs`, and
-`docs/corresponding-source.md` for what it contains) carries:
+The corresponding-source archive (`tools/build-corresponding-source.mjs`; see
+`docs/licensing.md` for what it contains) carries:
 
 - `texlive-source/texk/kpathsea/` — the unmodified kpathsea source at the pinned
   TeX Live commit, the exact tree the distributed binary was built from;
