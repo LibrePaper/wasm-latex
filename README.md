@@ -17,6 +17,12 @@ source, and every format file from a TeX Live tree whose signature we checked.
       -t librepaper-pdftex-wasm wasm-build/
     docker run --rm --platform linux/amd64 -v $PWD/wasm-build/dist:/dist librepaper-pdftex-wasm
 
+**Check the pins.** `tools/check-pins.mjs` verifies that the TeX Live commit and
+the Emscripten image digest are pinned and that every place naming them agrees —
+the Dockerfile builds with the image the published manifest claims:
+
+    node tools/check-pins.mjs
+
 **Check it against the published release.** `tools/compare-receipt.mjs` compares
 your build to upstream's pinned receipts byte for byte. It currently matches
 exactly, which is the evidence that the published binary is what its published
@@ -52,6 +58,11 @@ check every obligation this repository can check —
 `check-release.mjs` fails closed. Until the source archive is published
 somewhere and named with `--source-url`, it refuses the release, which is the
 correct answer: a GPL binary without its source is not distributable.
+
+**Know what the workers can reach.** The JavaScript we ship alongside the wasm
+contains no dynamic code and no embedded endpoint — every URL it builds comes
+from the host — which is what lets it be published without auditing the host's
+network policy too: [`docs/audit-worker-js.md`](docs/audit-worker-js.md).
 
 ## What is not done yet
 
@@ -92,11 +103,8 @@ Copied verbatim from that snapshot:
 
 - `wasm-build/` — Dockerfiles, Makefile, build scripts, C shims, TeX Live
   patches, worker controllers. The whole TeX-to-wasm layer.
-- `scripts/` — upstream's release tooling, since pruned from 113 files to the
-  11 that do useful work here.
-- `LICENSES/`, `THIRD_PARTY_NOTICES.md`, `docs/licensing.md`,
-  `docs/corresponding-source.md` — the obligations the engines carry. They are
-  GPL: a build we publish must publish its source.
+- `LICENSES/`, `THIRD_PARTY_NOTICES.md`, `docs/licensing.md` — the obligations
+  the engines carry. They are GPL: a build we publish must publish its source.
 
 The upstream editor, runtime library and application code were not copied;
 LibrePaper has its own controller. Written since the seed: `tools/`,
@@ -106,14 +114,14 @@ LibrePaper has its own controller. Written since the seed: `tools/`,
 
 | Path | What |
 |---|---|
-| `wasm-build/` | The build: Dockerfiles, Makefile, worker controllers, C shims. Outputs to `dist/` (ignored). |
-| `tools/` | Ours: format builder, receipt comparison. |
+| `wasm-build/` | The build: Dockerfiles, Makefile, worker controllers, C shims, and the from-source orchestration and gates for the engines not built here yet. Outputs to `dist/` (ignored). |
+| `tools/` | Everything that runs here: format builder, link inventory, pin check, release staging and gate. |
 | `receipts/` | Our build evidence — link inventories, format inputs, source-archive hashes. |
-| `licensing/` | What is linked and on what terms, and the LGPL relink recipe. |
 | `pinned/` | Upstream's published receipts for release `2026-8b7946970153c52e`, the thing we compare against. |
-| `scripts/` | Kept upstream tooling: pinned-source check, and the gates for the engines not yet built. |
 | `vendor/` | The verified TeX Live tree (ignored; 14 GB). |
 | `docs/` | How each part works and what is still missing. |
+| `LICENSES/` | Verbatim third-party notice texts, shipped whole with any release. |
+| `linked-components.json`, `RELINK.md` | What is linked and on what terms, and the LGPL relink recipe — at the root because that is where they land in a release, beside `LICENSE` and `THIRD_PARTY_NOTICES.md`. |
 
 This repository's own code is MIT ([`LICENSE`](LICENSE)). It tracks source only:
 no engine binaries, formats, or TeX Live files are committed.

@@ -10,7 +10,7 @@ const xetex = process.argv[2]
 const expectedPath = process.argv[3]
 if (!xetex) {
   console.error(
-    'Usage: node scripts/test-xetex-pdf-geometry.mjs /path/to/xetex [expected.json]',
+    'Usage: node wasm-build/test-xetex-pdf-geometry.mjs /path/to/xetex [expected.json]',
   )
   process.exit(2)
 }

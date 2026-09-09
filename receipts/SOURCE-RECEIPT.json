@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "archive": "librepaper-wasm-latex-1ab8617886d2-source.tar.xz",
+  "bytes": 101737456,
+  "sha256": "0d9a2fe1b3321ef7e1bf44d2ce4fd35293d998c3d84cc8cd1a8de2cc6474c918",
+  "repositoryCommit": "1ab8617886d26d1cb140a695b9a4f6275131fc46",
+  "dirty": false,
+  "uncommittedBuildPaths": [],
+  "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
+  "correspondsTo": [
+    {
+      "name": "wasmtex-bibtex.js",
+      "bytes": 77802,
+      "sha256": "1355f9aa7a7fa27a514876a448bbe7b17ba07cfb1ec2c1a251a2d4f0ebc9d9b4"
+    },
+    {
+      "name": "wasmtex-bibtex.wasm",
+      "bytes": 205813,
+      "sha256": "7ee47f5959d9f2a0d4cbde264be97472b6c1b7a1da2ca58b67baea759b03c3d6"
+    },
+    {
+      "name": "wasmtex-bibtex.worker.js",
+      "bytes": 7044,
+      "sha256": "50f6ef0b0c16473c3dda2c20bb47cd4f2a9003d221b59c3d756226168c5947a3"
+    },
+    {
+      "name": "wasmtex-kpse-resolve.js",
+      "bytes": 3223,
+      "sha256": "0303650d65055961498677e0e109357b061873b86a063cb901800a2a84b4859d"
+    },
+    {
+      "name": "wasmtex-pdftex-checkpoint.js",
+      "bytes": 111651,
+      "sha256": "7b234c8ef04fb59716487ef7f1fd56f0155488aff4d328a3b26e5f8de9decdef"
+    },
+    {
+      "name": "wasmtex-pdftex-checkpoint.wasm",
+      "bytes": 2701068,
+      "sha256": "83563869d753277b32f885cc4207355d13aba86e47fd804fb712f3722fecfc48"
+    },
+    {
+      "name": "wasmtex-pdftex-resolver-evidence.js",
+      "bytes": 589,
+      "sha256": "f42ab09591de3108ac07635f060cc1fca27571f62a852edf5e6307515b83b728"
+    },
+    {
+      "name": "wasmtex-pdftex.fmt",
+      "bytes": 3633351,
+      "sha256": "f63bc17a1d809184ebfa880a1a78dd81f5351a8934e8618905ff726d0054c962"
+    },
+    {
+      "name": "wasmtex-pdftex.js",
+      "bytes": 105102,
+      "sha256": "80da7fce4ad7238271bd5b5c6a7a790fb4f6a527ea84e8193be2721e6646b3c1"
+    },
+    {
+      "name": "wasmtex-pdftex.wasm",
+      "bytes": 1672898,
+      "sha256": "bf0b9fd1772fc78b02ad19eff39f7e03a73d7eefc1c1d05b15387768e57d013d"
+    },
+    {
+      "name": "wasmtex-pdftex.worker.js",
+      "bytes": 77849,
+      "sha256": "2bde4060a105d0e739c506a89ecfa765f0b5ffab8ec91a2577bf7e967b09c7fe"
+    }
+  ]
+}

@@ -131,7 +131,7 @@
       "notices": [
         "LICENSES/LGPL-2.1.txt"
       ],
-      "relink": "licensing/RELINK.md",
+      "relink": "RELINK.md",
       "selectedAs": [
         "/build/wasm/texk/kpathsea/.libs/libkpathsea.a"
       ]

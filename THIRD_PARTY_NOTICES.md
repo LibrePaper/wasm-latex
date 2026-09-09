@@ -20,7 +20,7 @@ contain have been removed; what remains describes what a build here links or emi
 
 This repository's build layer was seeded from WasmTex
 (<https://github.com/corca-ai/wasmtex>), which is MIT-licensed. Much of
-`wasm-build/` and `scripts/` is that code, modified or verbatim,
+`wasm-build/` is that code, modified or verbatim,
 and it remains under its own copyright and notice.
 
 - Copyright: 2025-2026 WasmTex contributors
@@ -73,11 +73,13 @@ Relevant license texts included here are:
 - [`LICENSES/Xpdf-4.06-README.txt`](LICENSES/Xpdf-4.06-README.txt)
 
 The exact archive-to-component mapping is machine-readable in
-[`scripts/engine-components-2026.json`](scripts/engine-components-2026.json). The
+[`pinned/2026-8b7946970153c52e/ENGINE-COMPONENTS.json`](pinned/2026-8b7946970153c52e/ENGINE-COMPONENTS.json). The
 inventory is data, not a gate: upstream's `check-license-compliance.mjs` enforced it
 against a repository layout this one does not have, and was removed rather than kept
 as a check that cannot run. Re-enforcing it is open work — see
-[`docs/licensing.md`](docs/licensing.md).
+[`docs/licensing.md`](docs/licensing.md). It is upstream's own published record, kept
+under `pinned/` verbatim; `LICENSE-MANIFEST.json` beside it names the same mapping
+at the `scripts/` path it had in their tree.
 
 Corresponding source means the pinned TeX Live source plus the WasmTex glue, patches,
 build scripts, Dockerfiles, and any other material needed to rebuild the distributed
@@ -151,7 +153,7 @@ build actually compiles: `libs/xpdf/xpdf-src` reports `xpdfVersion "4.06"`, and 
 `COPYING`, `COPYING3`, and `README` are byte-identical to
 `LICENSES/Xpdf-4.06-GPL-2.0.txt`, `LICENSES/GPL-3.0.txt`, and
 `LICENSES/Xpdf-4.06-README.txt`. The 4.04 texts have been removed;
-`scripts/engine-components-2026.json` already recorded 4.06. The alternative
+upstream's `ENGINE-COMPONENTS.json` already recorded 4.06. The alternative
 FreeType License is retained for provenance in
 [`LICENSES/FreeType.txt`](LICENSES/FreeType.txt), but is not the selected license for
 that combined binary.

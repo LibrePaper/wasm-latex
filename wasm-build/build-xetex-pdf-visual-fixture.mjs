@@ -9,7 +9,7 @@ const xetex = process.argv[2]
 const outputDirectory = process.argv[3]
 if (!xetex || !outputDirectory) {
   console.error(
-    'Usage: node scripts/build-xetex-pdf-visual-fixture.mjs /path/to/xetex /output/directory',
+    'Usage: node wasm-build/build-xetex-pdf-visual-fixture.mjs /path/to/xetex /output/directory',
   )
   process.exit(2)
 }

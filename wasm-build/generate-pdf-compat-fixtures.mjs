@@ -7,7 +7,7 @@ import { resolve } from 'node:path'
 
 const outputDirectory = process.argv[2]
 if (!outputDirectory) {
-  console.error('Usage: node scripts/generate-pdf-compat-fixtures.mjs OUTPUT_DIR')
+  console.error('Usage: node wasm-build/generate-pdf-compat-fixtures.mjs OUTPUT_DIR')
   process.exit(2)
 }
 

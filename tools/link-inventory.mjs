@@ -4,7 +4,7 @@
 // The compliance question for a statically linked GPL binary is not "what does
 // the build system mention" but "what is in the artifact". emcc writes a link
 // map beside each module naming every archive and object it selected; this
-// reads those maps, classifies each against licensing/linked-components.json,
+// reads those maps, classifies each against linked-components.json,
 // and fails on anything unclassified. An unclassifiable component is a
 // component whose redistribution basis nobody has established.
 //
@@ -27,7 +27,7 @@ const outPath = arg('out', null)
 const quiet = process.argv.includes('--quiet')
 const log = (...a) => { if (!quiet) console.error(...a) }
 
-const spec = JSON.parse(fs.readFileSync(path.join(root, 'licensing/linked-components.json'), 'utf8'))
+const spec = JSON.parse(fs.readFileSync(path.join(root, 'linked-components.json'), 'utf8'))
 if (!family || !spec.families[family]) {
   console.error(`usage: node tools/link-inventory.mjs --family <${Object.keys(spec.families).join('|')}> [--dist dir] [--out file]`)
   process.exit(2)
@@ -115,7 +115,7 @@ for (const c of inventory.linked) log(`  ${c.license.padEnd(32)} ${c.component}`
 
 if (unclassified.length) {
   console.error(`\n${unclassified.length} unclassified item(s) — every one is a component with no recorded`)
-  console.error('redistribution basis. Add it to licensing/linked-components.json:')
+  console.error('redistribution basis. Add it to linked-components.json:')
   for (const u of unclassified) console.error(`  ${u.kind}: ${u.item} (in ${u.module})`)
   process.exit(1)
 }

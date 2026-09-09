@@ -71,6 +71,25 @@ does; the engines are GPL and are separately delivered.
    bundler the artifacts pass through.
 5. **The format's input receipt**, wherever a `.fmt` is served.
 
+### What the source archive contains
+
+| Path in the archive | What |
+|---|---|
+| `repo/` | This repository at the commit that built the artifacts: Dockerfile, Makefile, C shims, worker controller, patches, tools, notices. |
+| `texlive-source/` | The pinned TeX Live tree, read out of the build image rather than cloned again. Contains kpathsea, zlib, libpng, xpdf, web2c, synctex and libmd5. |
+| `MANIFEST.json` | The artifacts this source corresponds to, with SHA-256; the TeX Live commit; the digest-pinned Emscripten image. |
+| `REBUILD.md`, `RELINK.md` | How to rebuild the engines from the archive, and how to substitute a modified LGPL library and relink. |
+
+Taking the tree out of the image, rather than re-cloning it, removes a step
+where the archive could quietly diverge from the binary: a re-clone can differ
+if the pin is wrong, if a tag moved, or if the fetch was patched. The manifest
+still records the commit, so the archive can be checked against upstream.
+
+The Emscripten runtime pieces linked into the binaries (musl libc, libc++,
+libc++abi, compiler-rt, dlmalloc) come from the digest-pinned `emscripten/emsdk`
+image, which the manifest names exactly. Their source is Emscripten's, at that
+digest; their notices are in `repo/LICENSES/`.
+
 ## The gate
 
     node tools/link-inventory.mjs --family pdftex --out receipts/LINK-INVENTORY.pdftex.json
@@ -94,19 +113,14 @@ with no notice retained at all.
 
 ## What is still owed
 
-- **Engines not built here.** XeTeX, LuaHBTeX, dvipdfmx, BibTeX8 and makeindex
-  have no link inventory, so no terms are established for them. makeindex
-  additionally needs its conspicuous modified-source statement, and XeTeX and
-  LuaHBTeX need the `pplib` question settled against artifacts we built —
-  upstream's evidence for that was never seeded here (see
+README's "What is not done yet" lists the gaps in the work generally. These are
+the ones specific to the obligations:
+
+- **Terms for the other engines.** XeTeX, LuaHBTeX, dvipdfmx, BibTeX8 and
+  makeindex have no link inventory, so no terms are established for them.
+  makeindex additionally needs its conspicuous modified-source statement, and
+  XeTeX and LuaHBTeX need the `pplib` question settled against artifacts we
+  built — upstream's evidence for that was never seeded here (see
   `THIRD_PARTY_NOTICES.md`).
-- **Publication mechanics.** Where the source archive is hosted, and how
-  LibrePaper links to it from the page that serves the engines, is a product
-  decision. Until it is made, `check-release.mjs` fails, by design.
-- **Reproducibility as evidence.** A clean rebuild from the corresponding-source
-  archive should be verified to produce the same bytes. The pdfTeX and BibTeX
-  binaries are known to rebuild byte-identically from the pinned inputs
-  (`reproduction-2026-pdftex.md`); doing it from the archive itself is not yet
-  automated.
 - **An SBOM**, if downstream consumers want one. The link inventory has the
   information; nothing emits SPDX.

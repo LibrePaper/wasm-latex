@@ -59,7 +59,7 @@ ARG TEXLIVE_REF
 # instead of fetching the pinned commit. LGPL-2.1 section 6 requires that a
 # recipient be able to modify kpathsea and relink, which means building from
 # their tree rather than from a clone we choose; the corresponding-source
-# archive ships exactly such a tree. See licensing/RELINK.md.
+# archive ships exactly such a tree. See RELINK.md.
 #
 # The marker file only exists so the glob always matches: COPY fails the build
 # when no source matches, and the tree is normally absent.

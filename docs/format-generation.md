@@ -5,22 +5,15 @@ class-independent macro layer, and the hyphenation tries, dumped by INITEX so
 the browser does not rebuild them on every page load. It is a build output like
 the `.wasm`, and it has to be produced from inputs we control.
 
-## The procedure
+## How it runs
 
-    node tools/build-format.mjs \
-      --texmf vendor/texlive-2026/texlive-20260301-texmf/texmf-dist \
-      --texmf vendor/texlive-2026/texmf-var \
-      --out wasm-build/dist/wasmtex-pdftex.fmt \
-      --evidence wasm-build/dist/format-inputs.json \
-      --smoke
-
-No network, no browser, no TypeScript host: the harness runs
-`wasm-build/dist/wasmtex-pdftex.worker.js` on Node, gives it the worker-shaped
-globals it expects (`self`, `importScripts`, synchronous `XMLHttpRequest`,
-`performance`), hands the engine its `.wasm` through `__wasmtexWasmBinary`, and
-drives the worker's own protocol: `settexliveurl`, then `compileformat`. The
-format bytes come back on a `postMessage`. A build takes about five seconds
-after the texmf tree is indexed.
+The invocation is in the README. No network, no browser, no TypeScript host:
+the harness runs `wasm-build/dist/wasmtex-pdftex.worker.js` on Node, gives it
+the worker-shaped globals it expects (`self`, `importScripts`, synchronous
+`XMLHttpRequest`, `performance`), hands the engine its `.wasm` through
+`__wasmtexWasmBinary`, and drives the worker's own protocol: `settexliveurl`,
+then `compileformat`. The format bytes come back on a `postMessage`. A build
+takes about five seconds after the texmf tree is indexed.
 
 Flags worth knowing:
 

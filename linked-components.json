@@ -41,7 +41,7 @@
       ],
       "source": "texlive-source/texk/kpathsea",
       "staticLinkObligation": "lgpl-relink",
-      "relink": "licensing/RELINK.md"
+      "relink": "RELINK.md"
     },
     {
       "match": "libs/libpng/libpng.a",

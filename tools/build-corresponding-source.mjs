@@ -46,7 +46,7 @@ const commit = sh('git', ['rev-parse', 'HEAD']).trim()
 // that feeds a build differs from HEAD. A rewritten document cannot change a
 // binary; an edited Makefile, shim or tool can, and then the archive would not
 // be the source these artifacts came from.
-const BUILD_PATHS = ['wasm-build/', 'tools/', 'licensing/', 'scripts/']
+const BUILD_PATHS = ['wasm-build/', 'tools/', 'linked-components.json']
 const changed = sh('git', ['status', '--porcelain'])
   .split('\n').filter(Boolean).map((l) => l.slice(3).trim())
 const buildChanges = changed.filter((f) => BUILD_PATHS.some((p) => f.startsWith(p)))
@@ -124,11 +124,11 @@ const manifest = {
   },
   correspondsTo: artifacts,
   linkInventories: inventories.map((f) => `repo/receipts/${f}`),
-  terms: 'See repo/licensing/linked-components.json for the per-component basis and repo/THIRD_PARTY_NOTICES.md for the notices that must accompany the binaries.',
+  terms: 'See repo/linked-components.json for the per-component basis and repo/THIRD_PARTY_NOTICES.md for the notices that must accompany the binaries.',
 }
 fs.writeFileSync(path.join(staging, 'MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n')
 
-fs.copyFileSync('licensing/RELINK.md', path.join(staging, 'RELINK.md'))
+fs.copyFileSync('RELINK.md', path.join(staging, 'RELINK.md'))
 fs.writeFileSync(path.join(staging, 'REBUILD.md'), `# Rebuilding these engines from this archive
 
 Everything needed is here: this repository's build layer under \`repo/\`, and the

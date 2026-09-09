@@ -2,8 +2,7 @@
 
 The format build, and eventually the package mirror LibrePaper serves, take
 their inputs from one place: the official TeX Live 2026 texmf release archive,
-verified against TUG's signed hash. Not from `texlive.corca.ai`, which is
-upstream's CDN and cannot be an input to anything we sign off on.
+verified against TUG's signed hash.
 
 ## Obtaining and verifying it
 
@@ -32,10 +31,6 @@ Verified on 2026-09-08:
 | Signature | Good, `TeX Live Distribution <tex-live@tug.org>`, key `C78B 82D8 C795 12F7 9CC0 D7C8 0D5E 5D91 06BA B6BC`, signed 2026-03-01 |
 | Extracted | `texlive-20260301-texmf/texmf-dist`, 9.1 GB |
 
-The same sha512 appears in `scripts/texlive-mirror-2026-initial.json`, which
-came from upstream. It agrees with TUG's signed value — so that file is
-corroborated, not trusted.
-
 ## The generated font map
 
 `texmf-dist` does not contain `pdftex.map`; `updmap` writes it. Without it a
@@ -54,9 +49,7 @@ the 2026 map is 5 541 403 bytes, a 2025 one is not.
 
 ## The format built from it
 
-    node tools/build-format.mjs --texmf $T --texmf $V \
-      --out wasm-build/dist/wasmtex-pdftex.fmt \
-      --evidence receipts/FORMAT-RECEIPT.pdftex-2026.json --smoke
+Building it with the `$T` and `$V` trees above as the two `--texmf` roots gave:
 
 | Item | Value |
 |---|---|
@@ -65,9 +58,7 @@ the 2026 map is 5 541 403 bytes, a 2025 one is not.
 | Inputs | 238 files, each hashed in the receipt |
 | Smoke | compiled a document, 29 911 byte PDF |
 
-This is not upstream's `.fmt` and is not meant to be. Theirs is 3 657 154 bytes
-and was dumped in a browser against their CDN on their build date; ours comes
-from a tree whose provenance we can demonstrate. See `format-generation.md`.
+The format is built from this tree, not fetched: see `format-generation.md`.
 
 ## Where it lives
 

@@ -15,7 +15,7 @@
 #     Silicon (the amd64 emcc toolchain runs under slow qemu emulation).
 #
 # Usage:
-#   scripts/build-luatex-fromsource.sh [OUT_DIR]     # default wasm-build/dist-luatex
+#   wasm-build/build-luatex-fromsource.sh [OUT_DIR]     # default wasm-build/dist-luatex
 set -uo pipefail
 
 OUT_DIR="${1:-wasm-build/dist-luatex}"
@@ -41,7 +41,7 @@ echo "Checking repeated PDF image inclusion (WTPDF lifetime gate) ..."
 # Several iterations because lifetime bugs here are address-layout dependent
 # (an uninitialized memstream pointer crashed only on some ASLR layouts).
 docker run --rm --platform linux/amd64 --tmpfs /work \
-  -v "$REPO_ROOT/scripts/generate-pdf-compat-fixtures.mjs:/gen-fixtures.mjs:ro" \
+  -v "$REPO_ROOT/wasm-build/generate-pdf-compat-fixtures.mjs:/gen-fixtures.mjs:ro" \
   -v "$REPO_ROOT/wasm-build/pdf-backend/fixtures/luahbtex-repeat-image.tex:/luahbtex-repeat-image.tex:ro" \
   --entrypoint sh "$IMAGE" -c '
     set -eu
@@ -72,8 +72,8 @@ echo "Checking pdfe/pdfscanner public API behavior ..."
 # pplib-differential-approved expectation in
 # wasm-build/pdf-backend/fixtures/luahbtex-pdf-api.expected.json.
 docker run --rm --platform linux/amd64 --tmpfs /work \
-  -v "$REPO_ROOT/scripts/generate-pdf-compat-fixtures.mjs:/gen-fixtures.mjs:ro" \
-  -v "$REPO_ROOT/scripts/probe-luahbtex-pdf-api.lua:/probe.lua:ro" \
+  -v "$REPO_ROOT/wasm-build/generate-pdf-compat-fixtures.mjs:/gen-fixtures.mjs:ro" \
+  -v "$REPO_ROOT/wasm-build/probe-luahbtex-pdf-api.lua:/probe.lua:ro" \
   -v "$REPO_ROOT/wasm-build/pdf-backend/fixtures/luahbtex-pdf-api.expected.json:/expected.json:ro" \
   --entrypoint sh "$IMAGE" -c '
     set -eu

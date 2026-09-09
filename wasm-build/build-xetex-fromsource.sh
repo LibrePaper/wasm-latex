@@ -5,7 +5,7 @@
 #     Dockerfile.xetex): real libkpathsea + our fontconfig shim + own worker controller.
 #     ICU data is NOT bundled — the worker fetches
 #     icudt68l.dat from the CDN at runtime (see wasm-build/icu-data-loader.c and
-#     scripts/build-icu-data.sh for producing/hosting that asset).
+#     wasm-build/build-icu-data.sh for producing/hosting that asset).
 #   • wasmtex-dvipdfm — built FROM TeX-Live/texlive-source too (same Docker image
 #     as xetex), with our own controller/library + real libkpathsea.
 #     wasm-build/build-dvipdfm2.sh does the emcc build.
@@ -16,7 +16,7 @@
 #     (native codegen + emcc).
 #
 # Usage:
-#   scripts/build-xetex-fromsource.sh [OUT_DIR]      # default wasm-build/dist-xetex
+#   wasm-build/build-xetex-fromsource.sh [OUT_DIR]      # default wasm-build/dist-xetex
 set -euo pipefail
 
 OUT_DIR="${1:-wasm-build/dist-xetex}"
@@ -41,14 +41,14 @@ docker build -f wasm-build/Dockerfile.xetex --platform linux/amd64 \
 
 echo "Checking XeTeX PDF inclusion geometry ..."
 docker run --rm --platform linux/amd64 \
-  -v "$REPO_ROOT/scripts/test-xetex-pdf-geometry.mjs:/test-xetex-pdf-geometry.mjs:ro" \
+  -v "$REPO_ROOT/wasm-build/test-xetex-pdf-geometry.mjs:/test-xetex-pdf-geometry.mjs:ro" \
   -v "$REPO_ROOT/wasm-build/pdf-backend/fixtures/xetex-geometry.expected.json:/xetex-geometry.expected.json:ro" \
   --entrypoint node wasmtex-xetex-wasm \
   /test-xetex-pdf-geometry.mjs /build/native/texk/web2c/xetex /xetex-geometry.expected.json
 
 echo "Checking deterministic XeTeX PDF inclusion XDV ..."
 docker run --rm --platform linux/amd64 --tmpfs /work \
-  -v "$REPO_ROOT/scripts/build-xetex-pdf-visual-fixture.mjs:/fixture.mjs:ro" \
+  -v "$REPO_ROOT/wasm-build/build-xetex-pdf-visual-fixture.mjs:/fixture.mjs:ro" \
   -v "$REPO_ROOT/wasm-build/pdf-backend/fixtures/xetex-visual.expected.sha256:/expected.sha256:ro" \
   --entrypoint sh wasmtex-xetex-wasm -c '
     set -eu
@@ -83,4 +83,4 @@ echo ""
 echo "XeLaTeX engine (own controller and glue) in $OUT_DIR:"
 echo "  wasmtex-xetex   — from texlive-source; fetches ICU data from the CDN"
 echo "  wasmtex-dvipdfm — from texlive-source; loads pdftex.map + fonts from the CDN"
-echo "Deploy next to the pdfTeX engine. Ensure icudt68l.dat is on the CDN (scripts/build-icu-data.sh)."
+echo "Deploy next to the pdfTeX engine. Ensure icudt68l.dat is on the CDN (wasm-build/build-icu-data.sh)."

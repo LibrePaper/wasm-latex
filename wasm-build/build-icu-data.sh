@@ -13,8 +13,8 @@
 # ICU version changes.
 #
 # Usage:
-#   scripts/build-icu-data.sh                 # build icudt68l.dat into /tmp/icu-data/
-#   scripts/build-icu-data.sh --upload        # build + gzip + upload to R2
+#   wasm-build/build-icu-data.sh                 # build icudt68l.dat into /tmp/icu-data/
+#   wasm-build/build-icu-data.sh --upload        # build + gzip + upload to R2
 #
 # R2 target: <bucket>/<immutable-prefix>/<year>/icudt68l.dat (gzip Content-Encoding,
 # so the worker's XHR transparently decompresses). The worker fetches it at

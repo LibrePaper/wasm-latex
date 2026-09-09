@@ -75,8 +75,8 @@ for (const n of required) {
 for (const f of fs.readdirSync('LICENSES')) {
   fs.copyFileSync(path.join('LICENSES', f), path.join(outDir, 'LICENSES', f))
 }
-fs.copyFileSync('licensing/RELINK.md', path.join(outDir, 'RELINK.md'))
-fs.copyFileSync('licensing/linked-components.json', path.join(outDir, 'linked-components.json'))
+fs.copyFileSync('RELINK.md', path.join(outDir, 'RELINK.md'))
+fs.copyFileSync('linked-components.json', path.join(outDir, 'linked-components.json'))
 
 const sourceReceipt = fs.existsSync('receipts/SOURCE-RECEIPT.json')
   ? JSON.parse(fs.readFileSync('receipts/SOURCE-RECEIPT.json', 'utf8'))

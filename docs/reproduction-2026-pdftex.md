@@ -3,8 +3,8 @@
 Date: 2026-09-08. Machine: 16 cores, Docker 29.7, x86_64.
 
 Built from this repository's `wasm-build/` at the seed commit, which is the
-upstream snapshot `0dddc924` the release receipts name, using upstream's own
-recipe unchanged:
+upstream snapshot `0dddc924` the release receipts name, with the recipe as it
+stood at that commit:
 
     docker buildx build --platform linux/amd64 --load \
       --build-arg TEXLIVE_REF=$(cat wasm-build/texlive-source-2026.ref) \
@@ -47,22 +47,17 @@ are what the published source says they are.
   format-generation.md), from inputs we hash ourselves rather than from
   upstream's CDN, so its bytes are ours and are not expected to match the
   pinned receipt.
-- The other engines: XeTeX, LuaHBTeX, dvipdfm, BibTeX8, makeindex each have
-  their own Dockerfile in `wasm-build/`, and their build sequence is recorded
-  in `build-layer-inventory.md`.
 
 ## Notes on the recipe
 
 - The Dockerfile clones TeX Live source from GitHub at the pinned commit
   during the image build. The corresponding-source tarball carries the same
   tree; pointing the build at it is part of the vendoring work.
-- `wasm-libs` ran a recursive make with `-` and `|| true`, expecting it to
-  fail once it reached libraries pdfTeX does not use (it failed configuring
-  luajit). A tolerated failure hides real ones. Replaced with an explicit
-  list of the subdirectories the link lines draw from (`libs/zlib`,
-  `texk/kpathsea`), each of which must now succeed. `native-build` still
-  tolerates its own failure, for a harder reason: the native phase exists to
-  run web2c's code generation across the whole tree, and it is checked
-  afterwards by asserting the generated pdfTeX C files exist.
+- `wasm-libs` builds an explicit list of the subdirectories the link lines draw
+  from (`libs/zlib`, `texk/kpathsea`), each of which must succeed, so a broken
+  library cannot pass as one pdfTeX does not use. `native-build` does tolerate
+  its own failure: the native phase exists to run web2c's code generation across
+  the whole tree, and it is checked afterwards by asserting the generated pdfTeX
+  C files exist.
 - Source maps (`*.map`) are produced beside the modules and are not part of
   the receipt.
