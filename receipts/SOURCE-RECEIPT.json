@@ -1,13 +1,18 @@
 {
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-cfa857009f02-source.tar.xz",
-  "bytes": 102004480,
-  "sha256": "6bc3a97d6f6471873a91c5d45750644567892345c1687fe06cf9b28f66582a57",
-  "repositoryCommit": "cfa857009f028da1b05693776cf0445d0b1096b8",
+  "archive": "librepaper-wasm-latex-ca93935623aa-source.tar.xz",
+  "bytes": 101990184,
+  "sha256": "022da3a0e8226c7cb2910e842d714174879e68d25ffe4dffe587a4c64bfd61bd",
+  "repositoryCommit": "ca93935623aa96d7cfba2d1298c2705f871269d0",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
   "correspondsTo": [
+    {
+      "name": "icudt68l.dat",
+      "bytes": 28566176,
+      "sha256": "d8e42c5c797e98f934a6a31e959231c2396ab68242f95d9e7b9f7783f71dc611"
+    },
     {
       "name": "wasmtex-bibtex.js",
       "bytes": 77802,
