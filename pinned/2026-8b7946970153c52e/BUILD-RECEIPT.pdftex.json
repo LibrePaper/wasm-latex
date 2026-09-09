@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "buildId": "b4bee380c4c86686c4c93361205d4b0bdeed19e386a6c2b5b0685ed5f44de0cb",
+  "texliveYear": "2026",
+  "family": "pdftex",
+  "sourceRevision": "0dddc924cc6e69bd2a4b4630e02efe414f84515e",
+  "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
+  "mirror": {
+    "revision": "2026-ba38749b8714505a",
+    "provenanceSha256": "7c5ef0a46b6a52cd8aa4e4ad2256eb58d6bb2062c45dfa43e48def1dfa9faf00",
+    "url": "https://texlive.corca.ai/snapshots/2026-ba38749b8714505a/2026/"
+  },
+  "toolchain": {
+    "emscriptenVersion": "3.1.46",
+    "emscriptenCommit": "19607820c447a13fd8d0b7680c56148427d6e1b8",
+    "dockerImage": "emscripten/emsdk:3.1.46@sha256:2491bc4bf6caf8c41993660822341bc72759cb577363dfe0781f0a2d05f7d357"
+  },
+  "files": [
+    {
+      "name": "wasmtex-kpse-resolve.js",
+      "bytes": 3223,
+      "sha256": "0303650d65055961498677e0e109357b061873b86a063cb901800a2a84b4859d"
+    },
+    {
+      "name": "wasmtex-pdftex-checkpoint.js",
+      "bytes": 111651,
+      "sha256": "7b234c8ef04fb59716487ef7f1fd56f0155488aff4d328a3b26e5f8de9decdef"
+    },
+    {
+      "name": "wasmtex-pdftex-checkpoint.wasm",
+      "bytes": 2701068,
+      "sha256": "83563869d753277b32f885cc4207355d13aba86e47fd804fb712f3722fecfc48"
+    },
+    {
+      "name": "wasmtex-pdftex-resolver-evidence.js",
+      "bytes": 589,
+      "sha256": "f42ab09591de3108ac07635f060cc1fca27571f62a852edf5e6307515b83b728"
+    },
+    {
+      "name": "wasmtex-pdftex.fmt",
+      "bytes": 3657154,
+      "sha256": "fd1f4c0411b9bceb8562acd847b62da030b3b803b72799bff6c73dc095935bb5"
+    },
+    {
+      "name": "wasmtex-pdftex.js",
+      "bytes": 105102,
+      "sha256": "80da7fce4ad7238271bd5b5c6a7a790fb4f6a527ea84e8193be2721e6646b3c1"
+    },
+    {
+      "name": "wasmtex-pdftex.wasm",
+      "bytes": 1672898,
+      "sha256": "bf0b9fd1772fc78b02ad19eff39f7e03a73d7eefc1c1d05b15387768e57d013d"
+    },
+    {
+      "name": "wasmtex-pdftex.worker.js",
+      "bytes": 77849,
+      "sha256": "2bde4060a105d0e739c506a89ecfa765f0b5ffab8ec91a2577bf7e967b09c7fe"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "buildId": "d67c49ffed42c6c4db4bef3e7c31426cf9f77b37bc0287f484abc3af3a545c67",
+  "texliveYear": "2026",
+  "family": "xetex",
+  "sourceRevision": "0dddc924cc6e69bd2a4b4630e02efe414f84515e",
+  "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
+  "mirror": {
+    "revision": "2026-ba38749b8714505a",
+    "provenanceSha256": "7c5ef0a46b6a52cd8aa4e4ad2256eb58d6bb2062c45dfa43e48def1dfa9faf00",
+    "url": "https://texlive.corca.ai/snapshots/2026-ba38749b8714505a/2026/"
+  },
+  "toolchain": {
+    "emscriptenVersion": "3.1.46",
+    "emscriptenCommit": "19607820c447a13fd8d0b7680c56148427d6e1b8",
+    "dockerImage": "emscripten/emsdk:3.1.46@sha256:2491bc4bf6caf8c41993660822341bc72759cb577363dfe0781f0a2d05f7d357"
+  },
+  "files": [
+    {
+      "name": "wasmtex-dvipdfm.js",
+      "bytes": 86724,
+      "sha256": "d781e79dfc02d40b9a2ce11cfa8178a1376623cafe74c48751f1ab331ced1d65"
+    },
+    {
+      "name": "wasmtex-dvipdfm.wasm",
+      "bytes": 832374,
+      "sha256": "72fce45bf59aa214328a63593647477b5646ae0ff39d18f74dcd8e93dcb959f0"
+    },
+    {
+      "name": "wasmtex-dvipdfm.worker.js",
+      "bytes": 14758,
+      "sha256": "f2e0d9eb3b273cfcbba78e5b0d4ae6768509c818499818229497a01121548548"
+    },
+    {
+      "name": "wasmtex-xetex-resolver-evidence.js",
+      "bytes": 589,
+      "sha256": "f42ab09591de3108ac07635f060cc1fca27571f62a852edf5e6307515b83b728"
+    },
+    {
+      "name": "wasmtex-xetex.fmt.gz",
+      "bytes": 3920543,
+      "sha256": "0b2bb28f6de7793488fdc11cfc1f6ff42c631d93486530f879036ec4b5307513"
+    },
+    {
+      "name": "wasmtex-xetex.js",
+      "bytes": 106975,
+      "sha256": "08abd09c617762cb4eb37922899cda818cf7a93d53801e53d28782070125a913"
+    },
+    {
+      "name": "wasmtex-xetex.wasm",
+      "bytes": 3494333,
+      "sha256": "b59c0de517a1215e3c3e4ddce30a3aa8714b20544916bc947f5ee08df3b3e620"
+    },
+    {
+      "name": "wasmtex-xetex.worker.js",
+      "bytes": 15040,
+      "sha256": "5880ff256b3a05dee9f298e026dd6f94bd9db7ae55573ccede844b33c7aba530"
+    }
+  ]
+}

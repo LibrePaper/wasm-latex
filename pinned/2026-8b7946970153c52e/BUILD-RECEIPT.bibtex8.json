@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "buildId": "1f0d1fa0729d49178e548ee7434ec380ab0c647b2e4ff5a42f80f9ef128dc78d",
+  "texliveYear": "2026",
+  "family": "bibtex8",
+  "sourceRevision": "06f1937c502188fe04f0931fed702d06c2b78ab3",
+  "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
+  "mirror": {
+    "revision": "2026-ba38749b8714505a",
+    "provenanceSha256": "7c5ef0a46b6a52cd8aa4e4ad2256eb58d6bb2062c45dfa43e48def1dfa9faf00",
+    "url": "https://texlive.corca.ai/snapshots/2026-ba38749b8714505a/2026/"
+  },
+  "toolchain": {
+    "emscriptenVersion": "3.1.46",
+    "emscriptenCommit": "19607820c447a13fd8d0b7680c56148427d6e1b8",
+    "dockerImage": "emscripten/emsdk:3.1.46@sha256:2491bc4bf6caf8c41993660822341bc72759cb577363dfe0781f0a2d05f7d357"
+  },
+  "files": [
+    {
+      "name": "wasmtex-bibtex8.js",
+      "bytes": 79476,
+      "sha256": "ffd5029614868f153877117ed3a82d9189844137f06b0180b0135735b3d6edc9"
+    },
+    {
+      "name": "wasmtex-bibtex8.wasm",
+      "bytes": 222168,
+      "sha256": "f2ad8f96a35cd5d0b7fd291cd966f0659664bc60ab1d88594af62569a41f1d6c"
+    },
+    {
+      "name": "wasmtex-bibtex8.worker.js",
+      "bytes": 6624,
+      "sha256": "19fe6c8e230cf6a005933b550da3cd16eca4645a1f8abf2f625b6fc0deabd84b"
+    }
+  ]
+}
