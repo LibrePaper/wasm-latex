@@ -9,37 +9,61 @@
     "tex/latex-dev"
   ],
   "core": [
-    "tex/latex/base",
-    "tex/latex/l3kernel",
-    "tex/latex/l3backend",
-    "tex/latex/l3packages",
-    "tex/latex/amsmath",
+    "fonts/jknappen/ec",
+    "fonts/public/cm",
+    "fonts/public/latex-fonts",
+    "tex/generic/atbegshi",
+    "tex/generic/babel",
+    "tex/generic/bigintcalc",
+    "tex/generic/bitset",
+    "tex/generic/config",
+    "tex/generic/dehyph",
+    "tex/generic/dehyph-exptl",
+    "tex/generic/gettitlestring",
+    "tex/generic/hyphen",
+    "tex/generic/iftex",
+    "tex/generic/infwarerr",
+    "tex/generic/intcalc",
+    "tex/generic/knuth-lib",
+    "tex/generic/kvdefinekeys",
+    "tex/generic/ltxcmds",
+    "tex/generic/pdfescape",
+    "tex/generic/pdftex",
+    "tex/generic/pdftexcmds",
+    "tex/generic/ruhyphen",
+    "tex/generic/stringenc",
+    "tex/generic/tex-ini-files",
+    "tex/generic/ukrhyph",
+    "tex/generic/unicode-data",
+    "tex/generic/uniquecounter",
     "tex/latex/amsfonts",
+    "tex/latex/amsmath",
+    "tex/latex/atveryend",
+    "tex/latex/base",
+    "tex/latex/booktabs",
+    "tex/latex/epstopdf-pkg",
+    "tex/latex/etoolbox",
+    "tex/latex/firstaid",
+    "tex/latex/geometry",
     "tex/latex/graphics",
     "tex/latex/graphics-cfg",
     "tex/latex/graphics-def",
+    "tex/latex/hycolor",
     "tex/latex/hyperref",
-    "tex/latex/geometry",
-    "tex/latex/tools",
-    "tex/generic/babel",
     "tex/latex/kvoptions",
-    "tex/generic/iftex",
-    "tex/generic/infwarerr",
-    "tex/generic/ltxcmds",
     "tex/latex/kvsetkeys",
-    "tex/generic/pdftexcmds",
-    "tex/latex/auxhook",
+    "tex/latex/l3backend",
+    "tex/latex/l3kernel",
+    "tex/latex/latexconfig",
+    "tex/latex/natbib",
+    "tex/latex/refcount",
     "tex/latex/rerunfilecheck",
-    "tex/latex/url",
-    "fonts/public/cm",
-    "fonts/public/amsfonts",
-    "fonts/public/knuth-lib",
-    "fonts/public/latex-fonts",
-    "fonts/pdftex/updmap"
+    "tex/latex/tex-ini-files",
+    "tex/latex/url"
   ],
   "index": {
-    "bytes": 14465203,
-    "sha256": "2db15c4f908b0ff20310be5450fd5cbee6e2241fa7e42930b56350ca96b035a4"
+    "bytes": 14444297,
+    "sha256": "a2b6bad5d939c21c9e9ca3b3f98031dd38306ad23f1588c2f7c35dbe520236b9"
   },
   "bundles": [
     {
@@ -1387,18 +1411,11 @@
       "files": 23
     },
     {
-      "name": "core.part1",
-      "url": "b/64c3d7146013e93f1ba4b70627ce82c392ccbd3212113128102df0aacb7e1ffc/core.part1.tar",
-      "size": 25707008,
-      "sha256": "64c3d7146013e93f1ba4b70627ce82c392ccbd3212113128102df0aacb7e1ffc",
-      "files": 1601
-    },
-    {
-      "name": "core.part2",
-      "url": "b/7bc15d57c4002bf769adc34c692479bc0eeb9ca6ab52bc0f369329566a467bca/core.part2.tar",
-      "size": 6065664,
-      "sha256": "7bc15d57c4002bf769adc34c692479bc0eeb9ca6ab52bc0f369329566a467bca",
-      "files": 273
+      "name": "core",
+      "url": "b/55a715bc6bd67eed7966d032d215c2245305d93d5fd8f55659b312a2b2260b92/core.tar",
+      "size": 17846272,
+      "sha256": "55a715bc6bd67eed7966d032d215c2245305d93d5fd8f55659b312a2b2260b92",
+      "files": 2165
     },
     {
       "name": "dvipdfmx/dvipdfmx-unsafe.cfg",
@@ -4390,13 +4407,6 @@
       "files": 144
     },
     {
-      "name": "fonts/jknappen/ec",
-      "url": "b/2cd85e6eb317a0c6159e505617ac6fddd9ff578cd8007a3ffb1d531730f7f87d/fonts-jknappen-ec.tar",
-      "size": 1728512,
-      "sha256": "2cd85e6eb317a0c6159e505617ac6fddd9ff578cd8007a3ffb1d531730f7f87d",
-      "files": 565
-    },
-    {
       "name": "fonts/jknappen/fc",
       "url": "b/dfd38bb0faca4d20996e10e10510887e32b32ffd72a121085e40398c40a289da/fonts-jknappen-fc.tar",
       "size": 652288,
@@ -4803,6 +4813,13 @@
       "files": 29
     },
     {
+      "name": "fonts/pdftex/updmap",
+      "url": "b/b2806d9cdc9467392326d1bfb9f471cf799db7ce0c3c4cc55eaf92066627843c/fonts-pdftex-updmap.tar",
+      "size": 16626176,
+      "sha256": "b2806d9cdc9467392326d1bfb9f471cf799db7ce0c3c4cc55eaf92066627843c",
+      "files": 3
+    },
+    {
       "name": "fonts/pdftex/vntex",
       "url": "b/0372feb13600cd46d00010d8fca60033a6050870b5f802404129e807792ed60d/fonts-pdftex-vntex.tar",
       "size": 9216,
@@ -4920,6 +4937,13 @@
       "size": 2070016,
       "sha256": "9935b2381531505a9f4788f5517b9aaf591ce79de53d1aae3d6813b336f7e0d1",
       "files": 6
+    },
+    {
+      "name": "fonts/public/amsfonts",
+      "url": "b/4e276cf212e2f015dede9ab33e11d5652624fc4db3df63379a4a90208cba9563/fonts-public-amsfonts.tar",
+      "size": 4563456,
+      "sha256": "4e276cf212e2f015dede9ab33e11d5652624fc4db3df63379a4a90208cba9563",
+      "files": 376
     },
     {
       "name": "fonts/public/anonymouspro",
@@ -6635,6 +6659,13 @@
       "size": 700416,
       "sha256": "0962e06f945ba47227c81206fad0ef9fc7334efbd80922a4d9cbb4afc6f8068b",
       "files": 38
+    },
+    {
+      "name": "fonts/public/knuth-lib",
+      "url": "b/7fa61ae38d052762bfc2324aaaaa53fadb60a08c79b2c82f31cf93024563d504/fonts-public-knuth-lib.tar",
+      "size": 8192,
+      "sha256": "7fa61ae38d052762bfc2324aaaaa53fadb60a08c79b2c82f31cf93024563d504",
+      "files": 6
     },
     {
       "name": "fonts/public/knuth-local",
@@ -9409,13 +9440,6 @@
       "files": 1
     },
     {
-      "name": "tex/generic/atbegshi",
-      "url": "b/878c212fcf0537e8c81e1b829374271f9f1b4d67fef83631e525b7c9f1babef7/tex-generic-atbegshi.tar",
-      "size": 26624,
-      "sha256": "878c212fcf0537e8c81e1b829374271f9f1b4d67fef83631e525b7c9f1babef7",
-      "files": 1
-    },
-    {
       "name": "tex/generic/autoaligne",
       "url": "b/c1e7fb3c9be540e2ef1b197603a4266a1abe8337d1b7bc256f09632891858a60/tex-generic-autoaligne.tar",
       "size": 33280,
@@ -9857,25 +9881,11 @@
       "files": 2
     },
     {
-      "name": "tex/generic/bigintcalc",
-      "url": "b/1df1500f5250c2e633bc91e15419396fa42aefce2f59507c9062a383bde35371/tex-generic-bigintcalc.tar",
-      "size": 42496,
-      "sha256": "1df1500f5250c2e633bc91e15419396fa42aefce2f59507c9062a383bde35371",
-      "files": 1
-    },
-    {
       "name": "tex/generic/bitelist",
       "url": "b/64127f8205b572c65dca59c5fc1664849e8086969a44f98756e464884a0e1839/tex-generic-bitelist.tar",
       "size": 15360,
       "sha256": "64127f8205b572c65dca59c5fc1664849e8086969a44f98756e464884a0e1839",
       "files": 2
-    },
-    {
-      "name": "tex/generic/bitset",
-      "url": "b/2001075467caa4ffede099f440db88b435451e6075af25f9a0863bc97e7a8bb3/tex-generic-bitset.tar",
-      "size": 35840,
-      "sha256": "2001075467caa4ffede099f440db88b435451e6075af25f9a0863bc97e7a8bb3",
-      "files": 1
     },
     {
       "name": "tex/generic/borceux",
@@ -9969,13 +9979,6 @@
       "files": 1
     },
     {
-      "name": "tex/generic/config",
-      "url": "b/14b7c2515db84298d779219534fe4751d7ec430ea4f72c692013c15dadfcd394/tex-generic-config.tar",
-      "size": 181248,
-      "sha256": "14b7c2515db84298d779219534fe4751d7ec430ea4f72c692013c15dadfcd394",
-      "files": 8
-    },
-    {
       "name": "tex/generic/context",
       "url": "b/0bc2a686d4b66c2259a871f672d9ca678fac1e56a77693dfb814a8f6c409aed7/tex-generic-context.tar",
       "size": 17920,
@@ -10002,20 +10005,6 @@
       "size": 55808,
       "sha256": "8f45566f86d59231a018951cb18908fe206fa765ba2452de264d6b1829948d04",
       "files": 2
-    },
-    {
-      "name": "tex/generic/dehyph",
-      "url": "b/dc975351b334819c529999295f77a3f4c3ad6ac2d3d02ced0fb69deb34fec037/tex-generic-dehyph.tar",
-      "size": 230400,
-      "sha256": "dc975351b334819c529999295f77a3f4c3ad6ac2d3d02ced0fb69deb34fec037",
-      "files": 4
-    },
-    {
-      "name": "tex/generic/dehyph-exptl",
-      "url": "b/edcf6549334e8a64b6d2ff373b1ab7f17fc8867a756a930d1de1a207e7cd4797/tex-generic-dehyph-exptl.tar",
-      "size": 834560,
-      "sha256": "edcf6549334e8a64b6d2ff373b1ab7f17fc8867a756a930d1de1a207e7cd4797",
-      "files": 6
     },
     {
       "name": "tex/generic/dirtree",
@@ -10228,13 +10217,6 @@
       "files": 2
     },
     {
-      "name": "tex/generic/gettitlestring",
-      "url": "b/f961d5dd3971a6982be36d43f374e481c66210870eac4db910908141e9b4c7b7/tex-generic-gettitlestring.tar",
-      "size": 10240,
-      "sha256": "f961d5dd3971a6982be36d43f374e481c66210870eac4db910908141e9b4c7b7",
-      "files": 1
-    },
-    {
       "name": "tex/generic/gobble",
       "url": "b/8f19ff7be251b1c67859440ccb2119df1ccdf8e3cb57ceaca198e56ccb82f1a0/tex-generic-gobble.tar",
       "size": 7680,
@@ -10268,13 +10250,6 @@
       "size": 10460160,
       "sha256": "7fd595407e4f6c17a22c2b7048f8318cbc155fd6b7ee38f11181b5771546c168",
       "files": 343
-    },
-    {
-      "name": "tex/generic/hyphen",
-      "url": "b/e326bfa856844abef0f1a4dd67627996ac5f5aae5694404983ff82f6501f46c8/tex-generic-hyphen.tar",
-      "size": 129024,
-      "sha256": "e326bfa856844abef0f1a4dd67627996ac5f5aae5694404983ff82f6501f46c8",
-      "files": 8
     },
     {
       "name": "tex/generic/hyphenex",
@@ -10312,31 +10287,10 @@
       "files": 1
     },
     {
-      "name": "tex/generic/intcalc",
-      "url": "b/f34d7706b3a815ebef80acf58ac17552121a0511817679b4e176201f7d74c21a/tex-generic-intcalc.tar",
-      "size": 33792,
-      "sha256": "f34d7706b3a815ebef80acf58ac17552121a0511817679b4e176201f7d74c21a",
-      "files": 1
-    },
-    {
       "name": "tex/generic/kastrup",
       "url": "b/bbf14d986272ac8fa2e687c0fa06917b5f2eb5bbd22506129c8c150cca9ebd33/tex-generic-kastrup.tar",
       "size": 4096,
       "sha256": "bbf14d986272ac8fa2e687c0fa06917b5f2eb5bbd22506129c8c150cca9ebd33",
-      "files": 1
-    },
-    {
-      "name": "tex/generic/knuth-lib",
-      "url": "b/b88712e68b47ada12211ad01d9b77f0dbff24a1d7bb51da9bffdf67e940a0699/tex-generic-knuth-lib.tar",
-      "size": 2048,
-      "sha256": "b88712e68b47ada12211ad01d9b77f0dbff24a1d7bb51da9bffdf67e940a0699",
-      "files": 1
-    },
-    {
-      "name": "tex/generic/kvdefinekeys",
-      "url": "b/b962e3412ceed225eb8ca06977ab4af74c3ac5e26bd2f609260e24a167a6a68c/tex-generic-kvdefinekeys.tar",
-      "size": 7168,
-      "sha256": "b962e3412ceed225eb8ca06977ab4af74c3ac5e26bd2f609260e24a167a6a68c",
       "files": 1
     },
     {
@@ -10606,25 +10560,11 @@
       "files": 1
     },
     {
-      "name": "tex/generic/pdfescape",
-      "url": "b/32b5c06233a5a9d4a3d395c8b10e0ffb61a89af419a21426e0956652982804c1/tex-generic-pdfescape.tar",
-      "size": 20992,
-      "sha256": "32b5c06233a5a9d4a3d395c8b10e0ffb61a89af419a21426e0956652982804c1",
-      "files": 1
-    },
-    {
       "name": "tex/generic/pdfmsym",
       "url": "b/14ea2c350d052f3945a954f2da88f9c772a0b418e3f3896b02bd895b873e0467/tex-generic-pdfmsym.tar",
       "size": 34816,
       "sha256": "14ea2c350d052f3945a954f2da88f9c772a0b418e3f3896b02bd895b873e0467",
       "files": 1
-    },
-    {
-      "name": "tex/generic/pdftex",
-      "url": "b/c0e12ffc5fc94662feaabfffb9d4eac5921212fda34c9d33c0116829112a27e9/tex-generic-pdftex.tar",
-      "size": 225280,
-      "sha256": "c0e12ffc5fc94662feaabfffb9d4eac5921212fda34c9d33c0116829112a27e9",
-      "files": 2
     },
     {
       "name": "tex/generic/petri-nets",
@@ -11341,13 +11281,6 @@
       "files": 1
     },
     {
-      "name": "tex/generic/ruhyphen",
-      "url": "b/5e28f1772ce26ec9445156e8663e9eab5c9fd5457a12a645228b5c4f3279917c/tex-generic-ruhyphen.tar",
-      "size": 216576,
-      "sha256": "5e28f1772ce26ec9445156e8663e9eab5c9fd5457a12a645228b5c4f3279917c",
-      "files": 24
-    },
-    {
       "name": "tex/generic/ruler",
       "url": "b/6c94091f846c9ed42a436183424b7ce61adf85a4c1071e08574aafeda9d327f3/tex-generic-ruler.tar",
       "size": 27136,
@@ -11411,13 +11344,6 @@
       "files": 5
     },
     {
-      "name": "tex/generic/stringenc",
-      "url": "b/33930cd9ed732b64c8fd774c7ab36b1a78e938949f647161c581f37dc98ac156/tex-generic-stringenc.tar",
-      "size": 385536,
-      "sha256": "33930cd9ed732b64c8fd774c7ab36b1a78e938949f647161c581f37dc98ac156",
-      "files": 41
-    },
-    {
       "name": "tex/generic/swrule",
       "url": "b/8b26f00be225d472f3a0c4631a30ccdcd32691c99e5136b8bd4dca280c60bdbd/tex-generic-swrule.tar",
       "size": 4608,
@@ -11465,13 +11391,6 @@
       "size": 9216,
       "sha256": "5a2da54aefa95779b5d864534ed887bedccc7605f18629a9ff9e293f38ba3dc0",
       "files": 1
-    },
-    {
-      "name": "tex/generic/tex-ini-files",
-      "url": "b/09b6d213d558e54a28ea1d7cde8a1671aee9ad066db763fed96b52aa96b21da9/tex-generic-tex-ini-files.tar",
-      "size": 14848,
-      "sha256": "09b6d213d558e54a28ea1d7cde8a1671aee9ad066db763fed96b52aa96b21da9",
-      "files": 8
     },
     {
       "name": "tex/generic/tex-locale",
@@ -11586,31 +11505,10 @@
       "files": 2
     },
     {
-      "name": "tex/generic/ukrhyph",
-      "url": "b/67d2c23816d5bb0713ee033080b2516122d8769c48b02fdc880e8ace6f7b7db5/tex-generic-ukrhyph.tar",
-      "size": 146944,
-      "sha256": "67d2c23816d5bb0713ee033080b2516122d8769c48b02fdc880e8ace6f7b7db5",
-      "files": 21
-    },
-    {
       "name": "tex/generic/ulem",
       "url": "b/468c7003b944fdb88ecbf685ece5613b64a8252952c282106f4d770929df66c8/tex-generic-ulem.tar",
       "size": 17408,
       "sha256": "468c7003b944fdb88ecbf685ece5613b64a8252952c282106f4d770929df66c8",
-      "files": 1
-    },
-    {
-      "name": "tex/generic/unicode-data",
-      "url": "b/455eaa99a6db9794960449c6342878bcf9ef808ad19f43e9b26ef3d47412e236/tex-generic-unicode-data.tar",
-      "size": 3553280,
-      "sha256": "455eaa99a6db9794960449c6342878bcf9ef808ad19f43e9b26ef3d47412e236",
-      "files": 18
-    },
-    {
-      "name": "tex/generic/uniquecounter",
-      "url": "b/a4b562f84a1aaffa780c8d4fcded176da9808c97756827dfca28cd9b80533466/tex-generic-uniquecounter.tar",
-      "size": 8704,
-      "sha256": "a4b562f84a1aaffa780c8d4fcded176da9808c97756827dfca28cd9b80533466",
       "files": 1
     },
     {
@@ -12832,13 +12730,6 @@
       "files": 5
     },
     {
-      "name": "tex/latex/atveryend",
-      "url": "b/a42be556962225423479e16ebbc4dec8a2aa0a1292445973b15ab88d29dfef8a/tex-latex-atveryend.tar",
-      "size": 3584,
-      "sha256": "a42be556962225423479e16ebbc4dec8a2aa0a1292445973b15ab88d29dfef8a",
-      "files": 1
-    },
-    {
       "name": "tex/latex/aucklandthesis",
       "url": "b/c35cf12ab7c08772ce216826752ce7c2f6f89463dae86df5604ae2c6a26f480d/tex-latex-aucklandthesis.tar",
       "size": 10752,
@@ -12948,6 +12839,13 @@
       "url": "b/a6615fa272599f8ac4a6f04c2ef43b7ef081e497695c506b8aa9591e7daf87fb/tex-latex-autopdf.tar",
       "size": 21504,
       "sha256": "a6615fa272599f8ac4a6f04c2ef43b7ef081e497695c506b8aa9591e7daf87fb",
+      "files": 1
+    },
+    {
+      "name": "tex/latex/auxhook",
+      "url": "b/ca815d638309bb9958586c98775a961f409ab66a75d39eca60822a61d3da12d8/tex-latex-auxhook.tar",
+      "size": 5632,
+      "sha256": "ca815d638309bb9958586c98775a961f409ab66a75d39eca60822a61d3da12d8",
       "files": 1
     },
     {
@@ -14475,13 +14373,6 @@
       "size": 20480,
       "sha256": "0272ee95bdc4781b7c583636837ec732b3f0964412d163bcd146d9c7ba398dd3",
       "files": 2
-    },
-    {
-      "name": "tex/latex/booktabs",
-      "url": "b/317adc2fb165bc8e1009572eb5c44d9328e1b1ec1efc2a0cc18d2abbf9af9a54/tex-latex-booktabs.tar",
-      "size": 7680,
-      "sha256": "317adc2fb165bc8e1009572eb5c44d9328e1b1ec1efc2a0cc18d2abbf9af9a54",
-      "files": 1
     },
     {
       "name": "tex/latex/boolexpr",
@@ -18824,13 +18715,6 @@
       "files": 1
     },
     {
-      "name": "tex/latex/epstopdf-pkg",
-      "url": "b/98465b6ded91df9da7721c1b5f20d909f51519d3677a327cc7db8ad399d1817e/tex-latex-epstopdf-pkg.tar",
-      "size": 20992,
-      "sha256": "98465b6ded91df9da7721c1b5f20d909f51519d3677a327cc7db8ad399d1817e",
-      "files": 2
-    },
-    {
       "name": "tex/latex/eq-pin2corr",
       "url": "b/3c6f0116ef48bdb2317d6bd00aa3ea83979b53152631c859d728cfef8ac5b741/tex-latex-eq-pin2corr.tar",
       "size": 9728,
@@ -19081,13 +18965,6 @@
       "size": 77312,
       "sha256": "d8573249863ac05adf72dd2886a8da3e0f473eb23bf93e14f44ec2e20dcd63f5",
       "files": 1
-    },
-    {
-      "name": "tex/latex/etoolbox",
-      "url": "b/e8b16c7e9107d1be425c6e07376c1c662d5a45c8f101fff3abb15d31c3fdee5d/tex-latex-etoolbox.tar",
-      "size": 51712,
-      "sha256": "e8b16c7e9107d1be425c6e07376c1c662d5a45c8f101fff3abb15d31c3fdee5d",
-      "files": 2
     },
     {
       "name": "tex/latex/etsvthor",
@@ -19865,13 +19742,6 @@
       "size": 4608,
       "sha256": "fa96f58f5801712a0a36e6bc94c51e2f9a364cd73bfc4bd517c0bacbd508ad03",
       "files": 1
-    },
-    {
-      "name": "tex/latex/firstaid",
-      "url": "b/938c2124ed6e1eb8cbb0447415a4ef77ebdec0a23e22b1e650e2a4f34ddc6e0a/tex-latex-firstaid.tar",
-      "size": 22528,
-      "sha256": "938c2124ed6e1eb8cbb0447415a4ef77ebdec0a23e22b1e650e2a4f34ddc6e0a",
-      "files": 3
     },
     {
       "name": "tex/latex/fistrum",
@@ -22226,13 +22096,6 @@
       "files": 2
     },
     {
-      "name": "tex/latex/hycolor",
-      "url": "b/940919bc4ddb0306c5266a5789c49d1d52e75dc6ef64da77d8019a5463271410/tex-latex-hycolor.tar",
-      "size": 25088,
-      "sha256": "940919bc4ddb0306c5266a5789c49d1d52e75dc6ef64da77d8019a5463271410",
-      "files": 2
-    },
-    {
       "name": "tex/latex/hypcap",
       "url": "b/6b1242c28462ff9a4bdfbec3f58e1d80783ec71e07e686f4f39e7dffe9437261/tex-latex-hypcap.tar",
       "size": 5632,
@@ -23486,6 +23349,13 @@
       "files": 4
     },
     {
+      "name": "tex/latex/l3packages",
+      "url": "b/d77e08b4f789099e79f76541ae98043390cb715adf413a9de6a92ebe7d3f307e/tex-latex-l3packages.tar",
+      "size": 247808,
+      "sha256": "d77e08b4f789099e79f76541ae98043390cb715adf413a9de6a92ebe7d3f307e",
+      "files": 9
+    },
+    {
       "name": "tex/latex/labbook",
       "url": "b/2f94fc0bdc838ff9dd02e60c222d43bcd59064008e7888f5e8e2057ca10fb3f0/tex-latex-labbook.tar",
       "size": 21504,
@@ -23645,13 +23515,6 @@
       "size": 38912,
       "sha256": "fbc2da0786ef052b2baf495e3c17ac866952ec5985e6dad1cfd31c7ff0c2c22a",
       "files": 1
-    },
-    {
-      "name": "tex/latex/latexconfig",
-      "url": "b/2c00a4d05a668944dd614be349b01836482bd60122cccdca18dbb2a6dbbcbeeb/tex-latex-latexconfig.tar",
-      "size": 7168,
-      "sha256": "2c00a4d05a668944dd614be349b01836482bd60122cccdca18dbb2a6dbbcbeeb",
-      "files": 2
     },
     {
       "name": "tex/latex/latexdemo",
@@ -26179,13 +26042,6 @@
       "size": 13824,
       "sha256": "633001dbdd04532aa7681009ffe81b6d2a5c455f4e1345b953d8352972c79956",
       "files": 9
-    },
-    {
-      "name": "tex/latex/natbib",
-      "url": "b/6565747ea55c25f54709fde9d51e240a1a8afe8eb0df4f5a1f760019ee09c1ce/tex-latex-natbib.tar",
-      "size": 51200,
-      "sha256": "6565747ea55c25f54709fde9d51e240a1a8afe8eb0df4f5a1f760019ee09c1ce",
-      "files": 2
     },
     {
       "name": "tex/latex/natded",
@@ -30122,13 +29978,6 @@
       "files": 1
     },
     {
-      "name": "tex/latex/refcount",
-      "url": "b/91514034648fc4527a85b3b9e8485531b9f13784bc550b36214761141f1253eb/tex-latex-refcount.tar",
-      "size": 11776,
-      "sha256": "91514034648fc4527a85b3b9e8485531b9f13784bc550b36214761141f1253eb",
-      "files": 1
-    },
-    {
       "name": "tex/latex/refenums",
       "url": "b/6319852998ebb9afeec6870d49d69f2dbf99ce1d6541f086620ff31766b5c4a0/tex-latex-refenums.tar",
       "size": 6656,
@@ -32943,13 +32792,6 @@
       "files": 95
     },
     {
-      "name": "tex/latex/tex-ini-files",
-      "url": "b/4040294f53180c8fa7772164cc659c2ce880bfc18075080cf8e83597dac8cea0/tex-latex-tex-ini-files.tar",
-      "size": 9728,
-      "sha256": "4040294f53180c8fa7772164cc659c2ce880bfc18075080cf8e83597dac8cea0",
-      "files": 7
-    },
-    {
       "name": "tex/latex/tex-label",
       "url": "b/88ec0c7dcd4fd6bf71155339e81afc6a92231b40470b3671f60cb37c0894e7eb/tex-latex-tex-label.tar",
       "size": 2560,
@@ -34103,6 +33945,13 @@
       "size": 12288,
       "sha256": "a45cc786a5104c67a1ca1ed381c172ce851533d8ae2b351196d2c2a2b21e53a3",
       "files": 1
+    },
+    {
+      "name": "tex/latex/tools",
+      "url": "b/8a37a8c6446560a42d23472cb173a94841d7d01f23eeb71fc01e478ca51a67c8/tex-latex-tools.tar",
+      "size": 495104,
+      "sha256": "8a37a8c6446560a42d23472cb173a94841d7d01f23eeb71fc01e478ca51a67c8",
+      "files": 51
     },
     {
       "name": "tex/latex/topfloat",
@@ -38565,8 +38414,8 @@
     }
   ],
   "totals": {
-    "bundles": 5503,
+    "bundles": 5478,
     "files": 159000,
-    "bytes": 3491584512
+    "bytes": 3491558912
   }
 }

@@ -271,6 +271,8 @@ grep -F 'libxpdf.a' "$OUT/wasmtex-xetex.map" >/dev/null || {
   exit 1
 }
 cp "$GLUE/xetex-worker.js" "$OUT/wasmtex-xetex.worker.js"
+cp "$GLUE/kpse-resolve.cjs" "$OUT/wasmtex-kpse-resolve.js"
+cp "$GLUE/bundle-mode.js" "$OUT/wasmtex-bundle-mode.js"
 cp "$GLUE/resolver-evidence.js" "$OUT/wasmtex-xetex-resolver-evidence.js"
 
 echo ""

@@ -7,8 +7,12 @@
  */
 "use strict";
 
+importScripts("wasmtex-kpse-resolve.js");
+importScripts("wasmtex-bundle-mode.js");
+
 var TEXCACHEROOT = "/tex";
 var WORKROOT = "/work";
+var TEXMFROOT = "/texmf"; // bundle members unpack here; see loadbundleindex
 
 var texlive200_cache = {};
 var texlive404_cache = {};
@@ -27,8 +31,22 @@ Module["printErr"] = function(a) {
 Module["preRun"] = function() {
   FS.mkdir(TEXCACHEROOT);
   FS.mkdir(WORKROOT);
+  FS.mkdir(TEXMFROOT);
   FS.chdir(WORKROOT);
 };
+
+// Bundle-mode resolver (SPEC-latex.md "The resolver"); shared logic lives in
+// wasm-build/bundle-mode.js. self.bundleMode.index stays null until
+// loadbundleindex succeeds; kpse_find_file_impl consults it first, after the
+// session caches, and falls through to the legacy per-file XHR path only
+// when no index is loaded.
+self.bundleMode = BundleMode.create({
+  get FS() { return FS; },
+  texmfRoot: TEXMFROOT,
+  workRoot: WORKROOT,
+  endpoint: function() { return self.texlive_endpoint; },
+  postMessage: function(msg) { self.postMessage(msg); }
+});
 
 Module["postRun"] = function() {
   self.initmem = dumpHeapMemory();
@@ -83,6 +101,20 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
   var cacheKey = format + "/" + reqname;
   if (texlive200_cache[cacheKey]) return allocateString(texlive200_cache[cacheKey]);
   if (texlive404_cache[cacheKey]) return 0;
+
+  if (self.bundleMode.index) {
+    var bundleResult = self.bundleMode.resolve(reqname, format);
+    if (!bundleResult.fallthrough) {
+      if (bundleResult.path !== undefined) {
+        texlive200_cache[cacheKey] = bundleResult.path;
+        return allocateString(bundleResult.path);
+      }
+      if (bundleResult.absent) {
+        texlive404_cache[cacheKey] = true;
+      }
+      return 0;
+    }
+  }
 
   function tryFetch(name) {
     var url = self.texlive_endpoint + "pdftex/" + format + "/" + name;
@@ -211,6 +243,31 @@ self["onmessage"] = function(ev) {
     readFileRoutine(data.url);
   } else if (cmd === "settexliveurl") {
     self.texlive_endpoint = data.url;
+  } else if (cmd === "loadbundleindex") {
+    var libMsgId = data.msgId;
+    try {
+      self.bundleMode.loadIndex(data.data);
+      var bundleCount = Object.keys(self.bundleMode.index.bundles || {}).length;
+      var fileCount = Object.keys(self.bundleMode.index.files || {}).length;
+      self.bundleMode.preloadFromCacheStorage(data.preload).then(function(result) {
+        self.postMessage({
+          "result": "ok", "cmd": "loadbundleindex", "msgId": libMsgId,
+          "bundles": bundleCount, "files": fileCount,
+          "cached": result.cached, "skipped": result.skipped
+        });
+      }).catch(function(e) {
+        self.postMessage({ "result": "failed", "cmd": "loadbundleindex", "msgId": libMsgId, "log": String(e) });
+      });
+    } catch (e) {
+      self.postMessage({ "result": "failed", "cmd": "loadbundleindex", "msgId": libMsgId, "log": String(e) });
+    }
+  } else if (cmd === "preloadbundle") {
+    var pbOutcome = self.bundleMode.preloadBundle(data.name, new Uint8Array(data.data));
+    if (pbOutcome !== "ok") {
+      self.postMessage({ "result": "failed", "cmd": "preloadbundle", "msgId": data.msgId, "log": pbOutcome + " for bundle " + data.name });
+    } else {
+      self.postMessage({ "result": "ok", "cmd": "preloadbundle", "msgId": data.msgId });
+    }
   }
 };
 

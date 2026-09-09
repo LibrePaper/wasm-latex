@@ -118,6 +118,8 @@ if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' "$OUT/wasmtex-dvipdfm.
   exit 1
 fi
 cp "$GLUE/dvipdfm-worker.js" "$OUT/wasmtex-dvipdfm.worker.js"
+cp "$GLUE/kpse-resolve.cjs" "$OUT/wasmtex-kpse-resolve.js"
+cp "$GLUE/bundle-mode.js" "$OUT/wasmtex-bundle-mode.js"
 
 echo "=== Output ==="
 ls -lh "$OUT"/wasmtex-dvipdfm.* || { echo "no output"; exit 1; }

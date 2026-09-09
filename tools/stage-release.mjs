@@ -27,7 +27,10 @@ const sourceUrl = arg('source-url', null)
 const bundlesDir = arg('bundles', null) ? path.resolve(arg('bundles', null)) : null
 const log = (...a) => console.error(...a)
 
-const ARTIFACTS = /\.(wasm|fmt|fmt\.gz)$|^wasmtex-.*\.js$/
+// icudt68l.dat is XeTeX's ICU data: not an engine, but the worker cannot find a
+// font by name without it, and with bundles the endpoint no longer serves it by
+// name, so the host has to hand it over (loadicudata) from the release payload.
+const ARTIFACTS = /\.(wasm|fmt|fmt\.gz)$|^wasmtex-.*\.js$|^icudt[0-9]+[lb]\.dat$/
 const files = fs.readdirSync(distDir).filter((f) => ARTIFACTS.test(f) && !f.endsWith('.map')).sort()
 if (!files.length) { console.error(`no engine artifacts in ${distDir}`); process.exit(1) }
 

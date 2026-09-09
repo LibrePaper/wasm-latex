@@ -17,9 +17,12 @@
  * ========================================================================== */
 
 importScripts('wasmtex-xetex-resolver-evidence.js')
+importScripts('wasmtex-kpse-resolve.js')
+importScripts('wasmtex-bundle-mode.js')
 
 const TEXCACHEROOT = '/tex'
 const WORKROOT = '/work'
+const TEXMFROOT = '/texmf' // bundle members unpack here; see loadbundleindex
 // biome-ignore lint: emscripten populates Module
 var Module = self.Module = {}
 if (self.__wasmtexWasmBinary) Module.wasmBinary = self.__wasmtexWasmBinary
@@ -36,7 +39,22 @@ Module.printErr = (a) => {
 Module.preRun = () => {
   FS.mkdir(TEXCACHEROOT)
   FS.mkdir(WORKROOT)
+  FS.mkdir(TEXMFROOT)
 }
+
+// Bundle-mode resolver (SPEC-latex.md "The resolver"); shared logic lives in
+// wasm-build/bundle-mode.js. self.bundleMode.index stays null until
+// loadbundleindex succeeds; kpse_find_file_impl consults it first, after the
+// session caches, and falls through to the legacy per-file XHR path only
+// when no index is loaded.
+self.bundleMode = BundleMode.create({
+  get FS() { return FS },
+  texmfRoot: TEXMFROOT,
+  workRoot: WORKROOT,
+  endpoint: () => self.texlive_endpoint,
+  postMessage: (msg) => self.postMessage(msg),
+  evidence: (...args) => self.wasmtexResolverEvidence(...args),
+})
 Module.postRun = () => {
   self.postMessage({ result: 'ok' })
   self.initmem = dumpHeapMemory() // pristine post-init heap, restored before each compile (#82)
@@ -250,6 +268,32 @@ self.onmessage = (ev) => {
     self.postMessage({ result: 'ok', cmd: 'dumpcache', files, notFound }, transfer)
   } else if (cmd === 'flushcache') {
     cleanDir(WORKROOT)
+  } else if (cmd === 'loadbundleindex') {
+    // SPEC-latex.md "The index" / "The resolver". data: {data, msgId, preload?}.
+    const msgId = data.msgId
+    try {
+      self.bundleMode.loadIndex(data.data)
+      const bundleCount = Object.keys(self.bundleMode.index.bundles || {}).length
+      const fileCount = Object.keys(self.bundleMode.index.files || {}).length
+      self.bundleMode.preloadFromCacheStorage(data.preload).then((result) => {
+        self.postMessage({
+          result: 'ok', cmd: 'loadbundleindex', msgId,
+          bundles: bundleCount, files: fileCount,
+          cached: result.cached, skipped: result.skipped,
+        })
+      }).catch((e) => {
+        self.postMessage({ result: 'failed', cmd: 'loadbundleindex', msgId, log: String(e) })
+      })
+    } catch (e) {
+      self.postMessage({ result: 'failed', cmd: 'loadbundleindex', msgId, log: String(e) })
+    }
+  } else if (cmd === 'preloadbundle') {
+    const outcome = self.bundleMode.preloadBundle(data.name, new Uint8Array(data.data))
+    if (outcome !== 'ok') {
+      self.postMessage({ result: 'failed', cmd: 'preloadbundle', msgId: data.msgId, log: `${outcome} for bundle ${data.name}` })
+    } else {
+      self.postMessage({ result: 'ok', cmd: 'preloadbundle', msgId: data.msgId })
+    }
   } else if (cmd === 'grace') {
     self.close()
   }
@@ -300,6 +344,11 @@ function kpse_find_file_impl(nameptr, format) {
   // `/tex/lmroman10-regular`) to open it — strip the cache-root prefix so the
   // second lookup is a cache hit instead of being rejected by the slash guard.
   if (reqname.startsWith(`${TEXCACHEROOT}/`)) reqname = reqname.slice(TEXCACHEROOT.length + 1)
+  // Bundle-mode hits live under TEXMFROOT (a relative texmf path, possibly with
+  // its own "/"s); strip that prefix too so a re-resolve of the full path we
+  // returned (dvipdfmx re-opens fonts this way) is a plain basename lookup and
+  // hits texlive200 instead of the slash guard below.
+  if (reqname.startsWith(`${TEXMFROOT}/`)) reqname = reqname.slice(reqname.lastIndexOf('/') + 1)
   if (reqname.includes('/')) return 0
   const cacheKey = `${format}/${reqname}`
   if (cacheKey in texlive404) {
@@ -313,6 +362,23 @@ function kpse_find_file_impl(nameptr, format) {
       source: texlive200Source[cacheKey] || 'session-cache', outcome: 'hit',
     }])
     return _allocate(intArrayFromString(texlive200[cacheKey]))
+  }
+
+  if (self.bundleMode.index) {
+    const result = self.bundleMode.resolve(reqname, format)
+    if (!result.fallthrough) {
+      if (result.path !== undefined) {
+        texlive200[cacheKey] = result.path
+        texlive200Source[cacheKey] = 'bundle'
+        delete texlive404Source[cacheKey]
+        return _allocate(intArrayFromString(result.path))
+      }
+      if (result.absent) {
+        texlive404[cacheKey] = 1
+        texlive404Source[cacheKey] = 'bundle-index'
+      }
+      return 0
+    }
   }
 
   const attempts = []

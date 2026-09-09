@@ -126,43 +126,103 @@ export function slugFor(bundleName) {
 // --include-latex-dev re-enables it.
 export const EXCLUDED_BUNDLE_PREFIXES = ['tex/latex-dev']
 
-// The starting "core" list from SPEC-latex.md ("The core bundle"), adjusted
-// to the directory names that actually exist in the vendored TeX Live 2026
-// texmf tree (verified against
-// vendor/texlive-2026/texlive-20260301-texmf/texmf-dist):
-//   - tex/latex/babel does not exist; babel's implementation lives at
-//     tex/generic/babel only (tex/latex/babelbib is an unrelated package).
-//   - kvsetkeys lives at tex/latex/kvsetkeys, not tex/generic/kvsetkeys.
-//   - cm-super is not present in this snapshot at all, so it is omitted
-//     (the spec already excludes it from font bundles).
-//   - the pdftex.map bundle is named by the same fonts/<foundry>/<name> rule
-//     applied to fonts/map/pdftex/updmap/pdftex.map, i.e. fonts/pdftex/updmap.
+// The "core" list, replacing the spec's guessed starting point with a
+// measurement (SPEC-latex.md follow-up item 4, "Trimming it from corpus
+// measurement is still open"). Measured 2026-09-09 by resolving four
+// documents through tools/build-format.mjs --smoke-doc --smoke-evidence
+// against the pdftex format build (238 format inputs), against the vendored
+// TeX Live 2026 texmf tree:
+//   a) a plain article: amsmath, amssymb, graphicx, hyperref, geometry,
+//      natbib-style citations via thebibliography, a booktabs table, itemize
+//   b) the same, plus fontenc(T1), inputenc(utf8), lmodern, microtype and
+//      babel[french]
+//   c) tikz + siunitx + xcolor, one small picture
+//   d) beamer, two slides
+// Every texmf path each document (and the format build) resolved was mapped
+// to its bundle with bundleFor(). The new core is: every bundle the format
+// phase touched, plus every bundle both (a) and (b) touched (b, not a alone,
+// so a document's own babel language and font choices don't leak into the
+// list that ships to everyone) - capped at 20 MB of the actual tar (member
+// headers and 512-byte rounding included, not just file bytes) by dropping
+// the largest candidates until the rest fits. That drops four bundles:
+//   - tex/context/base (44.6 MB in-tar): pulled in by every document that
+//     loads graphics-def's pdftex.def (so also by plain graphicx/hyperref
+//     use, via \AtBeginDocument{\GPT@LoadSuppPdf}), but only for one file,
+//     supp-pdf.mkii; the rest of ConTeXt's base tree just comes along. A
+//     finer split of this package (that one file bundled separately) would
+//     let it join core cheaply; without that split it stays its own
+//     ~45 MB bundle, fetched once per browser and cached from then on.
+//   - fonts/pdftex/updmap (15.9 MB): pdftex.map plus font encoding files
+//     for every font family updmap knows about, to deliver the few hundred
+//     bytes an individual document's fonts actually need from it.
+//   - tex/generic/hyph-utf8 (10.0 MB): hyphenation patterns for every
+//     language TeX Live ships, to deliver the one or two the format build
+//     actually loads.
+//   - fonts/public/amsfonts (4.4 MB, the msam/msbm/cmex metrics and glyphs
+//     amssymb needs): simply doesn't fit once the three bundles above are
+//     also excluded; every document in the corpus that loads amssymb (all
+//     four measured here did) pays for this as a separate bundle fetch.
+// The first three are exactly the babel-shaped problem the spec called out
+// ("every language's .ldf... to be the fat") - several other packages key
+// their content by language or font family the same way babel does, and
+// package splitting (out of scope here) is the real fix for them, not
+// corpus measurement. Each excluded bundle is still just one more bundle
+// fetch on a cold cache, inside the spec's "1 to 3 requests" budget for a
+// plain article.
+// Resulting core: 51 bundles, about 17.0 MB as an actual built core.tar
+// (verified 2026-09-09 with tools/build-bundles.mjs against the vendored
+// TeX Live 2026 tree: one part, 22384640 bytes before this trim, 17.0 MB
+// after dropping fonts/public/amsfonts).
 export const DEFAULT_CORE = [
-  'tex/latex/base',
-  'tex/latex/l3kernel',
-  'tex/latex/l3backend',
-  'tex/latex/l3packages',
-  'tex/latex/amsmath',
+  'fonts/jknappen/ec',
+  'fonts/public/cm',
+  'fonts/public/latex-fonts',
+  'tex/generic/atbegshi',
+  'tex/generic/babel',
+  'tex/generic/bigintcalc',
+  'tex/generic/bitset',
+  'tex/generic/config',
+  'tex/generic/dehyph',
+  'tex/generic/dehyph-exptl',
+  'tex/generic/gettitlestring',
+  'tex/generic/hyphen',
+  'tex/generic/iftex',
+  'tex/generic/infwarerr',
+  'tex/generic/intcalc',
+  'tex/generic/knuth-lib',
+  'tex/generic/kvdefinekeys',
+  'tex/generic/ltxcmds',
+  'tex/generic/pdfescape',
+  'tex/generic/pdftex',
+  'tex/generic/pdftexcmds',
+  'tex/generic/ruhyphen',
+  'tex/generic/stringenc',
+  'tex/generic/tex-ini-files',
+  'tex/generic/ukrhyph',
+  'tex/generic/unicode-data',
+  'tex/generic/uniquecounter',
   'tex/latex/amsfonts',
+  'tex/latex/amsmath',
+  'tex/latex/atveryend',
+  'tex/latex/base',
+  'tex/latex/booktabs',
+  'tex/latex/epstopdf-pkg',
+  'tex/latex/etoolbox',
+  'tex/latex/firstaid',
+  'tex/latex/geometry',
   'tex/latex/graphics',
   'tex/latex/graphics-cfg',
   'tex/latex/graphics-def',
+  'tex/latex/hycolor',
   'tex/latex/hyperref',
-  'tex/latex/geometry',
-  'tex/latex/tools',
-  'tex/generic/babel',
   'tex/latex/kvoptions',
-  'tex/generic/iftex',
-  'tex/generic/infwarerr',
-  'tex/generic/ltxcmds',
   'tex/latex/kvsetkeys',
-  'tex/generic/pdftexcmds',
-  'tex/latex/auxhook',
+  'tex/latex/l3backend',
+  'tex/latex/l3kernel',
+  'tex/latex/latexconfig',
+  'tex/latex/natbib',
+  'tex/latex/refcount',
   'tex/latex/rerunfilecheck',
+  'tex/latex/tex-ini-files',
   'tex/latex/url',
-  'fonts/public/cm',
-  'fonts/public/amsfonts',
-  'fonts/public/knuth-lib',
-  'fonts/public/latex-fonts',
-  'fonts/pdftex/updmap',
 ]

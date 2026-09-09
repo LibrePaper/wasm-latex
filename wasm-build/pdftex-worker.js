@@ -75,14 +75,13 @@ self.initmem = undefined;        // Snapshot of WASM heap after initialization
 self.mainfile = "main.tex";      // Main .tex file to compile
 self.texlive_endpoint = "";      // TexLive package server URL (set by host)
 
-// Bundle-mode resolver state (see loadbundleindex below). self.bundle_index
-// stays null until loadbundleindex succeeds; kpse_find_file_impl checks it to
-// decide whether to resolve via the index or fall back to the legacy per-file
-// path.
-self.bundle_index = null;             // parsed bundles.json
-self.bundle_name_index = null;        // Map: basename -> [texmf-relative path, ...]
-self.bundles_loaded = new Set();      // bundle names already unpacked into /texmf
-self.bundle_paths_loaded = new Set(); // texmf-relative paths already written
+// Bundle-mode resolver state (see loadbundleindex below). self.bundleMode is
+// created near the bottom of this file, after wasmtex-bundle-mode.js loads;
+// self.bundleMode.index stays null until loadbundleindex succeeds,
+// kpse_find_file_impl checks it to decide whether to resolve via the index or
+// fall back to the legacy per-file path. All bundle-mode logic (unpacking,
+// digest verification, Cache Storage preload/write-back) lives in
+// wasm-build/bundle-mode.js, shared by every authored engine worker.
 
 // --- Emscripten Module configuration -----------------------------------------
 //
@@ -543,60 +542,10 @@ function bloomMaybe(format, reqname) {
 
 // --- Bundle unpacking ---------------------------------------------------------
 //
-// readTar and sha256Hex come from kpse-resolve.js (see the importScripts call
-// near the bottom of this file), same as retryExtensions/fetchCandidates
-// above and resolveName/buildNameIndex below.
-
-// Write one bundle member into the virtual filesystem, creating parent
-// directories as needed. Members are written once; a path already unpacked
-// (from this bundle or, in principle, a duplicate listing) is left alone.
-function writeBundleMember(relpath, memberBytes) {
-    if (self.bundle_paths_loaded.has(relpath)) return;
-    var fsPath = TEXMFROOT + "/" + relpath;
-    var slash = fsPath.lastIndexOf("/");
-    FS.mkdirTree(fsPath.substring(0, slash));
-    FS.writeFile(fsPath, memberBytes);
-    self.bundle_paths_loaded.add(relpath);
-}
-
-// Unpack every member of a verified bundle's tar bytes. A bundle already
-// unpacked this session is never re-unpacked (also covers a bundle restored
-// from Cache Storage before this call, e.g. by loadbundleindex's preload).
-function unpackBundle(name, bytes) {
-    if (self.bundles_loaded.has(name)) return;
-    readTar(bytes, writeBundleMember);
-    self.bundles_loaded.add(name);
-}
-
-// Fetch one bundle by synchronous XHR, verify it against the index's sha256,
-// and unpack it. Returns "ok", "transport-error" (network failure or non-200 —
-// never poisons the 404 cache, since the file may well exist; only the
-// transport failed), or "digest-mismatch". On success, also stashes the bytes
-// in Cache Storage (fire-and-forget) so the next session skips the network
-// entirely, per SPEC-latex.md's "Browser cache".
-function fetchAndUnpackBundle(name, meta, reqname) {
-    self.postMessage({ "cmd": "downloading", "file": reqname, "bundle": name, "size": meta.size });
-    var url = self.texlive_endpoint + meta.url;
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", url, false);
-    xhr.timeout = 150000;
-    xhr.responseType = "arraybuffer";
-    try {
-        xhr.send();
-    } catch (err) {
-        return "transport-error";
-    }
-    if (xhr.status !== 200) return "transport-error";
-    var bytes = new Uint8Array(xhr.response);
-    if (sha256Hex(bytes) !== meta.sha256) return "digest-mismatch";
-    unpackBundle(name, bytes);
-    if (typeof caches !== "undefined") {
-        caches.open("wasmtex-bundles").then(function(cache) {
-            return cache.put(url, new Response(bytes.slice()));
-        }).catch(function(e) {});
-    }
-    return "ok";
-}
+// All bundle logic (unpacking, digest verification, fetch, Cache Storage
+// preload/write-back) now lives in wasm-build/bundle-mode.js, shared by every
+// authored engine worker; self.bundleMode is created near the bottom of this
+// file, after wasmtex-bundle-mode.js loads.
 
 // Bundle-mode resolution for kpse_find_file_impl (SPEC-latex.md "The
 // resolver"). Returns a heap pointer (hit), 0 (a definitive miss — recorded in
@@ -606,54 +555,23 @@ function fetchAndUnpackBundle(name, meta, reqname) {
 // used to serve on-demand precompiled formats through the per-file path and
 // nothing here should regress that.
 function resolveViaBundleIndex(reqname, format, cacheKey) {
-    var hit = resolveName(format, reqname, self.bundle_name_index);
-    if (!hit) {
-        if (format === 10) return undefined;
-        texlive404_cache[cacheKey] = 1;
-        texlive404_source[cacheKey] = "bundle-index";
-        self.wasmtexResolverEvidence(reqname, format, "mirror-absent", [{
-            "source": "bundle-index", "outcome": "not-found"
-        }]);
-        return 0;
-    }
-    var relpath = hit.path;
-    var bundleName = self.bundle_index.files[relpath];
-    var bundleMeta = bundleName && self.bundle_index.bundles[bundleName];
-    if (!bundleMeta) {
-        // Index inconsistency (files points to a bundle bundles.json does not
-        // list) — treat like a miss rather than crash the resolver.
-        texlive404_cache[cacheKey] = 1;
-        texlive404_source[cacheKey] = "bundle-index";
-        self.wasmtexResolverEvidence(reqname, format, "mirror-absent", [{
-            "source": "bundle-index", "outcome": "not-found"
-        }]);
-        return 0;
-    }
-    if (!self.bundles_loaded.has(bundleName)) {
-        var outcome = fetchAndUnpackBundle(bundleName, bundleMeta, reqname);
-        if (outcome !== "ok") {
-            self.wasmtexResolverEvidence(reqname, format, "transport-error", [{
-                "source": "bundle", "outcome": outcome, "bundle": bundleName
-            }]);
-            return 0;
+    var result = self.bundleMode.resolve(reqname, format);
+    if (result.fallthrough) return undefined;
+    if (result.absent || result.error) {
+        // A definitive miss (absent) is durable; a transport/digest error is
+        // not — the bundle may well exist, only the transport or this
+        // particular fetch failed, so it must not poison the 404 cache (see
+        // bundle-mode.js's fetchAndUnpackBundle comment).
+        if (result.absent) {
+            texlive404_cache[cacheKey] = 1;
+            texlive404_source[cacheKey] = "bundle-index";
         }
+        return 0;
     }
-    var fsPath = TEXMFROOT + "/" + relpath;
-    // Format files are not bundled, but keep the on-demand-format contract
-    // (open_fmt_file() fopen()s the working directory, not kpse's return path)
-    // in case one ever is.
-    if (format === 10) {
-        try {
-            FS.writeFile(WORKROOT + "/" + reqname, FS.readFile(fsPath, { encoding: "binary" }));
-        } catch (e) {}
-    }
-    texlive200_cache[cacheKey] = fsPath;
+    texlive200_cache[cacheKey] = result.path;
     texlive200_source[cacheKey] = "bundle";
     delete texlive404_source[cacheKey];
-    self.wasmtexResolverEvidence(reqname, format, "resolved", [{
-        "source": "bundle", "outcome": "hit", "bundle": bundleName, "path": relpath
-    }]);
-    return allocateString(fsPath);
+    return allocateString(result.path);
 }
 
 // On-disk name inside the flat TEXCACHEROOT for a fetched or preloaded file.
@@ -703,7 +621,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
     // is authoritative and replaces the per-file bloom+XHR path below entirely,
     // except for a format-10 request the index has no entry for (see
     // resolveViaBundleIndex).
-    if (self.bundle_index) {
+    if (self.bundleMode.index) {
         var bundleResult = resolveViaBundleIndex(reqname, format, cacheKey);
         if (bundleResult !== undefined) return bundleResult;
     }
@@ -1464,61 +1382,23 @@ function writeFileRoutine(filename, content) {
     }
 }
 
-// After loadbundleindex parses the index, preload any bundle a previous
-// session already verified and stashed in Cache Storage (SPEC-latex.md
-// "Browser cache"): "the worker checks the cache before the network", so a
-// warm session makes no request at all for a package it has used before.
-// Node (the format-build harness) has no `caches`, so this replies
-// immediately with cached: 0 there.
-function loadBundleIndexPreload(msgId) {
-    var bundleCount = Object.keys(self.bundle_index.bundles || {}).length;
-    var fileCount = Object.keys(self.bundle_index.files || {}).length;
-    if (typeof caches === "undefined") {
+// After loadbundleindex parses the index, preload bundles a previous session
+// already verified and stashed in Cache Storage (SPEC-latex.md "Browser
+// cache"): "the worker checks the cache before the network", so a warm
+// session makes no request at all for a package it has used before. Without
+// `preload`, every cached bundle matching the index is restored (legacy
+// behaviour); with it, only the named bundles are — the rest are reported in
+// `skipped`, still in Cache Storage, restorable later by name (`preloadbundle`
+// or another scoped `loadbundleindex`). Node (the format-build harness) has
+// no `caches`, so this replies immediately with cached: 0, skipped: 0 there.
+function loadBundleIndexPreload(msgId, preloadNames) {
+    var bundleCount = Object.keys(self.bundleMode.index.bundles || {}).length;
+    var fileCount = Object.keys(self.bundleMode.index.files || {}).length;
+    self.bundleMode.preloadFromCacheStorage(preloadNames).then(function(result) {
         self.postMessage({
             "result": "ok", "cmd": "loadbundleindex", "msgId": msgId,
-            "bundles": bundleCount, "files": fileCount, "cached": 0
-        });
-        return;
-    }
-    var urlToName = {};
-    for (var name in self.bundle_index.bundles) {
-        if (Object.prototype.hasOwnProperty.call(self.bundle_index.bundles, name)) {
-            urlToName[self.bundle_index.bundles[name].url] = name;
-        }
-    }
-    function bundleNameForUrl(fullUrl) {
-        for (var u in urlToName) {
-            if (Object.prototype.hasOwnProperty.call(urlToName, u) &&
-                fullUrl.length >= u.length &&
-                fullUrl.lastIndexOf(u) === fullUrl.length - u.length) {
-                return urlToName[u];
-            }
-        }
-        return null;
-    }
-    caches.open("wasmtex-bundles").then(function(cache) {
-        return cache.keys().then(function(requests) {
-            var cachedCount = 0;
-            var tasks = requests.map(function(request) {
-                var matchName = bundleNameForUrl(request.url);
-                if (!matchName || self.bundles_loaded.has(matchName)) return null;
-                return cache.match(request).then(function(response) {
-                    if (!response) return;
-                    return response.arrayBuffer().then(function(buf) {
-                        var bytes = new Uint8Array(buf);
-                        var meta = self.bundle_index.bundles[matchName];
-                        if (sha256Hex(bytes) !== meta.sha256) return; // stale entry; ignore, refetch later
-                        unpackBundle(matchName, bytes);
-                        cachedCount++;
-                    });
-                }).catch(function(e) {});
-            }).filter(function(p) { return p; });
-            return Promise.all(tasks).then(function() { return cachedCount; });
-        });
-    }).then(function(cachedCount) {
-        self.postMessage({
-            "result": "ok", "cmd": "loadbundleindex", "msgId": msgId,
-            "bundles": bundleCount, "files": fileCount, "cached": cachedCount
+            "bundles": bundleCount, "files": fileCount,
+            "cached": result.cached, "skipped": result.skipped
         });
     }).catch(function(e) {
         self.postMessage({
@@ -1614,20 +1494,15 @@ self["onmessage"] = function(ev) {
         }
     } else if (cmd === "loadbundleindex") {
         // Load bundles.json and switch the resolver to bundle mode (SPEC-latex.md
-        // "The index" / "The resolver"). data: {data: string|ArrayBuffer, msgId}.
+        // "The index" / "The resolver"). data: {data: string|ArrayBuffer, msgId,
+        // preload?: string[]}. `preload`, when present, scopes the Cache Storage
+        // preload to just those bundle names (item 7: "scope the preload");
+        // without it every cached bundle matching the index is restored.
         var libMsgId = data["msgId"];
         try {
-            var libRaw = data["data"];
-            var libText = typeof libRaw === "string"
-                ? libRaw
-                : new TextDecoder("utf-8").decode(new Uint8Array(libRaw));
-            var libParsed = JSON.parse(libText);
-            self.bundle_index = libParsed;
-            self.bundle_name_index = buildNameIndex(libParsed["files"] || {});
-            loadBundleIndexPreload(libMsgId);
+            self.bundleMode.loadIndex(data["data"]);
+            loadBundleIndexPreload(libMsgId, data["preload"]);
         } catch (e) {
-            self.bundle_index = null;
-            self.bundle_name_index = null;
             self.postMessage({
                 "result": "failed", "cmd": "loadbundleindex", "msgId": libMsgId, "log": String(e)
             });
@@ -1637,23 +1512,14 @@ self["onmessage"] = function(ev) {
         // Cache Storage read on the main thread. data: {name, data, msgId}.
         var pbName = data["name"];
         var pbMsgId = data["msgId"];
-        var pbMeta = self.bundle_index && self.bundle_index.bundles[pbName];
-        if (!pbMeta) {
+        var pbOutcome = self.bundleMode.preloadBundle(pbName, new Uint8Array(data["data"]));
+        if (pbOutcome !== "ok") {
             self.postMessage({
                 "result": "failed", "cmd": "preloadbundle", "msgId": pbMsgId,
-                "log": "unknown bundle " + pbName
+                "log": pbOutcome + " for bundle " + pbName
             });
         } else {
-            var pbBytes = new Uint8Array(data["data"]);
-            if (sha256Hex(pbBytes) !== pbMeta.sha256) {
-                self.postMessage({
-                    "result": "failed", "cmd": "preloadbundle", "msgId": pbMsgId,
-                    "log": "sha256 mismatch for bundle " + pbName
-                });
-            } else {
-                unpackBundle(pbName, pbBytes);
-                self.postMessage({ "result": "ok", "cmd": "preloadbundle", "msgId": pbMsgId });
-            }
+            self.postMessage({ "result": "ok", "cmd": "preloadbundle", "msgId": pbMsgId });
         }
     } else if (cmd === "preload404") {
         // Batch-inject known 404 entries into the cache to avoid wasted sync XHR.
@@ -2149,6 +2015,19 @@ async function compileFromHeapCheckpointRoutine(data) {
         wantCheckpoint = new URLSearchParams(self.location.search).get("engine") === "checkpoint";
     } catch(e) {}
     importScripts("wasmtex-kpse-resolve.js");
+    importScripts("wasmtex-bundle-mode.js");
+    self.bundleMode = BundleMode.create({
+        // FS is a getter, not a plain value: the Emscripten module (which
+        // defines the global `FS`) has not been loaded yet at this point —
+        // it loads via importScripts below, after this object is built — so
+        // this must resolve FS lazily, at first actual use during a compile.
+        get FS() { return FS; },
+        texmfRoot: TEXMFROOT,
+        workRoot: WORKROOT,
+        endpoint: function() { return self.texlive_endpoint; },
+        postMessage: function(msg) { self.postMessage(msg); },
+        evidence: self.wasmtexResolverEvidence
+    });
     if (wantCheckpoint) {
         // A self-hosted asset set may predate the checkpoint build; fall back to the
         // plain engine rather than failing to boot (the host then sees no checkpoint

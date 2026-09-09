@@ -85,6 +85,8 @@ if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' "$OUT/wasmtex-bibtex8.
   exit 1
 fi
 cp "$GLUE/bibtex8-worker.js" "$OUT/wasmtex-bibtex8.worker.js"
+cp "$GLUE/kpse-resolve.cjs" "$OUT/wasmtex-kpse-resolve.js"
+cp "$GLUE/bundle-mode.js" "$OUT/wasmtex-bundle-mode.js"
 
 echo "=== Output ==="
 ls -lh "$OUT"/wasmtex-bibtex8.* || { echo "no output"; exit 1; }

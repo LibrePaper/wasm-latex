@@ -224,6 +224,8 @@ if grep -aE 'pplib|utilsha|sha(256|384|512)_digest|pp(doc|dict|array|stream|ref|
   exit 1
 fi
 cp "$GLUE/luatex-worker.js" "$OUT/wasmtex-luatex.worker.js"
+cp "$GLUE/kpse-resolve.cjs" "$OUT/wasmtex-kpse-resolve.js"
+cp "$GLUE/bundle-mode.js" "$OUT/wasmtex-bundle-mode.js"
 cp "$GLUE/resolver-evidence.js" "$OUT/wasmtex-luatex-resolver-evidence.js"
 
 echo ""

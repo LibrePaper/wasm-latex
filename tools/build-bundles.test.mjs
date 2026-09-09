@@ -192,9 +192,13 @@ test('build-bundles: end-to-end determinism and grouping', async () => {
     assert.notEqual(rel, 'ls-R')
   }
 
-  // The map file from texmf-var joins core, alongside tex/latex/base and
-  // amsmath (which is in DEFAULT_CORE), overriding dist's own stale copy.
-  assert.equal(index1.files['fonts/map/pdftex/updmap/pdftex.map'], 'core')
+  // The map file from texmf-var still overrides dist's own stale copy, even
+  // though fonts/pdftex/updmap (measured 2026-09-09, see the comment above
+  // DEFAULT_CORE) is no longer folded into core - it is its own bundle now,
+  // too large to fit the 20 MB core budget alongside everything else a
+  // plain article needs.
+  assert.equal(index1.files['fonts/map/pdftex/updmap/pdftex.map'], 'fonts/pdftex/updmap')
+  // tex/latex/base and amsmath are still in DEFAULT_CORE and merge into core.
   assert.equal(index1.files['tex/latex/base/latex.ltx'], 'core')
   assert.equal(index1.files['tex/latex/amsmath/amsmath.sty'], 'core')
   // web2c/updmap.log from the second tree must NOT appear (only fonts/map/

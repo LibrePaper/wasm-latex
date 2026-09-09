@@ -22,9 +22,12 @@
  * ========================================================================== */
 
 importScripts('wasmtex-luatex-resolver-evidence.js')
+importScripts('wasmtex-kpse-resolve.js')
+importScripts('wasmtex-bundle-mode.js')
 
 const TEXCACHEROOT = '/tex'
 const WORKROOT = '/work'
+const TEXMFROOT = '/texmf' // bundle members unpack here; see loadbundleindex
 // biome-ignore lint: emscripten populates Module
 var Module = self.Module = {}
 if (self.__wasmtexWasmBinary) Module.wasmBinary = self.__wasmtexWasmBinary
@@ -42,7 +45,22 @@ Module.printErr = (a) => {
 Module.preRun = () => {
   FS.mkdir(TEXCACHEROOT)
   FS.mkdir(WORKROOT)
+  FS.mkdir(TEXMFROOT)
 }
+
+// Bundle-mode resolver (SPEC-latex.md "The resolver"); shared logic lives in
+// wasm-build/bundle-mode.js. self.bundleMode.index stays null until
+// loadbundleindex succeeds; kpse_find_file_impl consults it first, after the
+// session caches, and falls through to the legacy per-file XHR path only
+// when no index is loaded.
+self.bundleMode = BundleMode.create({
+  get FS() { return FS },
+  texmfRoot: TEXMFROOT,
+  workRoot: WORKROOT,
+  endpoint: () => self.texlive_endpoint,
+  postMessage: (msg) => self.postMessage(msg),
+  evidence: (...args) => self.wasmtexResolverEvidence(...args),
+})
 Module.postRun = () => {
   self.postMessage({ result: 'ok' })
   self.initmem = dumpHeapMemory()
@@ -161,9 +179,18 @@ const NAMES_CK = '51/luaotfload-names.lua' // texlive200/dumpcache key (warmup u
 let namesInjected = false
 function injectLuaotfloadNames() {
   if (namesInjected) return // /tex persists across compiles; write once per session
-  // Prefer the warmup/persistent-cache copy; else fetch once and register it in
-  // texlive200 so dumpcache persists it for the next visit.
+  // Prefer the warmup/persistent-cache copy; else, in bundle mode, resolve it
+  // through the index like any other format-51 file (it lives in a `scripts/`
+  // bundle); else fetch once and register it in texlive200 so dumpcache
+  // persists it for the next visit.
   let path = texlive200[NAMES_CK]
+  if (!path && self.bundleMode.index) {
+    const result = self.bundleMode.resolve('luaotfload-names.lua', 51)
+    if (result.path !== undefined) {
+      path = result.path
+      texlive200[NAMES_CK] = path
+    }
+  }
   if (!path && self.texlive_endpoint && !(NAMES_CK in texlive404)) {
     try {
       const xhr = new XMLHttpRequest()
@@ -403,6 +430,32 @@ self.onmessage = (ev) => {
     self.postMessage({ result: 'ok', cmd: 'dumpcache', msgId: data.msgId, files, notFound }, transfer)
   } else if (cmd === 'flushcache') {
     cleanDir(WORKROOT)
+  } else if (cmd === 'loadbundleindex') {
+    // SPEC-latex.md "The index" / "The resolver". data: {data, msgId, preload?}.
+    const msgId = data.msgId
+    try {
+      self.bundleMode.loadIndex(data.data)
+      const bundleCount = Object.keys(self.bundleMode.index.bundles || {}).length
+      const fileCount = Object.keys(self.bundleMode.index.files || {}).length
+      self.bundleMode.preloadFromCacheStorage(data.preload).then((result) => {
+        self.postMessage({
+          result: 'ok', cmd: 'loadbundleindex', msgId,
+          bundles: bundleCount, files: fileCount,
+          cached: result.cached, skipped: result.skipped,
+        })
+      }).catch((e) => {
+        self.postMessage({ result: 'failed', cmd: 'loadbundleindex', msgId, log: String(e) })
+      })
+    } catch (e) {
+      self.postMessage({ result: 'failed', cmd: 'loadbundleindex', msgId, log: String(e) })
+    }
+  } else if (cmd === 'preloadbundle') {
+    const outcome = self.bundleMode.preloadBundle(data.name, new Uint8Array(data.data))
+    if (outcome !== 'ok') {
+      self.postMessage({ result: 'failed', cmd: 'preloadbundle', msgId: data.msgId, log: `${outcome} for bundle ${data.name}` })
+    } else {
+      self.postMessage({ result: 'ok', cmd: 'preloadbundle', msgId: data.msgId })
+    }
   } else if (cmd === 'grace') {
     self.close()
   }
@@ -499,6 +552,23 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
       source: texlive200Source[cacheKey] || 'session-cache', outcome: 'hit',
     }])
     return _allocate(intArrayFromString(texlive200[cacheKey]))
+  }
+
+  if (self.bundleMode.index) {
+    const result = self.bundleMode.resolve(reqname, format)
+    if (!result.fallthrough) {
+      if (result.path !== undefined) {
+        texlive200[cacheKey] = result.path
+        texlive200Source[cacheKey] = 'bundle'
+        delete texlive404Source[cacheKey]
+        return _allocate(intArrayFromString(result.path))
+      }
+      if (result.absent) {
+        texlive404[cacheKey] = 1
+        texlive404Source[cacheKey] = 'bundle-index'
+      }
+      return 0
+    }
   }
 
   const [dir, filename] = resolveCdn(reqname, format)

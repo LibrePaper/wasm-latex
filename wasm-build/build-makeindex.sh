@@ -107,6 +107,8 @@ if grep -E 'libpplib|pp(doc|dict|array|stream|ref|xref)_' "$OUT/wasmtex-makeinde
   exit 1
 fi
 cp "$GLUE/makeindex-worker.js" "$OUT/wasmtex-makeindex.worker.js"
+cp "$GLUE/kpse-resolve.cjs" "$OUT/wasmtex-kpse-resolve.js"
+cp "$GLUE/bundle-mode.js" "$OUT/wasmtex-bundle-mode.js"
 
 echo "=== Output ==="
 ls -lh "$OUT"/wasmtex-makeindex.* || { echo "no output"; exit 1; }

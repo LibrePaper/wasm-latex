@@ -11,3 +11,6 @@ vendor/
 # Release staging and source archives, produced by tools/
 dist-source/
 staged/
+
+# Agent worktrees created by the Claude Code harness
+.claude/worktrees/

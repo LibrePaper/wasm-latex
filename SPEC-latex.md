@@ -324,9 +324,16 @@ cache is wrong.
 ## Decided since
 
 - `latex-dev` is not bundled by default; `--include-latex-dev` re-enables it.
-- The `core` list is the spec's, corrected to directories that exist
-  (`DEFAULT_CORE` in `tools/bundle-rules.mjs`); it comes to 32 MB and is
-  split in two parts. Trimming it from corpus measurement is still open.
+- The `core` list is now measured, not guessed (`DEFAULT_CORE` in
+  `tools/bundle-rules.mjs`, measured 2026-09-09 against four representative
+  documents resolved through `tools/build-format.mjs --smoke-doc
+  --smoke-evidence`): 17.0 MB in one part, 2,165 files. Three bundles nearly
+  every pdfLaTeX document still needs did not fit the 20 MB budget on their
+  own - `tex/context/base` (43 MB, for the one file `supp-pdf.mkii` that
+  `graphics-def/pdftex.def` loads unconditionally at `\begin{document}`),
+  `fonts/pdftex/updmap` (16 MB), and `fonts/public/amsfonts` (4.4 MB) - so a
+  plain article's cold compile still makes more than the "1 to 3" requests
+  below; a finer split of those packages (not done here) is the real fix.
 - OpenType and TrueType fonts are bundled now, by the same rule as Type 1.
 - Also excluded, because no browser engine reads them: Metafont sources, PK
   bitmaps, AFM metrics, Type 3 fonts, non-Lua scripts, and the trees of tools

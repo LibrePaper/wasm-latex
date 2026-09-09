@@ -42,6 +42,7 @@ BUILD_WASM   = /build/wasm
 DIST         = /dist
 PDFTEX_WORKER = /src/pdftex-worker.js
 KPSE_RESOLVE = /src/kpse-resolve.cjs
+BUNDLE_MODE  = /src/bundle-mode.js
 WASM_ENTRY   = /src/wasm-entry.c
 KPSE_HOOK    = /src/kpse-hook.c
 TRACE_HOOK   = /src/trace-hook.c
@@ -513,6 +514,7 @@ wasm-compile:
 	fi
 	cp $(PDFTEX_WORKER) $(DIST)/wasmtex-pdftex.worker.js
 	cp $(KPSE_RESOLVE) $(DIST)/wasmtex-kpse-resolve.js
+	cp $(BUNDLE_MODE) $(DIST)/wasmtex-bundle-mode.js
 	cp /src/resolver-evidence.js $(DIST)/wasmtex-pdftex-resolver-evidence.js
 	@echo ""
 	@echo "--- Compiling pdfTeX WASM, checkpoint (Asyncify) variant ---"
@@ -625,6 +627,8 @@ bibtex-wasm-compile: bibtex-wasm-prep
 		echo "ERROR: forbidden pplib archive or symbol remains in the BibTeX link map" >&2; exit 1; \
 	fi
 	cp $(BIBTEX_WORKER) $(DIST)/wasmtex-bibtex.worker.js
+	cp $(KPSE_RESOLVE) $(DIST)/wasmtex-kpse-resolve.js
+	cp $(BUNDLE_MODE) $(DIST)/wasmtex-bundle-mode.js
 	@echo "BibTeX WASM compilation complete."
 
 # =============================================================================

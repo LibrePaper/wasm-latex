@@ -55,6 +55,15 @@ const verbose = process.argv.includes('--verbose')
 const quiet = process.argv.includes('--quiet')
 const log = (...a) => { if (!quiet) console.error(...a) }
 
+// --smoke-doc <file.tex>: use this document for the --smoke compile instead
+// of the built-in one-liner. --smoke-evidence <file>: write the smoke
+// phase's resolved inputs (format, name, resolved texmf-relative path,
+// bytes, sha256), the same shape --evidence uses for the format phase, so a
+// document's package footprint can be measured without hand-parsing --verbose
+// output. Both are no-ops without --smoke.
+const smokeDocPath = arg('smoke-doc', null)
+const smokeEvidencePath = arg('smoke-evidence', null)
+
 // --bundles <dir>: resolve through a bundle index (SPEC-latex.md "Package
 // delivery: bundles, not files") instead of the per-file harness resolver
 // below. --texmf trees are still required in this mode: they are the fallback
@@ -391,13 +400,15 @@ if (unknownFormats.size) {
 // document with them, so a broken format fails here rather than in a browser.
 if (process.argv.includes("--smoke")) {
   currentPhase = 'smoke'
-  const doc = [
-    "\\documentclass{article}",
-    "\\begin{document}",
-    "Format smoke test. $E = mc^2$",
-    "\\end{document}",
-    "",
-  ].join("\n")
+  const doc = smokeDocPath
+    ? fs.readFileSync(smokeDocPath, "utf8")
+    : [
+        "\\documentclass{article}",
+        "\\begin{document}",
+        "Format smoke test. $E = mc^2$",
+        "\\end{document}",
+        "",
+      ].join("\n")
   sandbox.onmessage({ data: { cmd: "loadformat", data: new Uint8Array(fmt).buffer } })
   await nextMessage((m) => m.cmd === "loadformat", 30000, "the format to load")
   sandbox.onmessage({ data: { cmd: "writefile", url: "main.tex", src: doc } })
@@ -424,6 +435,54 @@ if (process.argv.includes("--smoke")) {
       console.error(`\nbundle-mode smoke compile made ${c.perFile} per-file request(s); expected zero`)
       process.exit(1)
     }
+  }
+
+  // The harness already splices format-phase resolutions out of `resolved`/
+  // `missing` right after the format dump (formatInputs = resolved.splice(...)
+  // above), so whatever landed in them since then belongs to this smoke
+  // compile alone — the same "what remains in resolved" trick, one phase later.
+  const smokeInputsPerFile = resolved.splice(0, resolved.length)
+  const smokeMissing = missing.splice(0, missing.length)
+  const smokeBundleInputsByRequest = new Map()
+  if (bundlesDir) {
+    for (const e of resolverEvidence) {
+      if (e.phase !== 'smoke' || e.outcome !== 'resolved' || e.attempts?.[0]?.source !== 'bundle') continue
+      const key = `${e.format}/${e.requestedName}`
+      if (e.attempts[0].path || !smokeBundleInputsByRequest.has(key)) smokeBundleInputsByRequest.set(key, e)
+    }
+  }
+  const smokeBundleInputs = [...smokeBundleInputsByRequest.values()].map((e) => {
+    const relpath = e.attempts[0].path
+    const member = relpath ? bundleMembersByPath.get(relpath) : null
+    return {
+      format: e.format,
+      name: e.requestedName,
+      path: relpath ?? null,
+      bundle: e.attempts[0].bundle ?? null,
+      bytes: member ? member.length : null,
+      sha256: member ? createHash('sha256').update(member).digest('hex') : null,
+    }
+  })
+  const smokeMissingAll = bundlesDir
+    ? smokeMissing.concat(
+        resolverEvidence
+          .filter((e) => e.phase === 'smoke' && e.outcome !== 'resolved')
+          .map((e) => ({ format: e.format, name: e.requestedName, outcome: e.outcome })),
+      )
+    : smokeMissing
+
+  if (smokeEvidencePath) {
+    fs.writeFileSync(smokeEvidencePath, JSON.stringify({
+      procedure: 'node tools/build-format.mjs --smoke',
+      engine: 'pdftex',
+      doc: smokeDocPath ? path.relative(process.cwd(), smokeDocPath) : '(built-in one-line document)',
+      texmf: texmfDirs,
+      sourceDateEpoch: epoch,
+      inputs: smokeInputsPerFile.concat(smokeBundleInputs).sort((a, b) => (a.path ?? '').localeCompare(b.path ?? '')),
+      unsatisfied: smokeMissingAll,
+      ...(bundlesDir ? { bundles: path.relative(process.cwd(), bundlesDir) } : {}),
+    }, null, 2) + '\n')
+    log(`smoke evidence -> ${path.relative(process.cwd(), smokeEvidencePath)}`)
   }
 }
 
