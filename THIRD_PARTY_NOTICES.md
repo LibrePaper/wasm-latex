@@ -20,7 +20,7 @@ contain have been removed; what remains describes what a build here links or emi
 
 This repository's build layer was seeded from WasmTex
 (<https://github.com/corca-ai/wasmtex>), which is MIT-licensed. Much of
-`wasm-build/`, `scripts/`, and `upstream-ci/` is that code, modified or verbatim,
+`wasm-build/` and `scripts/` is that code, modified or verbatim,
 and it remains under its own copyright and notice.
 
 - Copyright: 2025-2026 WasmTex contributors

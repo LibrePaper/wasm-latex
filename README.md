@@ -80,8 +80,10 @@ Copied verbatim from that snapshot:
 - `LICENSES/`, `THIRD_PARTY_NOTICES.md`, `docs/licensing.md`,
   `docs/corresponding-source.md` — the obligations the engines carry. They are
   GPL: a build we publish must publish its source.
-- `upstream-ci/` — upstream's GitHub workflows, kept as the reference for how
-  each engine was wired. Not runnable here.
+
+Upstream's GitHub workflows were seeded too and have since been removed: they
+could not run here, and what they actually did per engine is written down in
+[`docs/build-layer-inventory.md`](docs/build-layer-inventory.md).
 
 The upstream editor, runtime library and application code were not copied;
 LibrePaper has its own controller. Written since the seed: `tools/`,

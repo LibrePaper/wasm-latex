@@ -2,6 +2,13 @@
 
 ## Per-Engine Build Sequences
 
+Upstream drove each engine from a GitHub workflow. Those workflows were seeded
+into `upstream-ci/` and have been removed: they cannot run here (no `.github/`,
+and they call scripts this repository no longer has). What they did is recorded
+below, and the Dockerfiles and build scripts they invoked are all in
+`wasm-build/`. The headings keep the workflow filenames so the sequences can be
+matched against upstream if needed; `git log` has the files themselves.
+
 ### pdfTeX + BibTeX (wasm-build.yml)
 - **configure-engine-build-mirror.mjs** — resolve immutable TeX Live mirror URL + revision
 - **check-annual-engine-source.mjs** — verify source licensing policy
@@ -151,7 +158,7 @@ application, not for an engine build.
 
 ### External Object Storage (Optional)
 - **scripts/build-icu-data.sh:27** — Defaults to `corca-texlive-production` S3 bucket
-- **scripts/sync-texlive-mirror.sh:61** — Defaults to `corca-texlive-production` S3 bucket
+- **scripts/sync-texlive-mirror.sh:61** (removed) — Defaults to `corca-texlive-production` S3 bucket
 - **scripts/lib/object-store.mjs:4** — References `TEXLIVE_OBJECT_BUCKET` env var (default: corca-texlive-production)
 
 **Critical upstream infrastructure dependencies to replace:**

@@ -48,7 +48,8 @@ are what the published source says they are.
   upstream's CDN, so its bytes are ours and are not expected to match the
   pinned receipt.
 - The other engines: XeTeX, LuaHBTeX, dvipdfm, BibTeX8, makeindex each have
-  their own Dockerfile and workflow under `upstream-ci/`.
+  their own Dockerfile in `wasm-build/`, and their build sequence is recorded
+  in `build-layer-inventory.md`.
 
 ## Notes on the recipe
 
