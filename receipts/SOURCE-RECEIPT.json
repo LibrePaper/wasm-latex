@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-b9b2341065a1-source.tar.xz",
-  "bytes": 101984512,
-  "sha256": "1c3c77379e0fec8bfb6a42a1d140421cb56c239ba9b716f17fb21416b64824c8",
-  "repositoryCommit": "b9b2341065a1deb9207e85fd052f2eaea5a8af7d",
+  "archive": "librepaper-wasm-latex-926db6db382f-source.tar.xz",
+  "bytes": 101988376,
+  "sha256": "656373a150671c0eb2fd4fe57b7353e53c262c3f148e05cfc559d40f12b7dd6e",
+  "repositoryCommit": "926db6db382fce24020dd0ee05d1ad4803f4917a",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
