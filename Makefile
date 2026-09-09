@@ -167,7 +167,7 @@ push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUD
 	  echo "push: neither bunx nor npx found on PATH; trying npx wrangler anyway"; \
 	  RUNNER="npx wrangler"; \
 	fi; \
-	$RUNNER deploy --name $(WORKER) --compatibility-date $(COMPAT_DATE) --assets "$(abspath $(MIRROR))"
+	$$RUNNER deploy --name $(WORKER) --compatibility-date $(COMPAT_DATE) --assets "$(abspath $(MIRROR))"
 	@echo "serve with: librepaper serve --latex https://latex.librepaper.workers.dev/"
 
 # A target cannot export into the shell that ran make, so this opens a
