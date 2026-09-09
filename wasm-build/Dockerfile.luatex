@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     wget python3 flex bison ghostscript texinfo \
     && rm -rf /var/lib/apt/lists/*
 
-# ---- TeX Live source (pinned, immutable; see wasm-build/texlive-source.ref) --
+# ---- TeX Live source (pinned, immutable; see wasm-build/texlive-source-2026.ref) --
 # Pinned to an immutable commit via --build-arg (a moving branch isn't
 # reproducible). No default → fails loudly if not supplied.
 ARG TEXLIVE_REF

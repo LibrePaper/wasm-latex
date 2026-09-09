@@ -51,7 +51,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # ---- TeX Live source (pinned, immutable) ------------------------------------
 # pdfTeX 1.40.28 is in TeX Live 2025. Pinned to an immutable commit (a moving
 # branch is not reproducible) via the single source of truth wasm-build/
-# texlive-source.ref, passed as --build-arg by the build scripts/workflows. No
+# texlive-source-2026.ref, passed as --build-arg by the build scripts/workflows. No
 # default → fails loudly if not supplied (build via the scripts, not bare).
 ARG TEXLIVE_REF
 RUN test -n "${TEXLIVE_REF}" || { echo "TEXLIVE_REF build-arg is required"; exit 1; }; \

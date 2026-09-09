@@ -26,7 +26,7 @@ repository's own MIT license is in [`LICENSE`](../LICENSE).
 | `musl.txt` | musl libc linked from the Emscripten sysroot; the complete component notice is also in corresponding source. |
 | `SyncTeX.txt` | The reference SyncTeX algorithms ported to TypeScript. |
 | `TECkit.txt` | TECkit's CPL/LGPL licensing notice. |
-| `WasmTex.txt` | The MIT-licensed WasmTex build layer this repository was seeded from. See [`../UPSTREAM.md`](../UPSTREAM.md). |
+| `WasmTex.txt` | The MIT-licensed WasmTex build layer this repository was seeded from. See [`../README.md`](../README.md). |
 | `XeTeX.txt` | XeTeX changes and additions. |
 | `Xpdf-4.06-GPL-2.0.txt` | GPL version 2 text, copied byte-for-byte from the `COPYING` of the Xpdf 4.06 source the engines link. |
 | `Xpdf-4.06-README.txt` | Xpdf 4.06 README and its GPL v2-or-v3 licensing notice. |

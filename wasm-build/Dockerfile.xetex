@@ -42,7 +42,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfontconfig1-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# ---- TeX Live source (pinned, immutable; see wasm-build/texlive-source.ref) --
+# ---- TeX Live source (pinned, immutable; see wasm-build/texlive-source-2026.ref) --
 ARG TEXLIVE_REF
 RUN test -n "${TEXLIVE_REF}" || { echo "TEXLIVE_REF build-arg is required"; exit 1; }; \
     echo "=== Fetching pinned TeX Live source ${TEXLIVE_REF} ===" && \

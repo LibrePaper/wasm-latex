@@ -26,7 +26,7 @@ and it remains under its own copyright and notice.
 - Copyright: 2025-2026 WasmTex contributors
 - License: MIT
 - Notice: [`LICENSES/WasmTex.txt`](LICENSES/WasmTex.txt)
-- Provenance and the exact snapshot seeded: [`UPSTREAM.md`](UPSTREAM.md)
+- Provenance and the exact snapshot seeded: [`README.md`](README.md)
 
 Retaining that notice is a condition of the MIT license and applies to any
 distribution of this repository or a work derived from it.
@@ -45,7 +45,7 @@ pdfTeX unit, under renamed symbols. The code is by Jérôme Laurens.
 ## TeX Live engine artifacts
 
 The engine build is pinned to TeX Live source commit
-`143f1723353b20202645f241db429b080a8adcdf`. The generated JavaScript, WebAssembly,
+`fb6158926661cb7a7246b3a94a0cb170a9624d5a` (`wasm-build/texlive-source-2026.ref`). The generated JavaScript, WebAssembly,
 worker, and format files a build writes to `wasm-build/dist/` are
 not covered solely by the WasmTex MIT license.
 
@@ -81,7 +81,7 @@ as a check that cannot run. Re-enforcing it is open work — see
 Corresponding source means the pinned TeX Live source plus the WasmTex glue, patches,
 build scripts, Dockerfiles, and any other material needed to rebuild the distributed
 object code. The build inputs are described in `wasm-build/` and
-`wasm-build/texlive-source.ref`. A distributor must make a complete source bundle
+`wasm-build/texlive-source-2026.ref`. A distributor must make a complete source bundle
 available with each binary release; an upstream link alone is not a substitute for
 that bundle.
 
