@@ -1,7 +1,7 @@
 # SPEC: The LaTeX experience, and how packages reach the browser
 
-Status: accepted 2026-09-09; implementation status at the end. The seam and
-the local tier restate and extend what LibrePaper's `docs/specs/wasmtex.md`
+Status: accepted 2026-09-09; what is built and what is next are at the end. The seam and
+the local tier restate and extend what LibrePaper's `docs/specs/latex-compiler.md`
 and `docs/specs/latex.md` already describe. Where the spec names a file that
 exists, it says what changes in it; where it names one that does not, it says
 so.
@@ -51,28 +51,27 @@ owner's explicit choice, under confinement.
 - The restricted allowlist, so `\write18` can reach `epstopdf` and `pygmentize`
   and not `rm`.
 - Sandboxed to the job workspace with no network, as LibrePaper's
-  `docs/specs/wasmtex.md` already requires. Refuse rather than degrade when
+  `docs/specs/latex-compiler.md` already requires. Refuse rather than degrade when
   the platform cannot confine.
 
-## Browser tier, in build order
+## Browser tier
 
-1. Serve the entire TeX Live macro tree, bundled as described below.
-2. Type1 fonts and a generated `pdftex.map`, so font packages embed.
-   `docs/texlive-snapshot-2026.md` describes the map problem: it is produced
-   by `updmap-sys` into `texmf-var` and is in no release archive.
-3. makeindex and BibTeX8. `wasm-build/Dockerfile.makeindex` and
-   `Dockerfile.bibtex8` exist and have never been run. Each needs a link
-   inventory before it can ship.
-4. Precise failure messages. When the browser tier stops, name the missing
-   package or the required program and print the one-line pairing
-   instruction. The resolver evidence the worker already emits
-   (`resolverEvidence`) carries what is needed.
-5. A published "what works in the browser" page, readable by people and by
-   agents.
-6. XeTeX with ICU data and TeX Live's OpenType fonts, rebuilt with SyncTeX.
-   `Dockerfile.xetex` and `build-icu-data.sh` exist and have never been run.
+What the browser compiles with, and the order it was built in:
+
+1. The entire TeX Live macro tree, bundled as described below.
+2. Type 1 fonts and the generated `pdftex.map`, so font packages embed.
+   `docs/texlive-snapshot-2026.md` describes the map: `updmap` writes it
+   into `texmf-var`, and no release archive contains it.
+3. makeindex and BibTeX8, each with a link inventory.
+4. Precise failure messages: when the browser tier stops, the message names
+   the missing package or the required program and prints the pairing
+   instruction, from the resolver evidence the worker emits.
+5. `docs/what-works-in-the-browser.md`, readable by people and by agents.
+6. XeTeX with ICU data, TeX Live's OpenType fonts found by name through a
+   generated font list, and SyncTeX, producing PDFs through dvipdfm.
 7. Biber VM warmed in the background the moment a document loads biblatex.
-8. LuaTeX once its timeout is diagnosed.
+   Not done.
+8. LuaTeX once its timeout is diagnosed. Not done.
 
 ## Local tier
 
@@ -141,8 +140,18 @@ download for grouping.
   families are the candidates.
 - `texmf-var/fonts/map/` is the one directory taken from the second tree; its
   files join the `core` bundle. Nothing else in `texmf-var` is bundled.
-- `doc/` and `source/` are never bundled. That removes 4.6 GB and most of
-  the remainder that is not needed at compile time.
+- Never bundled, because no browser engine reads them: `doc/`, `source/`,
+  Metafont sources and PK bitmaps, AFM metrics, Type 3 fonts, non-Lua
+  scripts, and the trees of tools that are not shipped (tex4ht, MetaPost,
+  dvips, xindy, Asymptote and others). `tex/latex-dev` is excluded by
+  default (`--include-latex-dev` re-enables it): the format build already
+  has to rank it below `tex/latex`, and serving it invites the same mistake
+  at runtime. 3.49 GB remain.
+- A file that would drag a whole package in for one member is named in
+  `FILE_BUNDLE_OVERRIDES`: `supp-pdf.mkii`, which `pdftex.def` loads at
+  `\begin{document}` and which sat in 47 MB of ConTeXt, goes into core;
+  `pdftex.map`, which sat beside two variants nothing reads, is a 5.5 MB
+  bundle of its own.
 
 ### The core bundle
 
@@ -158,9 +167,11 @@ before the first line of its preamble: `tex/latex/base`, `tex/latex/l3kernel`,
 Computer Modern and AMS font bundles, `pdftex.map`, and the encoding files
 those fonts reference.
 
-The list is a starting point. The right list is whatever the corpus in
-LibrePaper's `latex/corpus/` touches on its first pass through the kernel;
-`wasmtex-record.mjs` already measures that. Target: under 20 MB compressed.
+The list is measured, not guessed: the format's own inputs plus what two
+ordinary papers load, resolved through `tools/build-format.mjs --smoke-doc
+--smoke-evidence` on 2026-09-09. It comes to 18.3 MB in one part, 2,185
+files; `DEFAULT_CORE` in `tools/bundle-rules.mjs` is the list.
+`fonts/public/amsfonts` (4.6 MB, for `amssymb`) stays separate.
 Files in `core` are not repeated in their own package bundles; the index
 points to `core`.
 
@@ -296,21 +307,25 @@ gate all of this" already asked for on the engine side.
 
 | Document | Per-file requests today | Bundled, cold | Bundled, warm |
 |---|---|---|---|
-| Plain article | about 50 | 1 to 3 | 0 |
+| Plain article | about 50 | about 5 | 0 |
 | TikZ or beamer | about 400 | about 20 | 0 |
 
-If a cold plain article needs more than three requests after `core`, the core
-list is wrong. If a warm compile of any corpus document makes a request, the
+A cold plain article after `core` fetches amsfonts, the map, and cm-super's
+one Type 1 file for OT1's TS1 symbols; more than that means the core list
+is wrong. If a warm compile of any corpus document makes a request, the
 cache is wrong.
 
 ## Engine repository obligations that gate all of this
 
-- Run the five unbuilt engines and produce their link inventories.
-- Publish the corresponding-source archive and name its URL; until then
-  `check-release.mjs` refuses the release, correctly.
-- Verify a clean rebuild from that archive reproduces the distributed bytes.
+- Every built engine has a link inventory. Done for six; LuaTeX is unbuilt.
+- Publish the corresponding-source archive and name its URL. `make release`
+  does it; not yet run. The gate checks only that the URL is HTTPS and
+  hashed, so a placeholder passes it, which is how local tests are staged.
+- Show that a clean rebuild from that archive reproduces the distributed
+  bytes: a `make reproduce` that unpacks `dist-source/`, builds in Docker
+  and compares every artefact to the staged manifest. Not done.
 - Vendor the TeX Live source tarball instead of cloning GitHub in the
-  Dockerfiles.
+  Dockerfiles. Not done.
 
 ## Acceptance
 
@@ -332,115 +347,32 @@ cache is wrong.
   opened a few hyphenation loaders under, and bundle mode nests those under
   `/texmf/`. The input set, not byte identity, is the check.
 
-## Decided since
+## Status, 2026-09-09
 
-- `latex-dev` is not bundled by default; `--include-latex-dev` re-enables it.
-- The `core` list is now measured, not guessed (`DEFAULT_CORE` in
-  `tools/bundle-rules.mjs`, measured 2026-09-09 against four representative
-  documents resolved through `tools/build-format.mjs --smoke-doc
-  --smoke-evidence`): 18.3 MB in one part, 2,185 files. The measurement found
-  two files that dragged whole packages in, `supp-pdf.mkii` (47 MB of
-  ConTeXt, loaded by `pdftex.def` at `\begin{document}`) and `pdftex.map`
-  (beside two 5.5 MB variants nothing reads); `FILE_BUNDLE_OVERRIDES` in
-  `tools/bundle-rules.mjs` names them, the first into core and the second as
-  a 5.5 MB bundle of its own. `fonts/public/amsfonts` (4.6 MB) stays separate,
-  so a cold plain article makes about five requests after core, against the
-  "1 to 3" below; the bytes are what dropped, from roughly 80 MB to 11 MB.
-- OpenType and TrueType fonts are bundled now, by the same rule as Type 1.
-- Also excluded, because no browser engine reads them: Metafont sources, PK
-  bitmaps, AFM metrics, Type 3 fonts, non-Lua scripts, and the trees of tools
-  that are not shipped (tex4ht, MetaPost, dvips, xindy, Asymptote and others).
-  3.49 GB remain.
+Everything above the "Not done" marks exists and is verified: the bundles,
+the shared resolver in every worker, the release gate, six engines with
+inventories, the mirror built and deployed from this repository
+(`docs/release.md`), and LibrePaper's controller compiling the corpus,
+XeLaTeX included, in headless Chromium against a mirror built here. The
+README and the docs it lists describe what is built; this file describes
+why.
 
-## Not decided here
+## Next
 
-- The source archive's published location.
-
-## Implementation status, updated 2026-09-09 evening
-
-Done in this repository:
-
-- `tools/bundle-rules.mjs`, `tools/build-bundles.mjs`, their test, and the
-  2026 build: 5,479 bundles, 159,000 files, receipt in
-  `receipts/BUNDLE-RECEIPT.texlive-2026.json`.
-- `wasm-build/kpse-resolve.cjs` holds the one search order, the name index,
-  ranking, a synchronous SHA-256 and a tar reader; `wasm-build/bundle-mode.js`
-  holds bundle mode once, and every worker (pdfTeX, XeTeX, LuaTeX, dvipdfm,
-  BibTeX, BibTeX8, makeindex) imports it, answers `loadbundleindex` and
-  `preloadbundle`, and consults the index before any network. The Cache
-  Storage preload takes an optional list of bundle names and reports what it
-  skipped; a cached tar whose digest no longer matches is deleted. Legacy
-  per-file mode is unchanged.
-- `tools/build-format.mjs --bundles --expect-inputs`: the bundle-built format
-  resolves the same 238 inputs as the per-file build, with zero per-file
-  requests in the smoke compile.
-- `tools/stage-release.mjs --bundles` and the gate's section 7, tested at
-  full scale.
-- makeindex and BibTeX8 built, link-inventoried, and smoke-tested against
-  the native tools' output. A missing placeholder file made makeindex exit
-  before reading its input; fixed in `makeindex-worker.js`.
-- XeTeX built from source with the fontconfig shim, plus dvipdfm and the
-  ICU data file, all link-inventoried. `tools/build-format.mjs --engine xetex`
-  dumps its format (receipt in `receipts/FORMAT-RECEIPT.xetex-2026.json`)
-  and smokes a fontspec document by font name and by file name through
-  dvipdfm to a PDF with Latin Modern embedded. SyncTeX is passed and returned.
-  Both workers lacked `.tfm` in their extension table, which failed every
-  document on the preloaded Computer Modern metrics; fixed.
-- A root `Makefile` names each release step and `tools/release.sh` publishes
-  the corresponding-source archive to a GitHub Release and annotates it with
-  the staged manifest hash.
-- `docs/bundles.md` and `docs/what-works-in-the-browser.md`.
-- The browser run. On 2026-09-09 LibrePaper's `latex-wasmtex-browser` check
-  compiled the corpus in headless Chromium against a release staged here
-  and imported into a local mirror: article, paper and packages with
-  pdfLaTeX and BibTeX, and the XeTeX document with XeLaTeX, every one with
-  the expected page count and SyncTeX, XeTeX in 2.7 s. A prose edit
-  recompiled with zero new bytes from the mirror.
-- OpenType font lookup by name, as far as this repository ships it:
-  `tools/xetex-fontlist.mjs` (extracted from `tools/build-format.mjs`, which
-  now imports it) builds `xetexfontlist.txt` with `otfinfo`, and
-  `tools/build-bundles.mjs --extra` adds it to the bundle set as
-  `tex/xetex/fontlist`, so a browser resolver answering format-26 requests
-  from the bundle index can serve it like any other file. The XeTeX worker
-  reading it, and LibrePaper handing XeTeX its ICU data, remain below.
-- Hosting moved here: `tools/build-mirror.mjs` and `tools/check-mirror.mjs`
-  build and verify the mirror LibrePaper serves (layout and manifest format
-  1 in `docs/mirror.md`, ported from LibrePaper's own importer and
-  `check-mirror.mjs`, minus the legacy per-file TeX Live snapshot and the
-  bloom filter, since this repository ships bundles only), `make mirror`
-  builds it and `make push` deploys it to Cloudflare with wrangler's flags, and
-  `bibliographyIdentity` reads `biblatex.sty` out of the staged release's own
-  bundle instead of fetching it from a CDN at import time. Verified against
-  LibrePaper's current `latex/tools/check-mirror.mjs`, which already expects
-  exactly this contract and passes against a mirror built here from a real
-  staged release (5,501 bundles, 3.49 GB) with a placeholder source URL.
-
-Done in LibrePaper:
-
-- The importer records `bundles` on the release, `check-mirror.mjs` verifies
-  every bundle, the dev server and the Cloudflare headers treat the index as
-  `no-cache`, the controller loads the index for pdfTeX and skips the
-  per-file warmups, progress shows the bundle name and size, and a failed
-  compile whose resolver evidence names an absent package says so with the
-  pairing instruction.
-
-Not done:
-
-- LuaTeX's timeout; its engine is still unbuilt.
-- The local tier: platform confinement, the shell-escape policy, stored
-  renderings, and doctor output for agents. All of it is Rust in LibrePaper
-  and none of it was touched.
-- Biber VM warm-up on biblatex load.
-- Preloading `core` at page load through `preloadbundle`, and passing the
-  `preload` list from what a project used last time; the controller sends
-  only the bare index today.
-- Publishing the corresponding source and importing a release into
-  LibrePaper's shipped mirror, which still points at the pinned WasmTex
-  package snapshot. The gate checks only that a source URL is HTTPS and
-  hashed; no release has been staged with a real one.
-- The engine Dockerfiles still clone TeX Live source from GitHub rather than
-  copying in a vendored tarball.
-- A clean rebuild from the source archive has not been shown to reproduce
-  the distributed bytes. There is no reproduction evidence of our own yet; a
-  `make reproduce` that unpacks `dist-source/`, builds in Docker and
-  compares every artifact to the staged manifest is the missing target.
+1. Cut the release with `make release TAG=…`, then `make mirror` and
+   `make push`. LibrePaper's app-level smoke test, which `latex-push`'s
+   predecessor depended on, opens the published document read-only and never
+   compiles; that access bug is LibrePaper's and blocks nothing here now,
+   but it should be fixed before the mirror carries real traffic.
+2. Typst fonts from the mirror: `make mirror` writes a `fonts/` set with an
+   index in the shape LibrePaper's font library produces, from the same
+   OpenType and TrueType files the bundles hold, and LibrePaper's `--fonts`
+   defaults to it. Where typst packages come from is unexamined.
+3. `make reproduce`, and the vendored TeX Live source tarball.
+4. Preload `core` at page load and pass the per-project `preload` list;
+   the controller sends only the bare index today.
+5. Biber VM warm-up when a document loads biblatex.
+6. LuaTeX.
+7. The local tier: platform confinement, the owner-only restricted shell
+   escape, stored renderings, doctor output an agent can act on. All Rust in
+   LibrePaper; none of it started.

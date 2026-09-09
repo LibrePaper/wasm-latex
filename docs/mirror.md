@@ -2,10 +2,10 @@
 
 This is the contract LibrePaper's `latex/tools/check-mirror.mjs` and
 `web/src/lib/latex/worker.js` (`configure()`) consume. It used to live as
-section 1 of LibrePaper's `docs/specs/wasmtex-interfaces.md`, back when
-LibrePaper's own `latex/tools/wasmtex.mjs` built the mirror by importing a
-staged wasm-latex release and fetching a TeX Live package snapshot from a
-third party. Both of those moved here: this repository now builds and
+section 1 of LibrePaper's `docs/specs/latex-interfaces.md`, back when
+LibrePaper's own importer built the mirror from a staged wasm-latex release
+and fetched a TeX Live package snapshot from a third party. Both of those
+moved here: this repository now builds and
 deploys the whole mirror (`make mirror`, `make push`; see
 [`docs/release.md`](release.md)), and LibrePaper keeps only a URL and this
 consumer-side contract. There is no legacy per-file TeX Live snapshot in
@@ -34,9 +34,9 @@ mirror/
 `<engineRelease>` is the bare `<sha256 of the staged MANIFEST.json>`.
 Directories are immutable; a new digest is a new directory, and every
 release this repository has ever imported stays in `manifest.releases` --
-only `default_release` moves. `biber-vm/` is not written by this repository;
-LibrePaper's `latex/tools/wasmtex.mjs --vm <dir>` still registers it, since
-the VM is built and owned on that side.
+only `default_release` moves. The Biber VM is not part of the mirror: it is
+LibrePaper's own artefact, hosted where LibrePaper puts it and named to the
+server with `--biber-vm <url>#<sha256>`.
 
 ## Manifest, format 1
 
@@ -105,12 +105,10 @@ map and unpacked with the tar reader in `wasm-build/kpse-resolve.cjs`
 network: WasmTex's old CDN fetch of `biblatex.sty` at import time is gone,
 because the file is already part of the staged release's `core` bundle.
 
-`vm` is filled in by LibrePaper's own `latex/tools/wasmtex.mjs --vm <dir>`,
-which registers a Biber VM release under `manifest.default_release`,
-recomputes that release's `digest`, and otherwise leaves the mirror alone --
-this repository's `tools/build-mirror.mjs` never overwrites an existing
-`vm` when it re-imports a release (a previously registered VM survives a
-`make mirror` re-run for the same or a later release).
+`vm` is always `null`. The field survives from the time the Biber VM was
+registered into the mirror; LibrePaper now finds its VM through its own
+`--biber-vm <url>#<sha256>` flag and ignores this field. It will be dropped
+in format 2.
 
 ## Serving
 

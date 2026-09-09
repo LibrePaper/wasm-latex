@@ -84,10 +84,9 @@ under the free plan's 20,000-file cap.
 
 LibrePaper then just points at the deployed URL: `librepaper serve --latex
 https://latex.librepaper.workers.dev/`, or its own
-`latex/tools/check-mirror.mjs <url>` to verify it first. The one piece
-LibrePaper still builds and registers on its own is the Biber VM
-(`latex/tools/wasmtex.mjs --vm <dir>`), since it is not part of a
-wasm-latex release.
+`latex/tools/check-mirror.mjs <url>` to verify it first. The Biber VM is
+LibrePaper's own artefact, hosted separately and named to the server with
+`--biber-vm <url>#<sha256>`; it is not part of a wasm-latex release.
 
 ## What the gate checks
 
