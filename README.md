@@ -11,6 +11,7 @@ receipts and notices that let a reader verify that.
 
 ## Use it
 
+    make vendor                  # fetch and verify the TeX Live tree, once
     make test                    # every check that needs no Docker or network
     make bundles                 # pack TeX Live into per-package bundles
     make format                  # dump and smoke the pdfTeX and XeTeX formats

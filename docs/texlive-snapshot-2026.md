@@ -6,6 +6,9 @@ verified against TUG's signed hash.
 
 ## Obtaining and verifying it
 
+`make vendor` runs `tools/vendor-texlive.sh`, which does exactly the
+following and skips what is already on disk. By hand:
+
     mkdir -p vendor/texlive-2026 && cd vendor/texlive-2026
     B=https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2026
     curl -O $B/texlive-20260301-texmf.tar.xz.sha512 \

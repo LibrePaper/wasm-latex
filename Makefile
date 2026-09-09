@@ -1,5 +1,6 @@
 # The release pipeline, one target per step, in the order they run.
 #
+#   make vendor      fetch, verify and unpack the TeX Live tree -> vendor/ (network, 5 GB)
 #   make test        every check that runs without Docker or network
 #   make fontlist    generate xetexfontlist.txt with otfinfo  -> $(DIST)/xetexfontlist.txt
 #   make bundles     pack the vendored texmf tree, plus the
@@ -36,10 +37,13 @@ FAMILIES    ?= pdftex bibtex bibtex8 makeindex xetex dvipdfm
 MIRROR      ?= mirror
 TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
 
-.PHONY: help test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push
+.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push
 
 help:  ## List targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | sed 's/:.*## /  /'
+
+vendor:  ## Fetch, verify (signature and hash) and unpack the TeX Live tree, then generate the font map
+	tools/vendor-texlive.sh
 
 test:  ## Unit tests, pin check, and the resolver test
 	node tools/check-pins.mjs

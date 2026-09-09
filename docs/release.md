@@ -27,7 +27,8 @@ the pinned ones. Skip this step when nothing under `wasm-build/` changed.
     make format       # pdfTeX and XeTeX formats, smoked, with receipts
     make inventory    # link inventories for every engine family
 
-`vendor/` must hold the verified TeX Live tree
+`vendor/` must hold the verified TeX Live tree; `make vendor` fetches,
+verifies and unpacks it and generates the font map
 (`docs/texlive-snapshot-2026.md`). `make bundles` and `make format` are
 deterministic; rerunning them changes nothing unless the tree or the engines
 did.
