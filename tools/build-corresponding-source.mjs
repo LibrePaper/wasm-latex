@@ -30,6 +30,7 @@ import { execFileSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+import { normalizeCrateArchiveUrl } from './crate-url.mjs'
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(`--${name}`)
@@ -161,10 +162,11 @@ if (fs.existsSync(latexmlReceiptPath)) {
       const archiveSpec = dependency.sourceArchive
       if (!archiveSpec?.url || !/^[a-f0-9]{64}$/.test(archiveSpec.sha256 || '')) continue
       fs.mkdirSync(dependencyRoot, { recursive: true })
-      const filename = path.basename(new URL(archiveSpec.url).pathname) || `${dependency.name}-${dependency.version}.src`
+      const archiveUrl = normalizeCrateArchiveUrl(archiveSpec.url)
+      const filename = path.basename(new URL(archiveUrl).pathname) || `${dependency.name}-${dependency.version}.src`
       const destination = path.join(dependencyRoot, filename)
       log(`latexml dependency ${dependency.name} ${dependency.version}`)
-      execFileSync('curl', ['-fL', '--retry', '3', '--output', destination, archiveSpec.url], { stdio: 'inherit' })
+      execFileSync('curl', ['-fL', '--retry', '3', '--output', destination, archiveUrl], { stdio: 'inherit' })
       const digest = createHash('sha256').update(fs.readFileSync(destination)).digest('hex')
       if (digest !== archiveSpec.sha256) throw new Error(`LaTeXML dependency archive hash mismatch: ${dependency.name}`)
     }
