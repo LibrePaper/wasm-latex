@@ -131,6 +131,35 @@ export const ENGINE_FILE_SETS = {
       'bundle-mode.js',
     ],
   },
+  // LaTeXML uses the same browser resolver and bundle protocol as the TeX
+  // engines, with its kernel snapshots embedded in WASM. Require the worker/glue/WASM,
+  // resolver, and stylesheet set; publishing just the WASM would leave the
+  // browser with an engine it cannot start or a document it cannot display.
+  latexml: {
+    worker: 'latexml.worker.js',
+    files: [
+      'latexml.worker.js',
+      'latexml.js',
+      'latexml.wasm',
+      'latexml.css',
+      'LaTeXML.css',
+      'LaTeXML-blue.css',
+      'LaTeXML-marginpar.css',
+      'LaTeXML-navbar-left.css',
+      'LaTeXML-navbar-right.css',
+      'ltx-amsart.css',
+      'ltx-apj.css',
+      'ltx-article.css',
+      'ltx-book.css',
+      'ltx-listings.css',
+      'ltx-report.css',
+      'ltx-svjour.css',
+      'ltx-ulem.css',
+      'latexml.build.json',
+      'kpse-resolve.js',
+      'bundle-mode.js',
+    ],
+  },
 }
 
 /* -------------------------------------------------------------- readRelease */

@@ -60,6 +60,28 @@ pdfTeX unit, under renamed symbols. The code is by Jérôme Laurens.
 - Notice: [`LICENSES/SyncTeX.txt`](LICENSES/SyncTeX.txt)
 - Upstream: <https://github.com/TeX-Live/texlive-source/tree/trunk/texk/web2c/synctexdir>
 
+## LaTeXML HTML renderer
+
+The optional LaTeXML WebAssembly renderer is built from the pinned
+`latexml-oxide` source named in `wasm-build/latexml-source.ref`. Its source is
+separate from TeX Live: the corresponding-source archive includes that exact
+checkout and the native dependency sources named in `latexml.build.json`.
+
+| Component | Terms and source evidence |
+| --- | --- |
+| latexml-oxide code and embedded Perl LaTeXML CSS/XSLT resources | CC0/public-domain terms recorded by upstream; see [`LICENSES/CC0-1.0.txt`](LICENSES/CC0-1.0.txt) and the upstream `THIRD-PARTY-NOTICES` carried by the corresponding source. |
+| libxml2, libxslt, and libexslt | MIT terms; exact versions, source archive hashes, and the upstream notices are recorded in `latexml.build.json`; see [`LICENSES/libxml2-Copyright.txt`](LICENSES/libxml2-Copyright.txt) and [`LICENSES/libxslt-COPYING.txt`](LICENSES/libxslt-COPYING.txt). |
+| libkpathsea | LGPL-2.1-or-later; the exact TeX Live source tree and relink instructions are included in the corresponding source. |
+| libmarpa 8.6.2 (via `libmarpa-asf-sys`) | Most code MIT; `marpa_obs.c` is LGPL-2.1-or-later and `marpa_tavl.c` is LGPL-3.0-or-later. The exact crate checksum and both upstream COPYING files are recorded in `latexml.build.json`; see [`LICENSES/libmarpa-COPYING.txt`](LICENSES/libmarpa-COPYING.txt) and [`LICENSES/libmarpa-COPYING.LESSER.txt`](LICENSES/libmarpa-COPYING.LESSER.txt). |
+| SQLite bundled source (via `libsqlite3-sys`) | SQLite is dedicated to the public domain. The Rust wrapper is MIT, with the `libsqlite3-sys` crate's exact version and checksum recorded in the Cargo lockfile and build receipt. |
+| mimalloc (via `libmimalloc-sys`) | MIT; the bundled crate notice retains `Copyright 2019 Octavian Oncescu` and its upstream license text. |
+| Emscripten 6.0.9 runtime | MIT and University of Illinois/NCSA terms; see the exact SDK notice in [`LICENSES/Emscripten-6.0.9.txt`](LICENSES/Emscripten-6.0.9.txt). |
+| Rust and native transitive dependencies | The build receipt names each dependency, source, version, license, and required notice. No LaTeXML release is cleared by assuming that TeX Live covers these inputs. |
+
+The renderer worker inlines the upstream CSS links selected by each generated
+document. Article, book, and other document-class stylesheets are available as
+separate artifacts and are not combined indiscriminately.
+
 ## TeX Live engine artifacts
 
 The engine build is pinned to TeX Live source commit

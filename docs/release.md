@@ -20,6 +20,23 @@ the gzip the release ships. Each takes 15 to 20 minutes. `node
 tools/check-pins.mjs` confirms the source commit and the Emscripten image are
 the pinned ones. Skip this step when nothing under `wasm-build/` changed.
 
+The experimental LaTeXML renderer has a separate pinned Rust/native build:
+
+    docker buildx build --platform linux/amd64 --load \
+      -f wasm-build/Dockerfile.latexml -t librepaper-latexml-wasm .
+    docker run --rm --platform linux/amd64 \
+      -e LATEXML_DIST_DIR=/dist -v $PWD/wasm-build/dist:/dist \
+      librepaper-latexml-wasm
+
+This writes the worker, glue/WASM, upstream CSS resources, and
+`latexml.build.json`. The receipt is required for staging and records the
+LaTeXML checkout, libxml2/libxslt/kpathsea inputs, and the wrapper Cargo lock
+graph separately from the TeX Live source receipt. See
+It uses Emscripten 6.0.9
+and nightly Rust `2026-08-02`; the other engine images remain on Emscripten
+3.1.46. See
+[`docs/latexml.md`](latexml.md).
+
 ## 2. Build the data from the vendored tree
 
     make biber-build  # Biber WASM, worker, data, link map, source archive and build receipt

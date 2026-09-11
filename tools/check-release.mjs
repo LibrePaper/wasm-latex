@@ -42,6 +42,97 @@ for (const a of manifest.artifacts) {
 }
 // ...and nothing shipped that the manifest does not name.
 const named = new Set(manifest.artifacts.map((a) => a.name))
+// LaTeXML is a browser renderer, so its worker, Emscripten glue/WASM, resolver
+// helpers, and standalone stylesheet are one inseparable payload. Catch a
+// partial copy at staging time instead of advertising an engine that can boot
+// but cannot produce a self-contained document.
+if ([...named].some((name) => name.startsWith('latexml'))) {
+  for (const name of [
+    'latexml.worker.js', 'latexml.js', 'latexml.wasm', 'latexml.css', 'LaTeXML.css',
+    'LaTeXML-blue.css', 'LaTeXML-marginpar.css', 'LaTeXML-navbar-left.css',
+    'LaTeXML-navbar-right.css', 'ltx-amsart.css', 'ltx-apj.css',
+    'ltx-article.css', 'ltx-book.css', 'ltx-listings.css', 'ltx-report.css',
+    'ltx-svjour.css', 'ltx-ulem.css',
+    'latexml.build.json', 'kpse-resolve.js', 'bundle-mode.js',
+  ]) {
+    if (!named.has(name)) fail(`incomplete LaTeXML family: missing ${name}`)
+  }
+  if (has('latexml.build.json')) {
+    const build = read('latexml.build.json')
+    if (build.schemaVersion !== 1 || build.family !== 'latexml') {
+      fail('latexml.build.json: unsupported or missing LaTeXML build receipt identity')
+    }
+    if (build.toolchain?.emscripten !== '6.0.9' ||
+        build.toolchain?.emscriptenImage !== 'emscripten/emsdk:6.0.9@sha256:96617f27fe16421588241def73908fd348a7f9d260440ed0d00b36dcf7a063cc' ||
+        build.toolchain?.rust !== 'nightly-2026-08-02') {
+      fail('latexml.build.json: LaTeXML must record the pinned Emscripten 6.0.9 image and nightly Rust toolchain')
+    }
+    if (!build.source?.repository || !/^[a-f0-9]{40}$/.test(build.source?.commit || '')) {
+      fail('latexml.build.json: pinned latexml-oxide repository and commit are required')
+    }
+    const kernelDumps = build.kernelDumps
+    if (!Array.isArray(kernelDumps) || !kernelDumps.length) {
+      fail('latexml.build.json: nonempty plain and LaTeX kernel dumps are required')
+    } else {
+      const years = new Set()
+      for (const dump of kernelDumps) {
+        const year = dump?.year
+        if (!Number.isInteger(year) || year < 2000 || year > 2099 || years.has(year)) {
+          fail('latexml.build.json: kernel dump years must be unique four-digit years')
+          continue
+        }
+        years.add(year)
+        const expected = {
+          plain: `resources/dumps/plain.${year}.dump.txt`,
+          latex: `resources/dumps/latex.${year}.dump.txt`,
+          texlive: `resources/dumps/texlive.${year}.version`,
+        }
+        for (const kind of ['plain', 'latex', 'texlive']) {
+          const file = dump[kind]
+          if (file?.name !== expected[kind] || !Number.isInteger(file.bytes) || file.bytes <= 0 ||
+              !/^[a-f0-9]{64}$/.test(file.sha256 || '')) {
+            fail(`latexml.build.json: ${kind} kernel dump for ${year} must name a nonempty hashed source file`)
+          }
+        }
+        if (dump.provenance?.kind !== 'host-texlive-version-stamp' ||
+            dump.provenance?.source !== 'latexml-oxide/resources/dumps' ||
+            !dump.provenance?.version) {
+          fail(`latexml.build.json: ${year} kernel dump lacks host TeX Live stamp provenance`)
+        }
+      }
+    }
+    if (!Array.isArray(build.dependencies) || !build.dependencies.length) {
+      fail('latexml.build.json: native dependency sources and licenses are required')
+    }
+    for (const dependency of build.dependencies || []) {
+      if (!dependency.name || !dependency.version || !dependency.source || !dependency.license ||
+          !Array.isArray(dependency.notices) || !dependency.notices.length) {
+        fail('latexml.build.json: every dependency needs name, version, source, and license')
+      }
+      if (dependency.sourceArchive &&
+          (!/^https:\/\//.test(dependency.sourceArchive.url || '') ||
+           !/^[a-f0-9]{64}$/.test(dependency.sourceArchive.sha256 || ''))) {
+        fail(`latexml.build.json: ${dependency.name} source archive needs HTTPS URL and SHA-256`)
+      }
+      for (const notice of dependency.notices || []) {
+        if (!has(notice)) fail(`latexml.build.json: dependency notice is not shipped: ${notice}`)
+      }
+    }
+    const receiptArtifacts = build.artifacts || {}
+    for (const name of [
+      'latexml.js', 'latexml.wasm', 'latexml.worker.js', 'latexml.css', 'LaTeXML.css',
+      'LaTeXML-blue.css', 'LaTeXML-marginpar.css', 'LaTeXML-navbar-left.css',
+      'LaTeXML-navbar-right.css', 'ltx-amsart.css', 'ltx-apj.css',
+      'ltx-article.css', 'ltx-book.css', 'ltx-listings.css', 'ltx-report.css',
+      'ltx-svjour.css', 'ltx-ulem.css',
+    ]) {
+      const artifact = manifest.artifacts.find((entry) => entry.name === name)
+      if (artifact && receiptArtifacts[name]?.sha256 !== artifact.sha256) {
+        fail(`latexml.build.json: artifact hash does not match ${name}`)
+      }
+    }
+  }
+}
 if ([...named].some(name => name.startsWith('biber.'))) {
   for (const name of ['biber.worker.js', 'biber.js', 'biber.wasm', 'biber.data', 'biber.build.json']) {
     if (!named.has(name)) fail(`incomplete Biber family: missing ${name}`)

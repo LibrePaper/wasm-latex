@@ -24,6 +24,10 @@ mirror/
     kpse-resolve.js bundle-mode.js   -- imported by every worker
     bibtex.* bibtex8.* makeindex.* biber.* biber-notices/
     xetex.* xetex.fmt.gz icudt68l.dat.gz dvipdfm.*
+    latexml.worker.js latexml.js latexml.wasm latexml.css LaTeXML.css
+    LaTeXML-blue.css LaTeXML-marginpar.css LaTeXML-navbar-left.css LaTeXML-navbar-right.css
+    ltx-amsart.css ltx-apj.css ltx-article.css ltx-book.css ltx-listings.css
+    ltx-report.css ltx-svjour.css ltx-ulem.css kpse-resolve.js bundle-mode.js
     LICENSE THIRD_PARTY_NOTICES.md SOURCE.md SOURCE-RECEIPT.json RELINK.md
     LICENSES/  LINK-INVENTORY.*.json  FORMAT-RECEIPT.*.json  BUNDLE-RECEIPT.*.json
   engines/<engineRelease>/bundles/bundles.json     package index
@@ -57,7 +61,8 @@ that do not advertise `engines.biber`.
         "bibtex":  { "worker": "bibtex.worker.js", "files": [...] },
         "bibtex8": { "worker": "bibtex8.worker.js", "files": [...] },
         "biber": { "worker": "biber.worker.js", "files": ["biber.worker.js", "biber.js", "biber.wasm", "biber.data", "biber.build.json"] },
-        "makeindex": { "worker": "makeindex.worker.js", "files": [...] }
+        "makeindex": { "worker": "makeindex.worker.js", "files": [...] },
+        "latexml": { "worker": "latexml.worker.js", "files": ["latexml.worker.js", "latexml.js", "latexml.wasm", "latexml.css", "LaTeXML.css", "LaTeXML-blue.css", "LaTeXML-marginpar.css", "LaTeXML-navbar-left.css", "LaTeXML-navbar-right.css", "ltx-amsart.css", "ltx-apj.css", "ltx-article.css", "ltx-book.css", "ltx-listings.css", "ltx-report.css", "ltx-svjour.css", "ltx-ulem.css", "kpse-resolve.js", "bundle-mode.js", "latexml.build.json"] }
       },
       "files": { "<name>": { "url": "engines/<sha256>/<name>", "sha256": "...", "size": 123 } },
       "bibliography": {

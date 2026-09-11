@@ -14,6 +14,7 @@ release was built from.
 | TeX Live packages, upstream's | `2026-ba38749b8714505a` (their CDN; not used as a build input here) |
 | TeX Live packages, ours | `texlive-20260301-texmf.tar.xz`, signature-verified |
 | Emscripten | 3.1.46, `emscripten/emsdk:3.1.46@sha256:2491bc4bf6caf8c41993660822341bc72759cb577363dfe0781f0a2d05f7d357` |
+| LaTeXML Emscripten | 6.0.9, `emscripten/emsdk:6.0.9@sha256:96617f27fe16421588241def73908fd348a7f9d260440ed0d00b36dcf7a063cc`; nightly Rust `2026-08-02` |
 | Corresponding-source tarball | `wasmtex-2026-8b7946970153c52e-source.tar.xz`, sha256 `a858abfd2d5b0ad7699ccb6b1dab8b45658c32ecac7a08d68c88bf76847b7cf2` |
 
 Copied verbatim from that snapshot:

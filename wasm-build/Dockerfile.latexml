@@ -1,0 +1,26 @@
+FROM emscripten/emsdk:6.0.9@sha256:96617f27fe16421588241def73908fd348a7f9d260440ed0d00b36dcf7a063cc
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential ca-certificates curl git pkg-config xz-utils \
+    libclang-dev clang libxml2-dev libxslt1-dev \
+    texlive-base texlive-latex-base && rm -rf /var/lib/apt/lists/*
+
+# Keep the compiler channel pinned alongside the Emscripten SDK. The latexml
+# source itself requires nightly Rust (edition 2024 + thread_local feature).
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+    sh -s -- -y --default-toolchain nightly-2026-08-02 --profile minimal && \
+    /root/.cargo/bin/rustup target add wasm32-unknown-emscripten
+ENV PATH="/root/.cargo/bin:/emsdk:/emsdk/upstream/emscripten:${PATH}"
+
+WORKDIR /src
+COPY wasm-build /src/wasm-build
+COPY wasm-build/library-latexml.js /src/wasm-build/library-latexml.js
+RUN chmod +x /src/wasm-build/build-latexml-kpathsea.sh
+
+# The Cargo manifest keeps its upstream workspace dependency paths relative to
+# /latexml-oxide.  Build the pinned checkout there at container runtime so the
+# image remains small and the source provenance check in build-latexml.sh is
+# the single source of truth.
+ENV LATEXML_SOURCE_DIR=/latexml-oxide
+
+CMD ["bash", "/src/wasm-build/build-latexml.sh"]

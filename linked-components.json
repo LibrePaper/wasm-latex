@@ -44,6 +44,13 @@
       ],
       "combinedTerms": "GPL-2.0-or-later",
       "combinedTermsReason": "dvipdfm-x (texk/dvipdfm-x) is GPL-2.0-or-later; it links kpathsea (LGPL-2.1-or-later), libpng and zlib (permissive) and no Xpdf, so the combined unit is GPL-2.0-or-later."
+    },
+    "latexml": {
+      "modules": [
+        "latexml"
+      ],
+      "combinedTerms": "CC0-1.0 AND MIT AND LGPL-2.1-or-later AND LGPL-3.0-or-later",
+      "combinedTermsReason": "LaTeXML combines CC0 upstream code and embedded public-domain resources with MIT native libraries and statically linked LGPL kpathsea/libmarpa components. The exact Rust/Cargo graph is recorded in latexml.build.json rather than guessed from map object names."
     }
   },
   "archives": [

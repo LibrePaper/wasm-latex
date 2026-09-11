@@ -1,8 +1,9 @@
 # librepaper-wasm-latex
 
-TeX engines built to WebAssembly for LibrePaper's in-browser LaTeX compiler:
-pdfTeX, XeTeX, dvipdfm, BibTeX, BibTeX8, Biber and makeindex, plus the TeX Live
-packages they load, packed for the browser.
+Engines built to WebAssembly for LibrePaper's in-browser LaTeX compiler:
+pdfTeX, XeTeX, dvipdfm, BibTeX, BibTeX8, Biber and makeindex, plus the
+experimental LaTeXML HTML renderer and the TeX Live packages they load, packed
+for the browser.
 
 Nothing LibrePaper ships has to be taken on trust from someone else's CDN.
 Every engine is built here from pinned source, every format and package from
@@ -31,6 +32,8 @@ lists every target.
   the same seam for authors and agents deciding whether to pair.
 - [`docs/release.md`](docs/release.md): the release runbook.
 - [`docs/biber.md`](docs/biber.md): the pinned TeXlyre Biber build, release packaging and browser checks.
+- [`docs/latexml.md`](docs/latexml.md): the experimental LaTeXML HTML worker,
+  standalone CSS resources, and pinned source receipt.
 - [`docs/mirror.md`](docs/mirror.md): the mirror LibrePaper serves -- layout,
   manifest format 1, and the contract `tools/build-mirror.mjs` and
   `tools/check-mirror.mjs` implement.

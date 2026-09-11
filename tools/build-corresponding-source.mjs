@@ -12,6 +12,11 @@
 //                    that ought to match. Contains kpathsea, zlib, libpng, xpdf,
 //                    web2c, synctex and libmd5 — every statically linked
 //                    component except the toolchain runtime.
+//   latexml-oxide/   the exact latexml-oxide checkout named by
+//                    latexml.build.json, plus native dependency source
+//                    archives named by that receipt, and the Cargo crate
+//                    archives named by its lock graph. TeX Live is only the
+//                    kpathsea input for this engine; it is not its source.
 //
 // plus the manifest, rebuild and relink instructions. The Emscripten runtime
 // pieces (musl, libc++, compiler-rt, dlmalloc) come from the digest-pinned
@@ -96,12 +101,114 @@ if (!fs.existsSync(configure)) {
   process.exit(1)
 }
 
+// --- LaTeXML's pinned source and native dependency sources -------------------
+// LaTeXML is a separate Rust project with libxml2/libxslt and kpathsea inputs.
+// Include those exact inputs when the release contains its build receipt; a
+// TeX Live checkout by itself is not corresponding source for this engine.
+let latexmlSource = null
+const latexmlReceiptPath = path.join(distDir, 'latexml.build.json')
+if (fs.existsSync(latexmlReceiptPath)) {
+  const build = JSON.parse(fs.readFileSync(latexmlReceiptPath, 'utf8'))
+  if (build.schemaVersion !== 1 || build.family !== 'latexml' ||
+      !build.source?.repository || !/^[a-f0-9]{40}$/.test(build.source?.commit || '')) {
+    throw new Error('latexml.build.json must pin a repository and 40-character commit')
+  }
+  const kernelDumpInput = path.join(distDir, 'latexml-kernels')
+  if ((build.kernelDumps ?? []).length && !fs.existsSync(kernelDumpInput)) {
+    throw new Error(`LaTeXML kernel dumps are present in the receipt but ${kernelDumpInput} is missing`)
+  }
+  const temp = fs.mkdtempSync(path.join(outDir, '.latexml-source-'))
+  const checkout = path.join(temp, 'checkout')
+  const sourceRoot = path.join(staging, 'latexml-oxide')
+  fs.mkdirSync(sourceRoot, { recursive: true })
+  fs.copyFileSync(latexmlReceiptPath, path.join(staging, 'latexml.build.json'))
+  try {
+    log(`latexml ${build.source.repository}@${build.source.commit}`)
+    sh('git', ['clone', '--filter=blob:none', '--no-checkout', build.source.repository, checkout])
+    sh('git', ['-C', checkout, 'checkout', '--detach', build.source.commit])
+    const archive = execFileSync('git', ['-C', checkout, 'archive', '--format=tar', build.source.commit], {
+      maxBuffer: 1 << 30,
+      encoding: null,
+    })
+    execFileSync('tar', ['-x', '-C', sourceRoot], { input: archive, maxBuffer: 1 << 30 })
+
+    // git archive deliberately omits generated resources/dumps. The build
+    // driver stages receipt-listed snapshots beside the artifacts; copy those
+    // exact files and verify every receipt byte before packaging source.
+    for (const dump of build.kernelDumps ?? []) {
+      for (const kind of ['plain', 'latex', 'texlive']) {
+        const expectedName = kind === 'plain'
+          ? `resources/dumps/plain.${dump.year}.dump.txt`
+          : kind === 'latex'
+            ? `resources/dumps/latex.${dump.year}.dump.txt`
+            : `resources/dumps/texlive.${dump.year}.version`
+        if (dump[kind]?.name !== expectedName) throw new Error(`LaTeXML kernel dump name mismatch: ${kind} ${dump.year}`)
+        const input = path.join(kernelDumpInput, path.basename(expectedName))
+        if (!fs.existsSync(input)) throw new Error(`LaTeXML kernel dump missing from ${kernelDumpInput}: ${path.basename(expectedName)}`)
+        const bytes = fs.readFileSync(input)
+        const digest = createHash('sha256').update(bytes).digest('hex')
+        if (bytes.length !== dump[kind].bytes || digest !== dump[kind].sha256) {
+          throw new Error(`LaTeXML kernel dump does not match receipt: ${expectedName}`)
+        }
+        const output = path.join(sourceRoot, expectedName)
+        fs.mkdirSync(path.dirname(output), { recursive: true })
+        fs.writeFileSync(output, bytes)
+      }
+    }
+
+    const dependencyRoot = path.join(staging, 'latexml-dependencies')
+    for (const dependency of build.dependencies ?? []) {
+      const archiveSpec = dependency.sourceArchive
+      if (!archiveSpec?.url || !/^[a-f0-9]{64}$/.test(archiveSpec.sha256 || '')) continue
+      fs.mkdirSync(dependencyRoot, { recursive: true })
+      const filename = path.basename(new URL(archiveSpec.url).pathname) || `${dependency.name}-${dependency.version}.src`
+      const destination = path.join(dependencyRoot, filename)
+      log(`latexml dependency ${dependency.name} ${dependency.version}`)
+      execFileSync('curl', ['-fL', '--retry', '3', '--output', destination, archiveSpec.url], { stdio: 'inherit' })
+      const digest = createHash('sha256').update(fs.readFileSync(destination)).digest('hex')
+      if (digest !== archiveSpec.sha256) throw new Error(`LaTeXML dependency archive hash mismatch: ${dependency.name}`)
+    }
+    const cargoRoot = path.join(staging, 'latexml-cargo')
+    const cargoSources = []
+    for (const packageInfo of build.cargo?.packages ?? []) {
+      if (!packageInfo.name || !packageInfo.version ||
+          !packageInfo.source?.startsWith('registry+') || !/^[a-f0-9]{64}$/.test(packageInfo.checksum || '')) continue
+      fs.mkdirSync(cargoRoot, { recursive: true })
+      const filename = `${packageInfo.name}-${packageInfo.version}.crate`
+      const destination = path.join(cargoRoot, filename)
+      const url = `https://crates.io/api/v1/crates/${packageInfo.name}/${packageInfo.version}/download`
+      log(`latexml cargo ${packageInfo.name} ${packageInfo.version}`)
+      execFileSync('curl', ['-fL', '--retry', '3', '--output', destination, url], { stdio: 'inherit' })
+      const digest = createHash('sha256').update(fs.readFileSync(destination)).digest('hex')
+      if (digest !== packageInfo.checksum) throw new Error(`Cargo crate hash mismatch: ${packageInfo.name} ${packageInfo.version}`)
+      cargoSources.push({ ...packageInfo, url, path: `latexml-cargo/${filename}` })
+    }
+    latexmlSource = {
+      repository: build.source.repository,
+      commit: build.source.commit,
+      path: 'latexml-oxide/',
+      kernelDumps: build.kernelDumps ?? [],
+      dependencies: (build.dependencies ?? []).map((dependency) => ({
+        name: dependency.name,
+        version: dependency.version,
+        source: dependency.source,
+        sourceArchive: dependency.sourceArchive ?? null,
+        license: dependency.license,
+        notices: dependency.notices ?? [],
+      })),
+      cargoSources,
+    }
+  } finally {
+    fs.rmSync(temp, { recursive: true, force: true })
+  }
+}
+
 // --- What this source corresponds to ------------------------------------------
 const artifacts = fs.existsSync(distDir)
   ? fs.readdirSync(distDir)
       // ICU data is compiled from libs/icu in the same tree, so it corresponds
       // to this source as much as a .wasm does.
-      .filter((f) => /\.(wasm|js|fmt)$/.test(f) || /^biber\.(data|build\.json)$/.test(f) || /^icudt[0-9]+[lb]\.dat\.gz$/.test(f))
+      .filter((f) => /\.(wasm|js|css|fmt)$/.test(f) || /^(biber|latexml)\.(data|build\.json)$/.test(f) || /^icudt[0-9]+[lb]\.dat\.gz$/.test(f))
       .sort()
       .map((f) => {
         const data = fs.readFileSync(path.join(distDir, f))
@@ -133,10 +240,18 @@ const manifest = {
   producedBy: 'tools/build-corresponding-source.mjs',
   repository: { commit, dirty, uncommittedBuildPaths: buildChanges, uncommittedOther: changed.length - buildChanges.length },
   texliveSource: { commit: texliveRef, repository: 'https://github.com/TeX-Live/texlive-source.git', path: 'texlive-source/' },
+  latexmlSource,
   toolchain: {
     emscripten: '3.1.46',
     dockerImage: 'emscripten/emsdk:3.1.46@sha256:2491bc4bf6caf8c41993660822341bc72759cb577363dfe0781f0a2d05f7d357',
     note: 'Runtime pieces linked from this image (musl libc, libc++, libc++abi, compiler-rt, dlmalloc) are Emscripten\'s; their source is at the pinned image digest and in the Emscripten project, and their notices are in repo/LICENSES/.',
+  },
+  // LaTeXML is built by a separate Docker image because its Rust/LLVM output
+  // requires a newer Emscripten SDK than the TeX engines.
+  latexmlToolchain: {
+    emscripten: '6.0.9',
+    dockerImage: 'emscripten/emsdk:6.0.9@sha256:96617f27fe16421588241def73908fd348a7f9d260440ed0d00b36dcf7a063cc',
+    rust: 'nightly-2026-08-02',
   },
   correspondsTo: artifacts,
   linkInventories: inventories.map((f) => `repo/receipts/${f}`),
@@ -145,11 +260,39 @@ const manifest = {
 fs.writeFileSync(path.join(staging, 'MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n')
 
 fs.copyFileSync('RELINK.md', path.join(staging, 'RELINK.md'))
+const latexmlRebuild = latexmlSource ? `
+For a LaTeXML rebuild, first reconstruct a writable Git checkout at the exact
+commit named by MANIFEST.json and latexml.build.json:
+
+    mkdir -p rebuild out
+    git clone --filter=blob:none --no-checkout \\
+      ${JSON.stringify(latexmlSource.repository)} rebuild/latexml-oxide
+    git -C rebuild/latexml-oxide checkout --detach \\
+      ${latexmlSource.commit}
+    docker buildx build --platform linux/amd64 --load \\
+      -f repo/wasm-build/Dockerfile.latexml -t librepaper-latexml-rebuild repo/
+    docker run --rm --platform linux/amd64 \\
+      -e LATEXML_SOURCE_DIR=/latexml-oxide -e LATEXML_DIST_DIR=/dist \\
+      -v "$PWD/rebuild/latexml-oxide:/latexml-oxide" \\
+      -v "$PWD/out:/dist" librepaper-latexml-rebuild
+
+The source checkout must be writable: the build generates format snapshots in
+it, and the build script requires its .git directory to validate the pinned
+commit. The archived latexml-oxide/ tree in this source bundle is retained
+for audit and comparison, but is a git archive without .git and must not
+be mounted as the build input. The latexml-dependencies/ and
+latexml-cargo/ files are verified source archives for audit or an offline
+manual rebuild; the Docker build command fetches the receipt's pinned sources
+from their declared URLs.
+` : ''
 fs.writeFileSync(path.join(staging, 'REBUILD.md'), `# Rebuilding these engines from this archive
 
 Everything needed is here: this repository's build layer under \`repo/\`, and the
-pinned TeX Live tree under \`texlive-source/\` — the tree the distributed binaries
-were compiled from, taken out of the build image rather than cloned again.
+pinned source trees under \`texlive-source/\` and (when LaTeXML is present)
+\`latexml-oxide/\`, \`latexml-dependencies/\`, and \`latexml-cargo/\`. TeX Live
+is the tree the TeX engines were compiled from; LaTeXML has its own pinned Rust
+source, native dependency archives, and Cargo crate sources recorded in
+MANIFEST.json.
 
     cp -r texlive-source repo/wasm-build/texlive-source
     docker buildx build --platform linux/amd64 --load \\
@@ -160,6 +303,11 @@ were compiled from, taken out of the build image rather than cloned again.
 The Dockerfile uses a \`texlive-source/\` tree in its build context when one is
 there, so the copy above is what makes the rebuild use this archive's source and
 not the network. \`out/\` then holds the engine binaries.
+
+${latexmlRebuild}
+The build uses Emscripten 6.0.9 and nightly Rust 2026-08-02, as recorded in
+MANIFEST.json and \`latexml.build.json\`. Do not substitute the TeX Live tree
+for the LaTeXML source.
 
 Compare them with \`MANIFEST.json\`, which records the SHA-256 of every artifact
 this source corresponds to:
@@ -177,7 +325,8 @@ sources and packaged modules and uses its separately pinned Emscripten 5.0.4
 tooling image. See MANIFEST.json biberSource for the archive hash.
 
 TeX toolchain: Emscripten 3.1.46, image digest in \`MANIFEST.json\`. The build pulls
-that exact digest, so a rebuild uses the same compiler.
+that exact digest, so a rebuild uses the same compiler. LaTeXML uses its separate
+Emscripten 6.0.9 image and nightly Rust pin recorded above.
 `)
 
 // --- Archive -------------------------------------------------------------------

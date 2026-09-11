@@ -28,6 +28,116 @@ const quiet = process.argv.includes('--quiet')
 const log = (...a) => { if (!quiet) console.error(...a) }
 
 const spec = JSON.parse(fs.readFileSync(path.join(root, 'linked-components.json'), 'utf8'))
+if (family === 'latexml') {
+  const receiptPath = path.join(distDir, 'latexml.build.json')
+  const mapPath = path.join(distDir, 'latexml.map')
+  if (!fs.existsSync(receiptPath)) throw new Error(`missing LaTeXML build receipt: ${receiptPath}`)
+  if (!fs.existsSync(mapPath)) throw new Error(`missing LaTeXML link map: ${mapPath}`)
+  const receipt = JSON.parse(fs.readFileSync(receiptPath, 'utf8'))
+  const map = fs.readFileSync(mapPath, 'utf8')
+  const digest = createHash('sha256').update(map).digest('hex')
+  if (!receipt.linkMap?.sha256) throw new Error('LaTeXML build receipt has no link-map hash')
+  if (receipt.linkMap.sha256 !== digest) throw new Error(`LaTeXML link map hash does not match receipt: ${digest}`)
+  if (receipt.toolchain?.emscripten !== '6.0.9') throw new Error('LaTeXML receipt does not identify Emscripten 6.0.9')
+  // lld's symbol table also contains names ending in `.a` (for example
+  // `.rodata.sqlite3LogEst.a`). Only paths identify archive inputs. The
+  // object paths are similarly restricted to paths so symbol names do not
+  // inflate the inventory.
+  const archives = [...new Set([...map.matchAll(/(?:^|[\s(])([^\s()]+(?:\.a|\.rlib))(?=[\s):]|$)/gm)].map((m) => m[1]).filter((item) => item.includes('/')))]
+  const objects = [...new Set([...map.matchAll(/(?:^|[\s(])([^\s()]+\.o)(?=[\s):]|$)/gm)].map((m) => m[1]).filter((item) => item.includes('/')))]
+  if (!archives.length && !objects.length) throw new Error('LaTeXML link map contains no archive or object inputs')
+  const linked = new Map()
+  const dependency = (name) => receipt.dependencies?.find((entry) => entry.name === name)
+  const add = (key, item, data) => {
+    if (!linked.has(key)) linked.set(key, { ...data, selectedAs: [] })
+    const entry = linked.get(key)
+    if (item.endsWith('.o')) {
+      entry.objectCount = (entry.objectCount ?? 0) + 1
+      // Keep representative map evidence without serializing tens of
+      // thousands of LTO object paths into the release receipt.
+      if (entry.selectedAs.length < 16) entry.selectedAs.push(item)
+    } else {
+      entry.selectedAs.push(item)
+    }
+  }
+  const classify = (item) => {
+    const lower = item.toLowerCase()
+    if (lower.includes('libxml2') || lower.includes('/libxml-')) {
+      const d = dependency('libxml2')
+      return ['libxml2', { kind: 'archive', component: 'libxml2', version: d?.version ?? null, license: d?.license ?? 'MIT', staticLinkObligation: 'notice', source: d?.source ?? 'latexml.build.json', notices: d?.notices ?? ['LICENSES/libxml2-Copyright.txt'] }]
+    }
+    if (lower.includes('libxslt') || lower.includes('/libxslt-') || lower.includes('libexslt')) {
+      const d = dependency('libxslt')
+      return ['libxslt', { kind: 'archive', component: 'libxslt/libexslt', version: d?.version ?? null, license: d?.license ?? 'MIT', staticLinkObligation: 'notice', source: d?.source ?? 'latexml.build.json', notices: d?.notices ?? ['LICENSES/libxslt-COPYING.txt'] }]
+    }
+    if (lower.includes('kpathsea')) {
+      const d = dependency('kpathsea')
+      return ['kpathsea', { kind: 'archive', component: 'kpathsea', version: d?.version ?? null, license: d?.license ?? 'LGPL-2.1-or-later', staticLinkObligation: 'lgpl-relink', source: d?.source ?? 'texlive-source/texk/kpathsea', notices: d?.notices ?? ['LICENSES/LGPL-2.1.txt'], relink: 'RELINK.md' }]
+    }
+    if (lower.includes('libmarpa')) {
+      const d = dependency('libmarpa-asf-sys')
+      return ['libmarpa', { kind: 'archive', component: 'libmarpa 8.6.2 (via libmarpa-asf-sys)', version: d?.version ?? '8.6.2', license: d?.license ?? 'MIT AND LGPL-2.1-or-later AND LGPL-3.0-or-later', staticLinkObligation: 'lgpl-relink', source: d?.source ?? 'latexml-cargo/libmarpa-asf-sys', notices: d?.notices ?? ['LICENSES/libmarpa-COPYING.txt', 'LICENSES/libmarpa-COPYING.LESSER.txt'], relink: 'RELINK.md' }]
+    }
+    if (lower.includes('sqlite3')) return ['sqlite3', { kind: 'archive', component: 'SQLite3 via libsqlite3-sys', license: 'MIT AND Public domain', staticLinkObligation: 'notice', source: 'latexml-cargo/libsqlite3-sys', notices: ['LICENSES/libsqlite3-sys-MIT.txt', 'THIRD_PARTY_NOTICES.md'] }]
+    if (lower.includes('mimalloc')) return ['mimalloc', { kind: 'archive', component: 'mimalloc', license: 'MIT', staticLinkObligation: 'notice', source: 'latexml-cargo/libmimalloc-sys', notices: ['LICENSES/mimalloc-MIT.txt', 'THIRD_PARTY_NOTICES.md'] }]
+    if (lower.includes('/emsdk/') || lower.includes('sysroot/')) return ['emscripten', { kind: 'archive', component: 'Emscripten 6.0.9 runtime', license: 'MIT AND University of Illinois/NCSA', staticLinkObligation: 'notice', source: receipt.toolchain.emscriptenImage, notices: ['LICENSES/Emscripten-6.0.9.txt'] }]
+    if (lower.includes('latexml-oxide')) return ['latexml-oxide', { kind: 'objects', component: 'latexml-oxide code and embedded resources', license: 'CC0-1.0/public domain', staticLinkObligation: 'notice', source: `${receipt.source?.repository}@${receipt.source?.commit}`, notices: ['LICENSES/CC0-1.0.txt', 'THIRD_PARTY_NOTICES.md'] }]
+    if (lower.includes('cargo-target') || lower.includes('/target/') || lower.endsWith('.rlib')) return ['cargo', { kind: 'objects', component: 'Rust/Cargo dependency graph (see latexml.build.json)', license: 'Per-crate licenses recorded in latexml.build.json', staticLinkObligation: 'notice', source: receipt.cargo?.lockfile?.path ?? 'latexml.build.json', notices: ['THIRD_PARTY_NOTICES.md'] }]
+    return null
+  }
+  for (const item of [...archives, ...objects]) {
+    // lld often prints archive members as bare object basenames, without the
+    // source path that appears for archives. Keep those members under the
+    // conservative Cargo/object graph entry; an unknown archive still fails
+    // because it identifies a separately linked component.
+    const hit = classify(item) ?? (item.endsWith('.o') ? classify(`/build/cargo-target/${item}`) : null)
+    if (!hit) throw new Error(`unclassified LaTeXML link-map input: ${item}`)
+    add(hit[0], item, hit[1])
+  }
+  // Emscripten's final LTO map commonly names only the merged Rust object;
+  // native archive members are then absent even though the build receipt
+  // records the native closure. Add those declared inputs with explicit
+  // receipt evidence rather than pretending the map listed their archives.
+  const receiptInput = (item, evidence = 'build-receipt') => {
+    const hit = classify(item)
+    if (!hit || linked.has(hit[0])) return
+    add(hit[0], evidence, { ...hit[1], evidence })
+  }
+  const cargoNames = new Set((receipt.cargo?.packages ?? []).map((entry) => typeof entry === 'string' ? entry : entry.name))
+  const declaredInput = (name, item) => { if (dependency(name)) receiptInput(item) }
+  declaredInput('libxml2', '/build/latexml/libxml2/libxml2.a')
+  declaredInput('libxslt', '/build/latexml/libxslt/libxslt.a')
+  declaredInput('kpathsea', '/build/latexml/texlive-source/texk/kpathsea/libkpathsea.a')
+  declaredInput('libmarpa-asf-sys', '/build/latexml-cargo/libmarpa/libmarpa.a')
+  if (receipt.source?.repository && receipt.source?.commit) receiptInput('/build/latexml-oxide/latexml')
+  if (cargoNames.has('libsqlite3-sys')) receiptInput('/build/latexml-cargo/sqlite3/libsqlite3.a')
+  if (cargoNames.has('libmimalloc-sys')) receiptInput('/build/latexml-cargo/mimalloc/libmimalloc.a')
+  receiptInput('/build/emsdk/sysroot/lib/libc.a')
+  if (receipt.cargo) receiptInput('/build/cargo-target/latexml-dependencies.rlib')
+  const artifact = (name) => {
+    const expected = receipt.artifacts?.[name]
+    const file = path.join(distDir, name)
+    if (!expected || !fs.existsSync(file)) throw new Error(`LaTeXML receipt/artifact missing: ${name}`)
+    const actual = createHash('sha256').update(fs.readFileSync(file)).digest('hex')
+    if (actual !== expected.sha256) throw new Error(`LaTeXML artifact hash does not match receipt: ${name}`)
+    return { bytes: fs.statSync(file).size, sha256: actual }
+  }
+  const artifacts = Object.fromEntries(['latexml.js', 'latexml.wasm', 'latexml.worker.js'].map((name) => [name, artifact(name)]))
+  const inventory = {
+    schemaVersion: 1, family: 'latexml',
+    combinedTerms: spec.families.latexml?.combinedTerms ?? 'CC0-1.0 AND MIT AND LGPL-2.1-or-later AND LGPL-3.0-or-later',
+    combinedTermsReason: spec.families.latexml?.combinedTermsReason ?? 'LaTeXML combines CC0 upstream code/resources with permissive native dependencies and statically linked LGPL kpathsea/libmarpa components; the Cargo graph is recorded conservatively in the build receipt.',
+    modules: [{ name: 'latexml', wasm: artifacts['latexml.wasm'], archives: archives.length, objects: objects.length, artifacts }],
+    linkMap: { name: 'latexml.map', bytes: fs.statSync(mapPath).size, sha256: digest }, cargo: receipt.cargo ?? null,
+    linked: [...linked.values()].map((entry) => ({ ...entry, selectedAs: [...new Set(entry.selectedAs)].sort() })).sort((a, b) => a.component.localeCompare(b.component)),
+    requiredNotices: [...new Set([...linked.values()].flatMap((entry) => entry.notices))].sort(),
+  }
+  const missing = inventory.requiredNotices.filter((notice) => !fs.existsSync(path.join(root, notice)))
+  if (missing.length) throw new Error(`missing notice file(s) for LaTeXML: ${missing.join(', ')}`)
+  if (outPath) { fs.mkdirSync(path.dirname(path.resolve(outPath)), { recursive: true }); fs.writeFileSync(outPath, JSON.stringify(inventory, null, 2) + '\n') }
+  log(`family   latexml`); log(`linked   ${inventory.linked.length} components from latexml.map`); if (outPath) log(`written  ${outPath}`)
+  process.exit(0)
+}
 if (family === 'biber') {
   const receipt = JSON.parse(fs.readFileSync(path.join(distDir, 'biber.build.json')))
   for (const [name, expected] of Object.entries({ ...receipt.artifacts, 'biber.map': receipt.linkMap })) {

@@ -8,8 +8,10 @@ repository's own MIT license is in [`LICENSE`](../LICENSE).
 | --- | --- |
 | `Aladdin-MD5.txt` | The Aladdin/zlib-style notice on `texk/web2c/libmd5/md5.c`, compiled into pdfTeX. |
 | `Apache-2.0.txt` | Apache-2.0 components in the Emscripten sysroot (libc++, libc++abi, compiler-rt), used with the LLVM exception. |
+| `CC0-1.0.txt` | The pinned latexml-oxide source and its embedded LaTeXML resources. |
 | `BibTeX.txt` | BibTeX 0.99d and the separately identified WasmTex/Web2C port. |
 | `Emscripten-3.1.46.txt` | Emscripten-generated runtime code and Emscripten notices. |
+| `Emscripten-6.0.9.txt` | Emscripten 6.0.9-generated LaTeXML runtime code and notices. |
 | `FreeType.txt` | FreeType's alternative FreeType License text. The XeTeX release selects GPL-2.0-only instead because Xpdf fixes that combined unit at GPLv2. |
 | `GPL-2.0.txt` | GPL-2.0 and GPL-2.0-or-later engine components. |
 | `GPL-3.0.txt` | GPL version 3 text, copied byte-for-byte from the pinned Xpdf 4.06 `COPYING3`. |
@@ -18,6 +20,11 @@ repository's own MIT license is in [`LICENSE`](../LICENSE).
 | `ICU-68.2.txt` | ICU 68.2 code, data, and bundled third-party notices. |
 | `LGPL-2.0.txt` | LGPL-2.0 components such as zziplib when that option is used. |
 | `LGPL-2.1.txt` | LGPL-2.1 and LGPL-2.1-or-later components such as kpathsea. |
+| `libmarpa-COPYING.LESSER.txt` | The LGPL-3.0-or-later `marpa_tavl.c` notice in libmarpa 8.6.2. |
+| `libmarpa-COPYING.txt` | The libmarpa 8.6.2 MIT and LGPL notices. |
+| `libsqlite3-sys-MIT.txt` | The MIT notice for the bundled `libsqlite3-sys` Rust wrapper. |
+| `libxml2-Copyright.txt` | The exact libxml2 2.13.5 copyright and permission notice. |
+| `libxslt-COPYING.txt` | The exact libxslt 1.1.42 and libexslt copyright notice. |
 | `libpng.txt` | The bundled/ported libpng implementation. |
 | `LLVM-exception.txt` | The LLVM exception used with Apache-2.0 for libc++, libc++abi, and compiler-rt. |
 | `Lua-5.3.txt` | Lua 5.3.6 embedded in LuaHBTeX. |
@@ -25,6 +32,7 @@ repository's own MIT license is in [`LICENSE`](../LICENSE).
 | LPPL 1.3c | LaTeX formats and packages that identify LPPL 1.3c as their license. Use the exact package notice; authoritative text: <https://www.latex-project.org/lppl/lppl-1-3c/>. |
 | `MakeIndex.txt` | The makeindex source and WasmTex WebAssembly port. |
 | `musl.txt` | musl libc linked from the Emscripten sysroot; the complete component notice is also in corresponding source. |
+| `mimalloc-MIT.txt` | The MIT notice for the bundled mimalloc Rust/native allocator. |
 | `SyncTeX.txt` | The reference SyncTeX algorithms ported to TypeScript. |
 | `TECkit.txt` | TECkit's CPL/LGPL licensing notice. |
 | `WasmTex.txt` | The MIT-licensed WasmTex build layer this repository was seeded from. See [`../README.md`](../README.md). |

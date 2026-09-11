@@ -1,0 +1,30 @@
+[package]
+name = "latexml-wasm"
+version = "0.1.0"
+edition = "2024"
+publish = false
+license = "MIT"
+description = "Single-thread browser ABI for latexml-oxide"
+build = "build.rs"
+autolib = false
+
+[[bin]]
+name = "latexml_wasm"
+path = "src/lib.rs"
+
+[dependencies]
+latexml = { path = "../../../latexml-oxide/latexml_oxide", default-features = false }
+latexml_core = { path = "../../../latexml-oxide/latexml_core" }
+latexml_contrib = { path = "../../../latexml-oxide/latexml_contrib" }
+latexml_package = { path = "../../../latexml-oxide/latexml_package" }
+latexml_post = { path = "../../../latexml-oxide/latexml_post" }
+
+[build-dependencies]
+cc = "1"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
