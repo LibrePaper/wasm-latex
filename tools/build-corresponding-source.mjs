@@ -176,7 +176,10 @@ if (fs.existsSync(latexmlReceiptPath)) {
       fs.mkdirSync(cargoRoot, { recursive: true })
       const filename = `${packageInfo.name}-${packageInfo.version}.crate`
       const destination = path.join(cargoRoot, filename)
-      const url = `https://crates.io/api/v1/crates/${packageInfo.name}/${packageInfo.version}/download`
+      // Use the registry's immutable archive host. The crates.io API download
+      // endpoint is a redirect service and can be rejected by restricted
+      // release environments even though the canonical crate is available.
+      const url = `https://static.crates.io/crates/${packageInfo.name}/${packageInfo.name}-${packageInfo.version}.crate`
       log(`latexml cargo ${packageInfo.name} ${packageInfo.version}`)
       execFileSync('curl', ['-fL', '--retry', '3', '--output', destination, url], { stdio: 'inherit' })
       const digest = createHash('sha256').update(fs.readFileSync(destination)).digest('hex')

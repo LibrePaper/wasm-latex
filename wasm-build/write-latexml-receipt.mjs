@@ -99,7 +99,7 @@ const cargoDependencies = cargoLock
   : []
 const marpa = cargoDependencies.find((entry) => entry.name === 'libmarpa-asf-sys')
 if (marpa) {
-  const marpaUrl = `https://crates.io/api/v1/crates/libmarpa-asf-sys/${marpa.version}/download`
+  const marpaUrl = `https://static.crates.io/crates/libmarpa-asf-sys/libmarpa-asf-sys-${marpa.version}.crate`
   dependencies.push(marpa.checksum
     ? sourceArchive('libmarpa-asf-sys', marpa.version, marpaUrl, marpa.checksum,
       'MIT AND LGPL-2.1-or-later AND LGPL-3.0-or-later',
