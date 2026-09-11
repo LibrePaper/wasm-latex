@@ -157,6 +157,24 @@ if (fs.existsSync(latexmlReceiptPath)) {
       }
     }
 
+    // LaTeXML pins kpathsea independently of the PDF engines. Include the
+    // same sparse source selection used by its build driver.
+    const kpse = (build.dependencies ?? []).find((dependency) => dependency.name === 'kpathsea')
+    if (!kpse?.source || !/^[a-f0-9]{40}$/.test(kpse.version || '')) {
+      throw new Error('LaTeXML receipt must pin the kpathsea source commit')
+    }
+    const kpseCheckout = path.join(temp, 'kpathsea')
+    sh('git', ['init', '-q', kpseCheckout])
+    sh('git', ['-C', kpseCheckout, 'remote', 'add', 'origin', kpse.source])
+    sh('git', ['-C', kpseCheckout, 'sparse-checkout', 'init', '--cone'])
+    sh('git', ['-C', kpseCheckout, 'sparse-checkout', 'set', 'texk/kpathsea', 'build-aux', 'm4'])
+    sh('git', ['-C', kpseCheckout, 'fetch', '--depth', '1', '--filter=blob:none', 'origin', kpse.version])
+    sh('git', ['-C', kpseCheckout, 'checkout', '--detach', 'FETCH_HEAD'])
+    fs.cpSync(kpseCheckout, path.join(staging, 'latexml-kpathsea'), {
+      recursive: true,
+      filter: (entry) => path.basename(entry) !== '.git',
+    })
+
     const dependencyRoot = path.join(staging, 'latexml-dependencies')
     for (const dependency of build.dependencies ?? []) {
       const archiveSpec = dependency.sourceArchive
@@ -192,11 +210,13 @@ if (fs.existsSync(latexmlReceiptPath)) {
       repository: build.source.repository,
       commit: build.source.commit,
       path: 'latexml-oxide/',
+      kpathseaSource: { repository: kpse.source, commit: kpse.version, path: 'latexml-kpathsea/' },
       kernelDumps: build.kernelDumps ?? [],
       dependencies: (build.dependencies ?? []).map((dependency) => ({
         name: dependency.name,
         version: dependency.version,
         source: dependency.source,
+        sourcePath: dependency.name === 'kpathsea' ? 'latexml-kpathsea/texk/kpathsea' : dependency.sourcePath ?? null,
         sourceArchive: dependency.sourceArchive ?? null,
         license: dependency.license,
         notices: dependency.notices ?? [],
@@ -285,7 +305,9 @@ The source checkout must be writable: the build generates format snapshots in
 it, and the build script requires its .git directory to validate the pinned
 commit. The archived latexml-oxide/ tree in this source bundle is retained
 for audit and comparison, but is a git archive without .git and must not
-be mounted as the build input. The latexml-dependencies/ and
+be mounted as the build input. The latexml-kpathsea/ tree contains the separate
+kpathsea revision recorded in the LaTeXML receipt, including its build-aux
+and m4 inputs; the PDF engines use texlive-source/. The latexml-dependencies/ and
 latexml-cargo/ files are verified source archives for audit or an offline
 manual rebuild; the Docker build command fetches the receipt's pinned sources
 from their declared URLs.
