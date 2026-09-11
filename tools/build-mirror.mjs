@@ -29,6 +29,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readTar } from '../wasm-build/kpse-resolve.cjs'
+import { writeSidecar } from './mirror-brotli.mjs'
 
 const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex')
 
@@ -337,12 +338,26 @@ export function buildMirror({ stagedDir, expectedDigest, outDir }) {
   const releaseDir = `engines/${engineRelease}`
 
   const files = {}
+  let sidecars = 0
+  let sidecarBytes = 0
+  let plainBytes = 0
   for (const [name, bytes] of payload) {
     const url = `${releaseDir}/${name}`
     const dest = path.join(outDir, url)
     fs.mkdirSync(path.dirname(dest), { recursive: true })
     if (!fs.existsSync(dest) || sha256(fs.readFileSync(dest)) !== sha256(bytes)) fs.writeFileSync(dest, bytes)
     files[name] = { url, sha256: sha256(bytes), size: bytes.length }
+    // The brotli sidecar is a transport representation of the bytes just
+    // written, not a payload file: it stays out of `files` (and so out of
+    // the release digest) exactly like the `_headers` the deploy writes.
+    // tools/mirror-worker.js serves it; tools/check-mirror.mjs proves it
+    // still decompresses to what `files` pins.
+    const encoded = writeSidecar(dest, bytes)
+    if (encoded) {
+      sidecars++
+      sidecarBytes += encoded
+      plainBytes += bytes.length
+    }
   }
 
   const bibliography = bibliographyIdentity(payload)
@@ -382,7 +397,7 @@ export function buildMirror({ stagedDir, expectedDigest, outDir }) {
   manifest.releases[releaseId] = entry
   manifest.default_release = releaseId
   writeManifest(outDir, manifest)
-  return { releaseId, entry, manifest }
+  return { releaseId, entry, manifest, brotli: { count: sidecars, bytes: sidecarBytes, from: plainBytes } }
 }
 
 /* --------------------------------------------------------------------- run */
@@ -396,11 +411,14 @@ function main() {
   const stagedDir = path.resolve(arg('staged', 'staged'))
   const expectedDigest = arg('sha256', null)
   const outDir = path.resolve(arg('out', 'mirror'))
-  const { releaseId, entry } = buildMirror({ stagedDir, expectedDigest, outDir })
+  const { releaseId, entry, brotli } = buildMirror({ stagedDir, expectedDigest, outDir })
   console.log(`build-mirror: release ${releaseId} written to ${path.relative(process.cwd(), outDir)}`)
   console.log(`build-mirror: engines ${Object.keys(entry.engines).join(', ')}`)
   if (entry.bundles) {
     console.log(`build-mirror: bundles ${entry.bundles.count}, ${(entry.bundles.bytes / 1e6).toFixed(1)} MB, snapshot ${entry.bundles.snapshot}`)
+  }
+  if (brotli.count) {
+    console.log(`build-mirror: brotli ${brotli.count} sidecars, ${(brotli.from / 1e6).toFixed(1)} MB -> ${(brotli.bytes / 1e6).toFixed(1)} MB`)
   }
 }
 

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { spawnSync } from 'node:child_process'
+import { brotliCompressSync, brotliDecompressSync } from 'node:zlib'
 
 const root = fs.mkdtempSync(path.join(tmpdir(), 'wasm-latex-mirror-'))
 const stage = fileURLToPath(new URL('./stage-release.mjs', import.meta.url))
@@ -165,7 +166,11 @@ try {
   })
   const binary = { name: 'pdftex.wasm', bytes: Buffer.byteLength('binary'), sha256: hash('binary') }
   write('engines/pdftex.wasm', 'binary')
-  write('engines/pdftex.fmt', 'format')
+  // Over tools/mirror-brotli.mjs's 4 KiB floor and highly compressible, so
+  // this is the fixture file that must come out of the mirror with a `.br`
+  // sidecar beside it.
+  const FMT = Buffer.from('format '.repeat(2000))
+  write('engines/pdftex.fmt', FMT)
 
   for (const name of ['LICENSE', 'THIRD_PARTY_NOTICES.md', 'LICENSES/GPL.txt', 'RELINK.md']) write(name, 'fixture')
   write('linked-components.json', {})
@@ -175,7 +180,7 @@ try {
     linked: [{ component: 'fixture', license: 'GPL-2.0-only', source: 'source/' }],
     requiredNotices: ['LICENSES/GPL.txt'],
   })
-  write('receipts/FORMAT-RECEIPT.pdftex.json', { format: { sha256: hash('format') }, inputs: [{ name: 'latex.ltx' }] })
+  write('receipts/FORMAT-RECEIPT.pdftex.json', { format: { sha256: hash(FMT) }, inputs: [{ name: 'latex.ltx' }] })
   write('receipts/SOURCE-RECEIPT.json', { sha256: 'a'.repeat(64), dirty: false, correspondsTo: [binary, ...jsArtifacts] })
 
   writeBundleFixture('bundle-src')
@@ -212,6 +217,24 @@ try {
   assert.equal(entry.bibliography.control_file, '3.11')
   assert.equal(entry.bibliography.biblatex, '3.22')
   assert.deepEqual(entry.bibliography.biber.compatible, ['2.21'])
+
+  // Brotli sidecars: written beside the file they represent, smaller than
+  // it, decompressing back to it exactly, and absent from the manifest --
+  // they are a transport representation, not a payload file, so naming one
+  // in `files` would put it inside the release digest.
+  const fmtPath = path.join(root, 'mirror', entry.files['pdftex.fmt'].url)
+  const fmtSidecar = `${fmtPath}.br`
+  assert.ok(fs.existsSync(fmtSidecar), 'a compressible engine file must get a .br sidecar')
+  assert.ok(fs.statSync(fmtSidecar).size < fs.statSync(fmtPath).size, 'a sidecar must be smaller than its file')
+  assert.deepEqual(brotliDecompressSync(fs.readFileSync(fmtSidecar)), fs.readFileSync(fmtPath),
+    'a sidecar must decompress to the exact published bytes')
+  assert.ok(!Object.keys(entry.files).some((name) => name.endsWith('.br')),
+    'sidecars must not be named in the release manifest')
+  // ... and a file under the size floor must not get one, so the mirror does
+  // not fill up with sidecars that save nothing.
+  assert.ok(!fs.existsSync(path.join(root, 'mirror', entry.files['pdftex.wasm'].url + '.br')),
+    'a file below the size floor must not get a sidecar')
+  console.log('build-mirror: brotli sidecar written, verified and kept out of the manifest')
 
   console.log('build-mirror: manifest shape, engine advertisement, bundles rewrite, and bibliography identity checked')
 
@@ -256,6 +279,21 @@ try {
   assert.match(failing.stderr, /core/, 'the failure must name the corrupted bundle')
   fs.writeFileSync(coreTarPath, coreBytes)
   console.log('check-mirror: fails on a corrupted bundle tar')
+
+  // ... and on a sidecar that no longer decompresses to its file: nothing in
+  // the manifest covers a .br, so this check is the only thing standing
+  // between a corrupted sidecar and a browser being served it.
+  const goodSidecar = fs.readFileSync(fmtSidecar)
+  fs.writeFileSync(fmtSidecar, brotliCompressSync(Buffer.from('not the published bytes')))
+  const badSidecar = runCheckMirror('mirror')
+  assert.notEqual(badSidecar.status, 0, 'a sidecar that decompresses to the wrong bytes must fail check-mirror')
+  assert.match(badSidecar.stderr, /brotli sidecar/, 'the failure must name the sidecar')
+  fs.writeFileSync(fmtSidecar, Buffer.from('truncated'))
+  const unreadable = runCheckMirror('mirror')
+  assert.notEqual(unreadable.status, 0, 'an unreadable sidecar must fail check-mirror')
+  fs.writeFileSync(fmtSidecar, goodSidecar)
+  assert.equal(runCheckMirror('mirror').status, 0, 'restoring the sidecar must restore the check')
+  console.log('check-mirror: fails on a corrupted or unreadable brotli sidecar')
 
   // Biber is a complete release family: glue, worker, WASM, data and build
   // identity must all survive staging and be discoverable from the mirror.

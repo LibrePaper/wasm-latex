@@ -1,0 +1,24 @@
+{
+  // Deploy configuration for the mirror Worker. `make push` still passes
+  // --name and --compatibility-date so the Makefile's WORKER/COMPAT_DATE stay
+  // the ones you edit; this file exists for the one setting the CLI has no
+  // flag for -- assets.run_worker_first -- plus the script entry point and
+  // the binding name that go with it.
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "latex",
+  "main": "tools/mirror-worker.js",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "mirror",
+    "binding": "ASSETS",
+    // Static assets are served before the Worker runs unless a path is listed
+    // here, and every path the Worker cares about IS a static asset -- so
+    // without this the brotli sidecars would never be reached. Scoped to the
+    // release payload: manifest.json is small, uncached and sidecar-free, and
+    // has no reason to pay for a Worker invocation.
+    "run_worker_first": ["/engines/*"]
+  },
+  // Nothing here calls out, keeps state, or needs a trace; the mirror is
+  // static files plus one content-encoding decision.
+  "observability": { "enabled": false }
+}

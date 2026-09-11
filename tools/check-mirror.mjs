@@ -12,15 +12,22 @@
 // release has a complete pdfTeX engine, every engine file is on disk with a
 // matching digest and size, bundles.json's own digest matches the release
 // entry, and every bundle tar it names is on disk with a matching digest.
-// An https URL is checked for shape only -- manifest.json parses, format is
+// An https URL is checked for shape -- manifest.json parses, format is
 // supported, a default release with pdfTeX is named -- fetched with
 // `no-store` so a stale edge cache cannot pass a check that would fail on
 // what a browser actually gets; verifying every asset over the network on
-// every check is what the browser smoke test is for, not this.
+// every check is what the browser smoke test is for, not this. It also
+// downloads the single largest engine file and checks that what comes back
+// over the wire still hashes to the digest the manifest published, which is
+// the one thing a deployed mirror can get wrong that a local one cannot:
+// tools/mirror-worker.js hands the edge a pre-encoded body, and an edge that
+// re-encoded it instead of passing it through would serve every browser a
+// WASM module wrapped in a second layer of compression.
 
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
+import { verify as verifyBrotli } from './mirror-brotli.mjs'
 
 const base = process.argv[2] || 'mirror'
 const isUrl = /^https?:\/\//.test(base)
@@ -33,6 +40,28 @@ function checkShape(manifest) {
   return release
 }
 
+/// Download the largest file the default release advertises and prove the
+/// bytes that arrive are the bytes the manifest pins. `fetch` decodes
+/// `Content-Encoding` for us, so a body that survives this hashed the same
+/// after decoding -- a doubly-encoded response would not.
+async function checkEncoding(base, release) {
+  const candidates = Object.values(release.files || {})
+  if (!candidates.length) throw new Error('release names no files')
+  const biggest = candidates.reduce((a, b) => (b.size > a.size ? b : a))
+  const url = `${base.replace(/\/$/, '')}/${biggest.url}`
+  const response = await fetch(url, { signal: AbortSignal.timeout(300000), cache: 'no-store' })
+  if (!response.ok) throw new Error(`${biggest.url} returned HTTP ${response.status}`)
+  const encoding = response.headers.get('content-encoding') || 'identity'
+  const bytes = Buffer.from(await response.arrayBuffer())
+  if (bytes.length !== biggest.size || sha256(bytes) !== biggest.sha256) {
+    throw new Error(
+      `${biggest.url} does not decode to what the manifest published ` +
+      `(${bytes.length} bytes, content-encoding ${encoding}, expected ${biggest.size}): ` +
+      'the edge is serving a representation this mirror did not build')
+  }
+  console.log(`  wire:    ${biggest.url.split('/').pop()} ${(biggest.size / 1e6).toFixed(1)} MB, content-encoding ${encoding}, digest matches`)
+}
+
 async function main() {
   let manifest
   if (isUrl) {
@@ -42,7 +71,8 @@ async function main() {
     })
     if (!response.ok) throw new Error(`manifest.json returned HTTP ${response.status}`)
     manifest = await response.json()
-    checkShape(manifest)
+    const release = checkShape(manifest)
+    await checkEncoding(base, release)
     console.log(`mirror ready: ${base} (${manifest.default_release}, format ${manifest.format})`)
     return
   }
@@ -98,9 +128,20 @@ async function main() {
     if (!index.bundles?.[bundleName]) throw new Error(`bundles.json names unknown bundle "${bundleName}" in its files map`)
   }
 
+  // Brotli sidecars: a `.br` is served in place of the file it sits beside
+  // (tools/mirror-worker.js), so one that does not decompress back to those
+  // exact bytes would hand a browser something the manifest never published.
+  // It is the only content in the mirror no digest in the manifest covers,
+  // which is exactly why it is checked here instead.
+  const brotli = verifyBrotli(dir)
+  if (brotli.problems.length) {
+    throw new Error(`brotli sidecar: ${brotli.problems[0]}${brotli.problems.length > 1 ? ` (+${brotli.problems.length - 1} more)` : ''}`)
+  }
+
   console.log(`mirror ready: ${dir} (${manifest.default_release}, format ${manifest.format})`)
   console.log(`  engines: ${Object.keys(release.engines).join(', ')}`)
   console.log(`  bundles: ${bundleNames.length}, ${(release.bundles.bytes / 1e6).toFixed(1)} MB, snapshot ${release.bundles.snapshot}`)
+  console.log(`  brotli:  ${brotli.checked} sidecars verified`)
 }
 
 main().catch((error) => {
