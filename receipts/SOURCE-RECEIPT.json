@@ -5,14 +5,39 @@
     "bytes": 96739222
   },
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-1aeca95be759-source.tar.xz",
-  "bytes": 196833048,
-  "sha256": "257f7a42af7f20292e072d6d6d8c8d8585ce3c0f6c32264d4f5e2ccd67127383",
-  "repositoryCommit": "1aeca95be7595b2ce679cf7dcb582de64058b024",
+  "archive": "librepaper-wasm-latex-11b430bbfefb-source.tar.xz",
+  "bytes": 248526916,
+  "sha256": "e4687c9293cfc076c618907a3615d9fe9e14dcb8082842bc523dbda44105315b",
+  "repositoryCommit": "11b430bbfefb1ec1a79e7dfb6346f7fc5f9121d0",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
   "correspondsTo": [
+    {
+      "name": "LaTeXML-blue.css",
+      "bytes": 765,
+      "sha256": "5f2743950c78e3d09fda3a4d26447026b89e0f6934b5a052d372d6a9153c5468"
+    },
+    {
+      "name": "LaTeXML-marginpar.css",
+      "bytes": 1092,
+      "sha256": "45e4e0be782bccb1853a907b57ec2ddd0ed906fcf1a0e3ad66af962b6605c033"
+    },
+    {
+      "name": "LaTeXML-navbar-left.css",
+      "bytes": 516,
+      "sha256": "1ebb0c948a47de03f9ff666e65be2ce1d02738ec9ffb163206569c62a144ace6"
+    },
+    {
+      "name": "LaTeXML-navbar-right.css",
+      "bytes": 433,
+      "sha256": "23a8acef9e92734527e9ddad5dd2fbe44866cba6b0d8e4230dd59ae7fa6d319f"
+    },
+    {
+      "name": "LaTeXML.css",
+      "bytes": 31973,
+      "sha256": "866c2330148cf3a2a10119e209edbdb9794d1fab8029c4046d1e8393c2dd07fb"
+    },
     {
       "name": "biber.build.json",
       "bytes": 14697,
@@ -99,24 +124,69 @@
       "sha256": "f8b93168aa57c42af958a887fc8a8346abe8237c2b1c9a2022b58c99d1912666"
     },
     {
-      "name": "luatex-resolver-evidence.js",
-      "bytes": 582,
-      "sha256": "0e513d7f391df62baf0c655c6bf9952bafebb056e492bd30726d04b64d4d6a8a"
+      "name": "latexml.build.json",
+      "bytes": 42122,
+      "sha256": "b72e0606c5bd38c45d49c29f93d7cab7df27e3bc703eb0281a13eaa6615d7135"
     },
     {
-      "name": "luatex.js",
-      "bytes": 119541,
-      "sha256": "82deadb961629cf2dd6d20915e2fb867fc0e58ea5979bc971c3855e325737ead"
+      "name": "latexml.css",
+      "bytes": 31973,
+      "sha256": "866c2330148cf3a2a10119e209edbdb9794d1fab8029c4046d1e8393c2dd07fb"
     },
     {
-      "name": "luatex.wasm",
-      "bytes": 6605235,
-      "sha256": "05b387ff2c91a82e9f7e20295db8d9b3a512f206d01761f46365221409cfe827"
+      "name": "latexml.js",
+      "bytes": 81002,
+      "sha256": "461cb4aca6b0d8e4dfe2276e4edd8c623288c710c416d1f4f7d6083a05faa449"
     },
     {
-      "name": "luatex.worker.js",
-      "bytes": 24740,
-      "sha256": "12d6d976a7bb7ceea7ba52a732dc4f1db60dc56d9df1d59576c2e0f9dc998e5c"
+      "name": "latexml.wasm",
+      "bytes": 21694080,
+      "sha256": "b2d4ff37ab1ce343f2b9c50ca9d846ab39d720006c7a32e5e942571e3fbd1830"
+    },
+    {
+      "name": "latexml.worker.js",
+      "bytes": 15293,
+      "sha256": "fef3d7f857a8e3abec35dfb8c3185a9b548cfdb9e60013b4f7c61d3ef4984961"
+    },
+    {
+      "name": "ltx-amsart.css",
+      "bytes": 1738,
+      "sha256": "a98adac94883095cc8a12a7d066b502ee59a4be655860431d375ec85c9d52818"
+    },
+    {
+      "name": "ltx-apj.css",
+      "bytes": 1403,
+      "sha256": "29007119fad7fd187f82ef9fce9a348cef9b278654824aac5e5b4e11d31b35de"
+    },
+    {
+      "name": "ltx-article.css",
+      "bytes": 3259,
+      "sha256": "146bf8ab4d9609e4940768e53d004239729b4c36cdaf0a73ec44d15b84c6822b"
+    },
+    {
+      "name": "ltx-book.css",
+      "bytes": 3246,
+      "sha256": "7d064457b8af8970e5e9176297b44f5d7218b121bbfe966acbf99e82c756aa58"
+    },
+    {
+      "name": "ltx-listings.css",
+      "bytes": 87,
+      "sha256": "e20ea111654bab224295f21f8d31e02d9e7cf57953dc332d440b0ca620485919"
+    },
+    {
+      "name": "ltx-report.css",
+      "bytes": 3281,
+      "sha256": "a144dd190af24d1092dfd30003c2b49d84d530cfd18c08baa92ed91d4b2bd837"
+    },
+    {
+      "name": "ltx-svjour.css",
+      "bytes": 24,
+      "sha256": "aeabdaa716bb74fc94173473ee15961297d706bc3c7cb5f980d6b994073d4565"
+    },
+    {
+      "name": "ltx-ulem.css",
+      "bytes": 438,
+      "sha256": "59e77321a43b887805206ef2ac37f244b9ffd667860009b4398e9398426281d9"
     },
     {
       "name": "makeindex.js",
