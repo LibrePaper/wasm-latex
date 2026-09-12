@@ -30,11 +30,11 @@ try {
     const {compile} = await import('/app/src/lib/latex/html.js');
     const source = String.raw\`\\documentclass{article}
 \\usepackage{graphicx}
-\\newcommand{\\picture}{\\includegraphics[width=0.24\\linewidth]{pixel.png}}
+\\newcommand{\\sizedgraphic}{\\includegraphics[width=0.24\\linewidth]{pixel.png}}
 \\begin{document}
 \\includegraphics[width=0.12\\linewidth]{pixel.png}
-\\picture
-\\begin{minipage}{0.5\\linewidth}\\picture\\end{minipage}
+\\sizedgraphic
+\\begin{minipage}{0.5\\linewidth}\\sizedgraphic\\end{minipage}
 \\end{document}\`;
     const png = Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+aJXcAAAAASUVORK5CYII='), c => c.charCodeAt(0));
     const output = await compile({main:'main.tex', texts:{'main.tex':source}, assets:{'pixel.png':png}}, {base:location.origin+'/mirror/'});
