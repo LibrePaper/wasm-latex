@@ -129,6 +129,21 @@ directly from the deployed Cloudflare Worker):
 
 `make push`'s `mirror/_headers` (`Makefile`) implements exactly this table.
 
+### Retention and platform limits
+
+The mirror contains published build releases and their receipts only. It does
+not accept, retain, or log user documents, compiler inputs, compiler outputs,
+or request bodies. A release build is published as immutable static assets;
+the deployment keeps only releases referenced by the current manifest.
+No release beyond the one referenced by the current LibrePaper build is
+promised to remain available.
+
+As verified on September 11, 2026, Cloudflare's Workers limits allow 20,000 files on the Free plan and
+100,000 on paid plans, with a 25 MiB maximum individual asset. Static asset
+requests are free and unlimited. See the official [Workers limits](https://developers.cloudflare.com/workers/platform/limits/)
+and [Static Assets billing and limitations](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/)
+pages when sizing a release.
+
 ### Brotli
 
 Every engine file over 4 KiB that brotli can shrink below 90% of its size
