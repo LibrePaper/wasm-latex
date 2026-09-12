@@ -70,17 +70,16 @@ export default {
     if (tag) headers.set('ETag', tag.startsWith('W/') ? tag : `W/${tag}`)
     else headers.delete('ETag')
     // Length belongs to the encoded body, and it is known: the sidecar is a
-    // static file the asset server already sized. Setting it explicitly is
-    // also what keeps a runtime from treating the response as unsized and
-    // compressing it a second time.
+    // static file the asset server already sized. encodeBody below tells the
+    // runtime that these bytes have already been compressed.
     const length = encoded.headers.get('Content-Length')
     if (length) headers.set('Content-Length', length)
     else headers.delete('Content-Length')
 
     if (request.method === 'HEAD') {
       if (encoded.body) await encoded.body.cancel()
-      return new Response(null, { status: 200, headers })
+      return new Response(null, { status: 200, headers, encodeBody: 'manual' })
     }
-    return new Response(encoded.body, { status: 200, headers })
+    return new Response(encoded.body, { status: 200, headers, encodeBody: 'manual' })
   },
 }
