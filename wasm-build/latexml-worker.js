@@ -7,6 +7,7 @@
 importScripts("kpse-resolve.js", "bundle-mode.js", "latexml.js");
 
 const WORK_ROOT = "/work";
+const OUTPUT_ROOT = "/output";
 const TEXMF_ROOT = "/texmf";
 
 let moduleInstance;
@@ -146,7 +147,17 @@ function assetDataUrl(path) {
   const candidates = [normalizeProjectPath(`${base}/${requested}`), normalizeProjectPath(requested)];
   let bytes;
   let name;
+  // The graphics processor owns output names and dimensions. Package the
+  // exact output it referenced, including copied or converted resources.
+  const outputName = normalizeProjectPath(requested);
+  if (outputName) {
+    try {
+      bytes = moduleInstance.FS.readFile(`${OUTPUT_ROOT}/${outputName}`, { encoding: "binary" });
+      name = outputName;
+    } catch (_) { /* A source reference may still name a project asset. */ }
+  }
   for (const candidate of candidates) {
+    if (bytes) break;
     if (projectFiles.has(candidate)) {
       bytes = projectFiles.get(candidate);
       name = candidate;
@@ -350,6 +361,7 @@ self.onmessage = function ({ data }) {
       }
     } else if (cmd === "flushcache") {
       clearWorkDirectory();
+      clearWorkDirectory(OUTPUT_ROOT);
       moduleInstance._clear_files();
       projectFiles.clear();
       self.postMessage({ result: "ok", cmd: "flushcache" });

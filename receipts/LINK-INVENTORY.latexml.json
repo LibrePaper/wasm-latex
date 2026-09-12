@@ -7,8 +7,8 @@
     {
       "name": "latexml",
       "wasm": {
-        "bytes": 21694080,
-        "sha256": "b2d4ff37ab1ce343f2b9c50ca9d846ab39d720006c7a32e5e942571e3fbd1830"
+        "bytes": 21694350,
+        "sha256": "9d2eaea323dfa8d08f609a00d59144cc9098b6bec3af9d05d27edda6e12400db"
       },
       "archives": 0,
       "objects": 1,
@@ -18,20 +18,20 @@
           "sha256": "461cb4aca6b0d8e4dfe2276e4edd8c623288c710c416d1f4f7d6083a05faa449"
         },
         "latexml.wasm": {
-          "bytes": 21694080,
-          "sha256": "b2d4ff37ab1ce343f2b9c50ca9d846ab39d720006c7a32e5e942571e3fbd1830"
+          "bytes": 21694350,
+          "sha256": "9d2eaea323dfa8d08f609a00d59144cc9098b6bec3af9d05d27edda6e12400db"
         },
         "latexml.worker.js": {
-          "bytes": 15293,
-          "sha256": "fef3d7f857a8e3abec35dfb8c3185a9b548cfdb9e60013b4f7c61d3ef4984961"
+          "bytes": 15821,
+          "sha256": "5f0627d21b23177d4ab9fe36fda79e9f66be7dc280ec53b3ccc64b472ac0c0c1"
         }
       }
     }
   ],
   "linkMap": {
     "name": "latexml.map",
-    "bytes": 33572216,
-    "sha256": "5cdfac472eefd8450bad2e49d18cb3fa5d2c13ee3bffbb4e60b5ca283260f503"
+    "bytes": 33573583,
+    "sha256": "3eb99ce0c50117668d21d5012ddf4c993a418a98c3090489286b7a54195b5c97"
   },
   "cargo": {
     "lockfile": {
@@ -1023,7 +1023,7 @@
       "version": "0.3.0",
       "license": "MIT AND LGPL-2.1-or-later AND LGPL-3.0-or-later",
       "staticLinkObligation": "lgpl-relink",
-      "source": "https://crates.io/api/v1/crates/libmarpa-asf-sys/0.3.0/download",
+      "source": "https://static.crates.io/crates/libmarpa-asf-sys/libmarpa-asf-sys-0.3.0.crate",
       "notices": [
         "LICENSES/libmarpa-COPYING.txt",
         "LICENSES/libmarpa-COPYING.LESSER.txt"

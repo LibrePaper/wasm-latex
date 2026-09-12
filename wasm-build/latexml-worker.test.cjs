@@ -142,7 +142,8 @@ function makeModule() {
   module._compile = (sourcePointer, sourceLength, namePointer, nameLength) => {
     assert.equal(read(namePointer, nameLength), module.main)
     assert.equal(read(sourcePointer, sourceLength), new TextDecoder().decode(module.files.get(module.main)))
-    const output = write('<html><head><link rel="stylesheet" href="LaTeXML.css"><link rel="stylesheet" href="ltx-book.css"></head><body><img src="img.png"><svg><image xlink:href="img.png"></image></svg></body></html>')
+    module.FS.writeFile('/output/processed.png', Uint8Array.of(3, 4, 5))
+    const output = write('<html><head><link rel="stylesheet" href="LaTeXML.css"><link rel="stylesheet" href="ltx-book.css"></head><body><img src="img.png"><svg><image xlink:href="img.png"></image></svg><img src="processed.png" width="42" height="21"></body></html>')
     const diagnostics = write('one recoverable warning')
     module.output = output
     module.diagnostics = diagnostics
@@ -248,6 +249,7 @@ async function main() {
   assert.match(compile.html, /data-latexml-css="latexml.css"/)
   assert.match(compile.html, /data-latexml-css="ltx-book.css"/)
   assert.match(compile.html, /data:image\/png;base64,AAEC/)
+  assert.match(compile.html, /src="data:image\/png;base64,AwQF" width="42" height="21"/)
   assert.equal((compile.html.match(/data:image\/png;base64,AAEC/g) || []).length, 2,
     'project images in HTML and SVG xlink attributes are both inlined')
   assert.deepEqual(JSON.parse(JSON.stringify(compile.diagnostics)), [{ severity: 'warning', message: 'one recoverable warning' }])
@@ -270,6 +272,7 @@ async function main() {
   assert.deepEqual(message(), { result: 'ok', cmd: 'readfile', url: 'main.tex', data: '\\documentclass{article}' })
   self.onmessage({ data: { cmd: 'flushcache' } })
   assert.deepEqual(message(), { result: 'ok', cmd: 'flushcache' })
+  assert.equal(module.FS.analyzePath('/output/processed.png').exists, false)
   assert.equal(module.files.size, 0)
   assert.equal(self.closed, undefined)
   console.log('latexml-worker: startup, bundle protocol, resolver arena, resource inlining, I/O, and flush checked')

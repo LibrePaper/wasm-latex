@@ -17,6 +17,7 @@ use latexml::{converter::Converter, post};
 use latexml_core::common::{Config, OutputFormat};
 
 const WORK_ROOT: &str = "/work";
+const OUTPUT_ROOT: &str = "/output";
 
 struct State {
     files: BTreeMap<String, Vec<u8>>,
@@ -135,12 +136,19 @@ fn convert(state: &mut State, source: String) {
 
         return;
     };
+    // Graphics postprocessing resolves the digested graphicx options and
+    // writes imagesrc/imagewidth/imageheight before the HTML stylesheet runs.
+    // Keep its generated files separate from the author's source tree.
+    if let Err(error) = fs::create_dir_all(OUTPUT_ROOT) {
+        set_failure(state, format!("cannot create {OUTPUT_ROOT}: {error}"));
+        return;
+    }
     let post_options = post::PostOptions {
         pmml: true,
         cmml: false,
         keep_xmath: false,
         stylesheet: post::default_stylesheet(Some("html5")),
-        destination: None,
+        destination: Some("/output/index.html"),
         source_directory: Some(WORK_ROOT),
         site_directory: None,
         search_paths: &[],
@@ -159,7 +167,7 @@ fn convert(state: &mut State, source: String) {
         split_naming: None,
         xslt_parameters: &[],
         graphics_svg_threshold_kb: 0,
-        graphicimages: false,
+        graphicimages: true,
         timestamp: None,
         icon: None,
         whatsout: latexml_post::extract::Whatsout::Document,
