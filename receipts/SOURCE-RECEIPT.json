@@ -1,0 +1,272 @@
+{
+  "biberSource": {
+    "name": "BIBER-SOURCE.tar.gz",
+    "sha256": "d201c602b949945206808da09ebccb83e3f65ca8403c2e313de1eb62ec85ba1f",
+    "bytes": 96739222
+  },
+  "schemaVersion": 1,
+  "archive": "librepaper-wasm-latex-0ae2b990c8a7-source.tar.xz",
+  "bytes": 248545416,
+  "sha256": "1110bf6ec2994dacdfeead946d697c8229bcad5b2691007f9f5ca7f907a1706f",
+  "repositoryCommit": "0ae2b990c8a78103318b8981870918cc10169f44",
+  "dirty": false,
+  "uncommittedBuildPaths": [],
+  "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
+  "correspondsTo": [
+    {
+      "name": "LaTeXML-blue.css",
+      "bytes": 765,
+      "sha256": "5f2743950c78e3d09fda3a4d26447026b89e0f6934b5a052d372d6a9153c5468"
+    },
+    {
+      "name": "LaTeXML-marginpar.css",
+      "bytes": 1092,
+      "sha256": "45e4e0be782bccb1853a907b57ec2ddd0ed906fcf1a0e3ad66af962b6605c033"
+    },
+    {
+      "name": "LaTeXML-navbar-left.css",
+      "bytes": 516,
+      "sha256": "1ebb0c948a47de03f9ff666e65be2ce1d02738ec9ffb163206569c62a144ace6"
+    },
+    {
+      "name": "LaTeXML-navbar-right.css",
+      "bytes": 433,
+      "sha256": "23a8acef9e92734527e9ddad5dd2fbe44866cba6b0d8e4230dd59ae7fa6d319f"
+    },
+    {
+      "name": "LaTeXML.css",
+      "bytes": 31973,
+      "sha256": "866c2330148cf3a2a10119e209edbdb9794d1fab8029c4046d1e8393c2dd07fb"
+    },
+    {
+      "name": "biber.build.json",
+      "bytes": 14697,
+      "sha256": "a37e6298604c897163e99b3bd6da289b95f1a04c8084629e2e8936293fa6e0f8"
+    },
+    {
+      "name": "biber.data",
+      "bytes": 18261749,
+      "sha256": "260d8c9b5a7cfef62bb5437f97582d22b40f15233e49d707509afeb69993f412"
+    },
+    {
+      "name": "biber.js",
+      "bytes": 959313,
+      "sha256": "877285f52f641bf7cf5bdfd79a22b3abdbe9ede8a53e35b09cbf2bbea13922c3"
+    },
+    {
+      "name": "biber.wasm",
+      "bytes": 9644474,
+      "sha256": "106bf9221aa6f6337407711943bc5718bb138a20d0e22b17e9b54c13f37648b5"
+    },
+    {
+      "name": "biber.worker.js",
+      "bytes": 3237,
+      "sha256": "984d29171ccb15230c9c6e5d817f50ca100b4b3634fbfd5b21cfc87f070ba55e"
+    },
+    {
+      "name": "bibtex.js",
+      "bytes": 77794,
+      "sha256": "c38e9b4870ef09d7c9275d449f911d2341ad3abbe06ed40db430bc2d7be3087d"
+    },
+    {
+      "name": "bibtex.wasm",
+      "bytes": 205813,
+      "sha256": "7ee47f5959d9f2a0d4cbde264be97472b6c1b7a1da2ca58b67baea759b03c3d6"
+    },
+    {
+      "name": "bibtex.worker.js",
+      "bytes": 9544,
+      "sha256": "6329e78bbe7d4fa51324271e08b884fb2dfc59c9fc11451cd16f736b709fe668"
+    },
+    {
+      "name": "bibtex8.js",
+      "bytes": 79468,
+      "sha256": "fa59f3d7102713c8406a17ea83b9e2bfb48bb66860e6f8370b02469b4d4c26f9"
+    },
+    {
+      "name": "bibtex8.wasm",
+      "bytes": 222168,
+      "sha256": "f2ad8f96a35cd5d0b7fd291cd966f0659664bc60ab1d88594af62569a41f1d6c"
+    },
+    {
+      "name": "bibtex8.worker.js",
+      "bytes": 8761,
+      "sha256": "17ec60270fbf661717597bbbcfca2da31cf00dad9fd2933272523920c61ca02a"
+    },
+    {
+      "name": "bundle-mode.js",
+      "bytes": 14721,
+      "sha256": "190213759b6e9e155e5657dc517d229085bd6bf8d231a8df32ca14b386400d1f"
+    },
+    {
+      "name": "dvipdfm.js",
+      "bytes": 86716,
+      "sha256": "c8e3c6ba66ad1b41bd99a7a52f7dbce7f4893f348907bf4366924b178e916fad"
+    },
+    {
+      "name": "dvipdfm.wasm",
+      "bytes": 832374,
+      "sha256": "72fce45bf59aa214328a63593647477b5646ae0ff39d18f74dcd8e93dcb959f0"
+    },
+    {
+      "name": "dvipdfm.worker.js",
+      "bytes": 17932,
+      "sha256": "92329effb1de1b0c0692dba09193807ac15c7a06fcb23f2de85247d0cb9ffc45"
+    },
+    {
+      "name": "icudt68l.dat.gz",
+      "bytes": 11361071,
+      "sha256": "f95cd42fc89ef069f72d7c103ebe8d002b76cb01f5e66eab3c92886a19b1f478"
+    },
+    {
+      "name": "kpse-resolve.js",
+      "bytes": 14857,
+      "sha256": "f8b93168aa57c42af958a887fc8a8346abe8237c2b1c9a2022b58c99d1912666"
+    },
+    {
+      "name": "latexml.build.json",
+      "bytes": 42150,
+      "sha256": "0dae39b6d9a3d06b18ef31061d8523eaa4efaaf7c920f9aa7451f7471c2ba983"
+    },
+    {
+      "name": "latexml.css",
+      "bytes": 31973,
+      "sha256": "866c2330148cf3a2a10119e209edbdb9794d1fab8029c4046d1e8393c2dd07fb"
+    },
+    {
+      "name": "latexml.js",
+      "bytes": 81002,
+      "sha256": "461cb4aca6b0d8e4dfe2276e4edd8c623288c710c416d1f4f7d6083a05faa449"
+    },
+    {
+      "name": "latexml.wasm",
+      "bytes": 21694350,
+      "sha256": "9d2eaea323dfa8d08f609a00d59144cc9098b6bec3af9d05d27edda6e12400db"
+    },
+    {
+      "name": "latexml.worker.js",
+      "bytes": 15821,
+      "sha256": "5f0627d21b23177d4ab9fe36fda79e9f66be7dc280ec53b3ccc64b472ac0c0c1"
+    },
+    {
+      "name": "ltx-amsart.css",
+      "bytes": 1738,
+      "sha256": "a98adac94883095cc8a12a7d066b502ee59a4be655860431d375ec85c9d52818"
+    },
+    {
+      "name": "ltx-apj.css",
+      "bytes": 1403,
+      "sha256": "29007119fad7fd187f82ef9fce9a348cef9b278654824aac5e5b4e11d31b35de"
+    },
+    {
+      "name": "ltx-article.css",
+      "bytes": 3259,
+      "sha256": "146bf8ab4d9609e4940768e53d004239729b4c36cdaf0a73ec44d15b84c6822b"
+    },
+    {
+      "name": "ltx-book.css",
+      "bytes": 3246,
+      "sha256": "7d064457b8af8970e5e9176297b44f5d7218b121bbfe966acbf99e82c756aa58"
+    },
+    {
+      "name": "ltx-listings.css",
+      "bytes": 87,
+      "sha256": "e20ea111654bab224295f21f8d31e02d9e7cf57953dc332d440b0ca620485919"
+    },
+    {
+      "name": "ltx-report.css",
+      "bytes": 3281,
+      "sha256": "a144dd190af24d1092dfd30003c2b49d84d530cfd18c08baa92ed91d4b2bd837"
+    },
+    {
+      "name": "ltx-svjour.css",
+      "bytes": 24,
+      "sha256": "aeabdaa716bb74fc94173473ee15961297d706bc3c7cb5f980d6b994073d4565"
+    },
+    {
+      "name": "ltx-ulem.css",
+      "bytes": 438,
+      "sha256": "59e77321a43b887805206ef2ac37f244b9ffd667860009b4398e9398426281d9"
+    },
+    {
+      "name": "makeindex.js",
+      "bytes": 77453,
+      "sha256": "0b2ac6e418877b152f34d4d2f67e1c7df1774234c1c3690c15e4eb77dc3dad9a"
+    },
+    {
+      "name": "makeindex.wasm",
+      "bytes": 128682,
+      "sha256": "a0e199a8ed19c98830be277c2aed5c5a283521c8b96e7f3689107a36f8bb71e7"
+    },
+    {
+      "name": "makeindex.worker.js",
+      "bytes": 8928,
+      "sha256": "41e2a896948063e81bcf4eaa21c4a2c590ef5288f45294c06514b970f1fabb28"
+    },
+    {
+      "name": "pdftex-checkpoint.js",
+      "bytes": 111643,
+      "sha256": "ba572c503eae34fcf96e1ce8201e176d3a973d692a3784fdd9abcfc0b75f5fbf"
+    },
+    {
+      "name": "pdftex-checkpoint.wasm",
+      "bytes": 2701068,
+      "sha256": "83563869d753277b32f885cc4207355d13aba86e47fd804fb712f3722fecfc48"
+    },
+    {
+      "name": "pdftex-resolver-evidence.js",
+      "bytes": 582,
+      "sha256": "0e513d7f391df62baf0c655c6bf9952bafebb056e492bd30726d04b64d4d6a8a"
+    },
+    {
+      "name": "pdftex.fmt",
+      "bytes": 3633351,
+      "sha256": "f63bc17a1d809184ebfa880a1a78dd81f5351a8934e8618905ff726d0054c962"
+    },
+    {
+      "name": "pdftex.js",
+      "bytes": 105094,
+      "sha256": "3f92a1107f688957b576a102d6ed8250d6aa80cf618c42cb553ea7320f235a6e"
+    },
+    {
+      "name": "pdftex.wasm",
+      "bytes": 1672898,
+      "sha256": "bf0b9fd1772fc78b02ad19eff39f7e03a73d7eefc1c1d05b15387768e57d013d"
+    },
+    {
+      "name": "pdftex.worker.js",
+      "bytes": 84992,
+      "sha256": "c015db8fd8d7b5d01aa6a9a17460fbde792a723868422163149916231c43aae6"
+    },
+    {
+      "name": "relaxng-schema-rustdoc-theme.css",
+      "bytes": 37798,
+      "sha256": "b533950aac558210c286a5fda16b75c85cd8aa03985e4c077cf5a7632ec93577"
+    },
+    {
+      "name": "xetex-resolver-evidence.js",
+      "bytes": 582,
+      "sha256": "0e513d7f391df62baf0c655c6bf9952bafebb056e492bd30726d04b64d4d6a8a"
+    },
+    {
+      "name": "xetex.fmt",
+      "bytes": 5945900,
+      "sha256": "8206489312602342221ba14028ed73c6f88e69ed1655b9851a450b3b8e790a09"
+    },
+    {
+      "name": "xetex.js",
+      "bytes": 106967,
+      "sha256": "35d862da8485870b38da9e8a08b85dc1ce2a406a9a1cba89c0655d3e8d14fbf4"
+    },
+    {
+      "name": "xetex.wasm",
+      "bytes": 3494333,
+      "sha256": "e1b80dd5cb8d53f155ca09075f8a3fe81cff85b772774919956485f51ba0d4d3"
+    },
+    {
+      "name": "xetex.worker.js",
+      "bytes": 19349,
+      "sha256": "442d521815a38909510fc1250262597ba91a15ef7a781d7b24e63cad2ce75f1a"
+    }
+  ]
+}

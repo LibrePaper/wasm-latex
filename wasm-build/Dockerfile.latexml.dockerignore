@@ -1,0 +1,15 @@
+**
+!wasm-build/
+!wasm-build/Dockerfile.latexml
+!wasm-build/build-latexml.sh
+!wasm-build/build-latexml-kpathsea.sh
+!wasm-build/latexml-source.ref
+!wasm-build/write-latexml-receipt.mjs
+!wasm-build/latexml-kernel-dumps.mjs
+!wasm-build/latexml-worker.js
+!wasm-build/library-latexml.js
+!wasm-build/kpse-resolve.cjs
+!wasm-build/bundle-mode.js
+!wasm-build/latexml-wasm/
+!wasm-build/latexml-wasm/**
+wasm-build/latexml-wasm/target/

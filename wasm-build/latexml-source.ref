@@ -1,0 +1,4 @@
+# Source provenance for the browser port. The build driver verifies this exact
+# commit before Cargo sees the checkout.
+repository=https://github.com/dginev/latexml-oxide.git
+commit=1ef264a2bb49dcc806fe22aae45fd771e02a52ae

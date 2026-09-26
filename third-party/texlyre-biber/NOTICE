@@ -1,0 +1,15 @@
+TeXlyre-BusyTeX
+Copyright (c) 2026 [Fares Abawi](https://abawi.me)
+
+This project is based on BusyTeX (https://github.com/busytex/busytex)
+Original BusyTeX work is MIT licensed.
+
+Modifications (AGPL-3.0 licensed) include:
+- Fixes LuaHBTeX build (broken in upstream BusyTeX since TeXlive 2022)
+- Fixes to TeX Live 2026 build process
+- Adds SyncTeX detection
+- Adds TeX Live package and font hosting for download
+- Adds prebuilt font indexes and mappings for remote TeX Live fonts
+- Adds multilingual hyphenation formatting to all engines
+- Adds Biber support
+- Adds shell command execution support through registered in-browser shell handlers
