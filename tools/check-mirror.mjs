@@ -20,14 +20,12 @@
 // downloads the single largest engine file and checks that what comes back
 // over the wire still hashes to the digest the manifest published, which is
 // the one thing a deployed mirror can get wrong that a local one cannot:
-// tools/mirror-worker.js hands the edge a pre-encoded body, and an edge that
-// re-encoded it instead of passing it through would serve every browser a
-// WASM module wrapped in a second layer of compression.
+// Cloudflare may compress the response at the edge; `fetch` decodes
+// Content-Encoding so this confirms the downloaded bytes match the manifest.
 
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
 import path from 'node:path'
-import { verify as verifyBrotli } from './mirror-brotli.mjs'
 
 const base = process.argv[2] || 'mirror'
 const isUrl = /^https?:\/\//.test(base)
@@ -128,20 +126,9 @@ async function main() {
     if (!index.bundles?.[bundleName]) throw new Error(`bundles.json names unknown bundle "${bundleName}" in its files map`)
   }
 
-  // Brotli sidecars: a `.br` is served in place of the file it sits beside
-  // (tools/mirror-worker.js), so one that does not decompress back to those
-  // exact bytes would hand a browser something the manifest never published.
-  // It is the only content in the mirror no digest in the manifest covers,
-  // which is exactly why it is checked here instead.
-  const brotli = verifyBrotli(dir)
-  if (brotli.problems.length) {
-    throw new Error(`brotli sidecar: ${brotli.problems[0]}${brotli.problems.length > 1 ? ` (+${brotli.problems.length - 1} more)` : ''}`)
-  }
-
   console.log(`mirror ready: ${dir} (${manifest.default_release}, format ${manifest.format})`)
   console.log(`  engines: ${Object.keys(release.engines).join(', ')}`)
   console.log(`  bundles: ${bundleNames.length}, ${(release.bundles.bytes / 1e6).toFixed(1)} MB, snapshot ${release.bundles.snapshot}`)
-  console.log(`  brotli:  ${brotli.checked} sidecars verified`)
 }
 
 main().catch((error) => {

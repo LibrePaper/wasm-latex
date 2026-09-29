@@ -32,7 +32,6 @@ mirror/
     LICENSES/  LINK-INVENTORY.*.json  FORMAT-RECEIPT.*.json  BUNDLE-RECEIPT.*.json
   engines/<engineRelease>/bundles/bundles.json     package index
   engines/<engineRelease>/bundles/b/<sha256>/<slug>.tar   one tar per package directory
-  engines/<engineRelease>/<name>.br                brotli sidecar; see "Serving"
 ```
 
 `<engineRelease>` is the bare `<sha256 of the staged MANIFEST.json>`.
@@ -118,8 +117,8 @@ in format 2.
 
 ## Serving
 
-The browser fetches everything from `<base>/latex/` on its own origin (or
-directly from the deployed Cloudflare Worker):
+The browser fetches everything directly from its configured HTTPS mirror,
+by default `https://latex.librepaper.workers.dev/`:
 
 | Request | Answer |
 | --- | --- |
@@ -128,6 +127,10 @@ directly from the deployed Cloudflare Worker):
 | `manifest.json` | `Cache-Control: no-store`. |
 
 `make push`'s `mirror/_headers` (`Makefile`) implements exactly this table.
+Cloudflare serves these files directly as static assets and applies HTTP
+compression for eligible content types when the client negotiates it. No
+compression sidecars are generated; `make push` excludes legacy `.br` files
+from uploads through `.assetsignore`.
 
 ### Retention and platform limits
 
@@ -138,50 +141,14 @@ the deployment keeps only releases referenced by the current manifest.
 No release beyond the one referenced by the current LibrePaper build is
 promised to remain available.
 
-As verified on September 11, 2026, Cloudflare's Workers limits allow 20,000 files on the Free plan and
-100,000 on paid plans, with a 25 MiB maximum individual asset. Static asset
-requests are free and unlimited. See the official [Workers limits](https://developers.cloudflare.com/workers/platform/limits/)
+Cloudflare's current Static Assets pricing and limits allow up to 20,000
+files on the Free plan and 100,000 on paid plans, with a 25 MiB maximum
+individual asset. Static asset requests, storage, and egress are free within
+those platform limits. Edge-negotiated compression keeps transfers smaller
+for supported clients, though cold transfers may be larger than with the
+former quality-11 Brotli sidecars. See the official [Workers limits](https://developers.cloudflare.com/workers/platform/limits/)
 and [Static Assets billing and limitations](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/)
 pages when sizing a release.
-
-### Brotli
-
-Every engine file over 4 KiB that brotli can shrink below 90% of its size
-has a `<name>.br` beside it, compressed once at `make mirror` time at
-quality 11. `tools/mirror-worker.js` serves that sidecar in place of the
-file, with `Content-Encoding: br` and the headers the table above assigns
-the file itself. Bundle tars are excluded -- there are 11k of them and 7 GB,
-and the edge's own compression is what they get.
-
-This is worth doing because Cloudflare compresses on the fly at a much lower
-brotli quality than is worth paying for once, at release time, on a file
-every cold start has to fetch. Measured on `latexml.wasm`, the largest:
-
-| | bytes |
-| --- | --- |
-| identity | 21.69 MB |
-| gzip (edge) | 6.11 MB |
-| brotli (edge, on the fly) | 5.81 MB |
-| **brotli quality 11 (sidecar)** | **4.21 MB** |
-
-Two things about this are worth knowing before changing it:
-
-* **The Worker cannot negotiate.** Cloudflare rewrites the request's
-  `Accept-Encoding` to a constant `"br, gzip"` before the Worker sees it,
-  whatever the client sent -- so the Worker returns the encoded
-  representation unconditionally and the edge transcodes per client. Do not
-  add an `Accept-Encoding` check to `tools/mirror-worker.js`; it would read
-  the same on every request.
-* **`run_worker_first` is load-bearing.** Static assets are served before
-  the Worker runs, and every path here *is* a static asset, so without
-  `assets.run_worker_first` in `wrangler.jsonc` the sidecars are never
-  consulted and the Worker is dead code. It is scoped to `/engines/*`.
-
-A sidecar is not named in `manifest.json`: it is a second representation of
-a file the manifest already pins, not a payload file. `check-mirror.mjs`
-decompresses every one and compares it against the file it sits beside,
-which is what keeps an unpinned sidecar from ever disagreeing with a
-published digest.
 
 ## Building it
 
@@ -208,8 +175,8 @@ used to.
 A directory argument gets the full check: the manifest parses, the default
 release has a complete pdfTeX engine, every engine file is on disk with a
 matching digest and size, `bundles.json`'s own digest matches the release
-entry, every bundle tar it names is on disk with a matching digest, and
-every `.br` sidecar decompresses to exactly the file it sits beside. A
-URL argument gets a shape-only check (`manifest.json` fetched with
-`no-store`): LibrePaper's own browser smoke test is what actually exercises
-a deployed mirror's bytes, not a second full download here.
+entry, and every bundle tar it names is on disk with a matching digest. A
+URL argument checks the manifest shape (`manifest.json` fetched with
+`no-store`) and downloads the largest advertised file, verifying its decoded
+size and digest. LibrePaper's browser smoke test exercises rendering against
+the deployed mirror.

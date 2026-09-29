@@ -35,13 +35,10 @@ SOURCE_OUT  ?= dist-source
 IMAGE       ?= librepaper-pdftex-wasm
 FAMILIES    ?= pdftex bibtex bibtex8 biber makeindex xetex dvipdfm
 MIRROR      ?= mirror
-# The Cloudflare Worker that serves these files. Its name, compatibility date
-# and asset directory stay here as flags; wrangler.jsonc carries only what the
-# CLI has no flag for -- the script entry point (tools/mirror-worker.js, which
-# serves the precompressed brotli sidecars) and the run_worker_first rule that
-# gets it in front of a static asset. Deployed under the librepaper account's
-# workers.dev subdomain, this reaches it at
-# https://latex.librepaper.workers.dev/.
+# Cloudflare static asset deployment. The asset-only Wrangler config serves
+# these files directly at https://latex.librepaper.workers.dev/; Cloudflare
+# negotiates/compresses responses at the edge. We do not precompress at quality
+# 11, so the largest cold downloads may be larger than the old sidecar form.
 WORKER      ?= latex
 COMPAT_DATE ?= 2026-09-01
 TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
@@ -147,7 +144,7 @@ release:  ## The whole chain: test, source, publish, stage, annotate (needs TAG=
 clean-staged:  ## Remove the staged directory
 	rm -rf $(STAGED)
 
-mirror:  ## Build the mirror LibrePaper serves from staged/, brotli sidecars included (MANIFEST_SHA256= to pin a reviewed hash)
+mirror:  ## Build the static mirror LibrePaper serves from staged/ (MANIFEST_SHA256= to pin a reviewed hash)
 	@test -f $(STAGED)/MANIFEST.json || { echo "no $(STAGED)/MANIFEST.json; run make release TAG=<tag> (or make stage SOURCE_URL=<url>) first"; exit 2; }
 	@# The hash is read from the staged manifest when not given: this repository
 	@# staged it, so there is no second party whose review the hash would carry.
@@ -167,9 +164,10 @@ push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUD
 	@# Cloudflare merges every matching rule, so the two exceptions detach the
 	@# header the /* rule set before setting their own. The files are public
 	@# and digest-named; a browser on any origin may fetch them.
-	@# These headers reach the brotli responses too: tools/mirror-worker.js
-	@# builds each one from the headers of the file it represents, so a
-	@# sidecar is cached and shared exactly like its plain counterpart.
+	@# Ignore obsolete .br sidecars that may remain in a mirror built by the
+	@# previous Worker pipeline; Cloudflare serves the original asset and
+	@# negotiates compression itself.
+	@printf '**/*.br\n' > $(MIRROR)/.assetsignore
 	@printf '/*\n  Cache-Control: public, max-age=31536000, immutable\n  Access-Control-Allow-Origin: *\n/manifest.json\n  ! Cache-Control\n  Cache-Control: no-store\n/engines/*/bundles/bundles.json\n  ! Cache-Control\n  Cache-Control: no-cache\n' > $(MIRROR)/_headers
 	@if command -v bunx >/dev/null 2>&1; then \
 	  RUNNER="bunx wrangler"; \
