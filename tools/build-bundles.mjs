@@ -3,12 +3,11 @@
 // vendored texmf trees the format build takes.
 //
 // SPEC-latex.md ("Package delivery: bundles, not files") explains why: the
-// worker's per-file XHR model makes one request per .sty/.tfm/.map, which
-// blows both Cloudflare's request quota and the Workers static-asset file
-// count on a full TeX Live tree. Grouping the tree into one tar per texmf
-// package directory (tools/bundle-rules.mjs decides the grouping) cuts a
-// cold compile to a handful of requests and a warm one to zero, and the
-// bundle count comfortably clears the 20,000-file static-asset cap.
+// worker's per-file XHR model would make one request per .sty/.tfm/.map.
+// Bundling instead makes a cold compile fetch one tar for each package it needs,
+// while leaving unrelated packages on demand. A warm session can reuse its cache.
+// Grouping the tree into one tar per texmf package directory (tools/bundle-rules.mjs
+// decides the grouping) keeps those downloads useful without bundling the full tree.
 //
 //   node tools/build-bundles.mjs --texmf <texmf-dist> [--texmf <texmf-var>] \
 //     --out <dir> [--evidence <file>] [--epoch N] [--core <file>] \
@@ -44,8 +43,8 @@ import { bundleFor, slugFor, DEFAULT_CORE, EXCLUDED_BUNDLE_PREFIXES } from './bu
 
 // 2026-03-01T00:00:00Z, same fixed epoch build-format.mjs uses.
 const DEFAULT_EPOCH = 1772323200
-// A static asset may not exceed 25 MiB. Split at 20 MiB of *tar* bytes, headers
-// and padding included, so no part gets near the limit however the members fall.
+// Split at 20 MiB of tar bytes, headers and padding included, to keep package
+// downloads at a useful granularity. This is not an object-storage size limit.
 const DEFAULT_SPLIT_BYTES = 20 * 1024 * 1024
 
 function argAll(name) {
@@ -415,8 +414,8 @@ const indexSha = createHash('sha256').update(indexJson).digest('hex')
 
 // --- RECEIPT-FILES.json.gz ------------------------------------------------------
 // Every member of every bundle with its hash: an audit record, read by nobody
-// at runtime, and over 25 MiB as plain JSON, which a static asset may not be.
-// Shipped gzipped; zlib writes no timestamp, so the bytes are reproducible.
+// at runtime. Shipped gzipped to reduce storage and transfer size; zlib writes no
+// timestamp, so the bytes are reproducible.
 
 const fileRecords = []
 for (const rel of [...relToAbs.keys()].sort(byteOrder)) {

@@ -89,19 +89,20 @@ and every payload file against the manifest, then writes the release under
 `mirror/engines/<engineRelease>/`) and `tools/check-mirror.mjs` on the
 result. See [`docs/mirror.md`](mirror.md) for the layout and manifest shape
 this writes -- it is the contract LibrePaper's `check-mirror.mjs` and
-`web/src/lib/latex/worker.js` consume. Then, with `CLOUDFLARE_API_TOKEN`
-set:
+`web/src/lib/latex/worker.js` consume. Then, with the S3 endpoint, region, bucket
+and AWS credentials set in the environment (or loaded with `make secrets`), run:
 
     make push
 
-which writes `mirror/_headers` (everything digest-named immutable,
-`manifest.json` never cached, `bundles.json` short-lived) and deploys the
-directory with `wrangler` as Cloudflare Workers static assets. Every file in
-a staged release is under the 25 MiB per-file limit and the whole set is
-under the free plan's 20,000-file cap.
+which publishes `mirror/` through the shared `../librepaper/tools/publish-mirror.mjs`
+command. The publisher sets content types and cache metadata (`manifest.json` uses
+`no-store`; `bundles.json` uses `no-cache`) and serves gzip-encoded responses
+where applicable. Configure bucket CORS once with the publisher's explicit
+`--configure-cors` option (or configure it in OVH); ordinary `make push` only
+uploads mirror objects. There is no provider-specific object-size gate.
 
-LibrePaper then just points at the deployed URL: `librepaper serve --latex
-https://latex.librepaper.workers.dev/`, or its own
+After the OVH URL passes the deployed mirror check, configure LibrePaper to use
+it: `librepaper serve --latex <OVH mirror URL>`, or use its own
 `latex/tools/check-mirror.mjs <url>` to verify it first. Releases with
 `engines.biber` supply Biber directly through this mirror; no `--biber-vm`
 setting is required. Before deployment, test the app against the generated

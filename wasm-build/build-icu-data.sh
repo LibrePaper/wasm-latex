@@ -3,7 +3,7 @@
 #
 # Why: emscripten's -sUSE_ICU links libicu_stubdata (ICU with NO converter data), so
 # the unpatched upstream XeTeX font manager (ucnv_open("macintosh")) fails. Rather
-# than bake ~28MB into the wasm, the engine fetches `icudt68l.dat` from the CDN at
+# than bake ~28MB into the wasm, the engine fetches `icudt68l.dat` from the mirror at
 # init (see wasm-build/icu-data-loader.c + xetex-worker.js) and registers it
 # via udata_setCommonData.
 #
@@ -13,11 +13,9 @@
 #
 #   wasm-build/build-icu-data.sh                 # build icudt68l.dat into /tmp/icu-data/
 #
-# Publishing it is deliberately not this script's job. It previously uploaded to a
-# Cloudflare R2 bucket, defaulting to a project-specific `corca-texlive-production` —
-# infrastructure that is not ours, named as the destination of an `--upload` flag.
-# Serving the asset belongs with whatever serves the engines; the worker fetches it
-# from ${texlive_endpoint}icudt68l.dat, gzipped, with a long immutable cache header.
+# Publishing it is deliberately not this script's job. The shared S3 publisher
+# handles the mirror alongside the engines; the worker fetches it from
+# ${texlive_endpoint}icudt68l.dat, gzipped, with a long immutable cache header.
 set -euo pipefail
 
 ICU_VER="68_2"          # must match emscripten's ICU port (tools/ports/icu.py TAG)
@@ -66,8 +64,8 @@ DAT="$WORK/icudt${ICU_MAJOR}l.dat"
 [ -f "$DAT" ] || { echo "ICU data build produced no .dat"; exit 1; }
 echo "Built $DAT ($(wc -c < "$DAT") bytes)"
 
-# The raw file is 27 MiB and a Workers static asset may not exceed 25 MiB, so the
-# release ships the gzip (11 MiB) and the host inflates it before loadicudata.
+# The gzip representation reduces transfer size; the host inflates it before
+# loadicudata.
 # -n drops the timestamp so the same input gives the same bytes.
 gzip -9 -n -k -f "$DAT"
 echo "Gzipped  $DAT.gz ($(wc -c < "$DAT.gz") bytes) — this is the release artifact"

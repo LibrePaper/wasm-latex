@@ -18,7 +18,7 @@ receipts and notices that let a reader verify that.
     make format                  # dump and smoke the pdfTeX and XeTeX formats
     make release TAG=<tag>       # publish the source, stage, gate, print the manifest hash
     make mirror                  # build the mirror LibrePaper serves from staged/
-    make push                    # deploy it to Cloudflare (needs CLOUDFLARE_API_TOKEN)
+    make push                    # publish it to OVH S3 (needs S3 credentials; `make secrets` opens a shell)
 
 Engines themselves are built with Docker; see [`docs/release.md`](docs/release.md)
 for the whole path from source to a mirror LibrePaper serves. `make help`

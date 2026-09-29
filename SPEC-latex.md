@@ -103,19 +103,15 @@ round trip.
 Measured against the corpus, a cold compile of a plain article touches about
 50 files; a TikZ or beamer document about 400. Two consequences:
 
-- Requests are what Cloudflare meters. Workers Free allows 100,000 per day;
-  the paid plan includes 10 million per month. A few hundred daily users with
-  cold caches approach that.
-- The full macro tree is 32,614 files in `texmf-dist/tex` alone, and Workers
-  static assets cap a deployment at 20,000 files. Per-file delivery cannot be
-  hosted as static assets at all, and moving to R2 trades the file limit for
-  a metered read count.
+- A cold compile can touch hundreds of files, so fetching each file separately
+  creates avoidable round trips.
+- The full macro tree is 32,614 files in `texmf-dist/tex` alone. Packaging files
+  by TeX package keeps objects on demand without publishing the whole tree as
+  individual objects.
 
-Bundling fixes both. Requests drop by an order of magnitude, the file count
-falls under the static-asset cap, and static-asset requests are not counted
-against the Workers quota under Cloudflare's terms as of this writing. No R2,
-no request ceiling, no bill. If the terms change, the fallback origin below
-is the answer, not R2.
+Bundling reduces requests by an order of magnitude while preserving package-level
+on-demand downloads. The mirror is published to OVH S3, and the release manifest
+and bundle index keep object paths and content hashes verifiable.
 
 ### The unit
 
@@ -255,7 +251,7 @@ cached the same way.
 
 ### Hosting
 
-Bundles are Workers static assets in the mirror `make push` deploys, beside the engines.
+Bundles are S3 objects in the mirror `make push` publishes, beside the engines.
 Estimated shape, from the vendored tree without `doc/` and `source/`:
 
 | Content | Bundles | Size on disk |
@@ -264,8 +260,7 @@ Estimated shape, from the vendored tree without `doc/` and `source/`:
 | Type1, tfm, vf, afm, enc, map | about 1,500 | about 1.8 GB |
 | OpenType and TrueType, for XeTeX | about 300 | about 1 GB |
 
-Under the 20,000-file cap with room. Egress is free. Requests to static assets
-are not metered. There is nothing to pay for at LibrePaper's scale.
+The package layout keeps downloads on demand and avoids per-file request overhead.
 
 Bundles are built by a new `tools/build-bundles.mjs` in this repository from
 the same verified `vendor/` tree the format is built from, with a receipt
@@ -297,7 +292,7 @@ from LibrePaper's. `tools/build-mirror.mjs` turns a staged release plus its
 reviewed manifest hash into `mirror/`, in the layout and manifest shape
 (format 1, bundled releases only, documented in `docs/mirror.md`)
 LibrePaper's browser code already reads; `make mirror` builds and checks it,
-`make push` deploys it as Cloudflare Workers static assets. LibrePaper keeps
+`make push` publishes it to OVH S3 through the shared publisher. LibrePaper keeps
 only the URL and a consumer-side check (`latex/tools/check-mirror.mjs`) --
 building, staging, and hosting the mirror are entirely this repository's
 obligation now, matching what section "Engine repository obligations that

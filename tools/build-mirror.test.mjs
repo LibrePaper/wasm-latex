@@ -166,7 +166,7 @@ try {
   const binary = { name: 'pdftex.wasm', bytes: Buffer.byteLength('binary'), sha256: hash('binary') }
   write('engines/pdftex.wasm', 'binary')
   // Large and highly compressible, exercising preservation of the payload
-  // bytes that Cloudflare will compress when serving the static asset.
+  // bytes an HTTP server may compress when serving the object.
   const FMT = Buffer.from('format '.repeat(2000))
   write('engines/pdftex.fmt', FMT)
 

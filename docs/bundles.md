@@ -4,8 +4,8 @@ The browser engines do not fetch TeX Live one file at a time. `tools/build-bundl
 packs the verified texmf tree into one tar per package directory, indexed by
 `bundles.json`, and the worker fetches a whole bundle the first time any file in it
 is asked for. SPEC-latex.md ("Package delivery: bundles, not files") explains why:
-requests are what Cloudflare meters, and the per-file tree could not be hosted as
-static assets at all.
+package bundles fetch related files together while keeping unrelated packages on
+demand.
 
 ## Building
 
@@ -58,10 +58,9 @@ tree:
   bundle. `fonts/public/amsfonts` (4.6 MB, for `amssymb`) stays separate. A
   plain article fetches core, the map, amsfonts, then its own packages.
 - A bundle over 20 MiB of tar bytes, headers and padding included, is split
-  into `<name>.part1`, `<name>.part2`, ... so that every file stays well under
-  the 25 MiB static-asset limit. The resolver sees parts as ordinary bundles.
-  XeTeX's ICU data, 27 MiB raw, is shipped gzipped at 11 MiB for the same
-  reason; the host inflates it before `loadicudata`.
+  into `<name>.part1`, `<name>.part2`, ... to keep package downloads at a useful
+  granularity. The resolver sees parts as ordinary bundles. XeTeX's ICU data is
+  shipped gzipped to reduce transfer size; the host inflates it before `loadicudata`.
 
 Never bundled, because no browser engine can read them: `doc/`, `source/`,
 Metafont sources and PK bitmaps under `fonts/`, AFM metrics, Type 3 fonts, the
@@ -94,8 +93,8 @@ mistake at runtime.
 `files` maps every texmf-relative path to its bundle, and doubles as the
 existence check: a name not in it is absent, with no request. Bundle URLs are
 relative to the texlive endpoint and carry the tar's own digest, so they are
-served with `Cache-Control: immutable` and the edge cache absorbs repeats. The
-index is the one file fetched by a name without a digest; its hash is in the
+served with `Cache-Control: immutable`; object storage serves repeat requests.
+The index is the one file fetched by a name without a digest; its hash is in the
 release `MANIFEST.json`.
 
 `RECEIPT-FILES.json.gz` beside the index lists every member of every bundle with

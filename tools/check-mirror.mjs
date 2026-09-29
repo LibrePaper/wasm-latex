@@ -6,7 +6,7 @@
 // Live snapshot and no bloom filter to check.
 //
 //   node tools/check-mirror.mjs mirror
-//   node tools/check-mirror.mjs https://librepaper-latex.<account>.workers.dev/
+//   node tools/check-mirror.mjs https://<configured-mirror-url>/
 //
 // A directory argument is checked in full: the manifest parses, the default
 // release has a complete pdfTeX engine, every engine file is on disk with a
@@ -20,7 +20,7 @@
 // downloads the single largest engine file and checks that what comes back
 // over the wire still hashes to the digest the manifest published, which is
 // the one thing a deployed mirror can get wrong that a local one cannot:
-// Cloudflare may compress the response at the edge; `fetch` decodes
+// Object storage may return a gzip-encoded representation; `fetch` decodes
 // Content-Encoding so this confirms the downloaded bytes match the manifest.
 
 import { createHash } from 'node:crypto'

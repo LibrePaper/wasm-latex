@@ -30,7 +30,7 @@ const log = (...a) => console.error(...a)
 // icudt68l.dat.gz is XeTeX's ICU data: not an engine, but the worker cannot find
 // a font by name without it, and with bundles the endpoint no longer serves it
 // by name, so the host inflates it and hands it over (loadicudata). Shipped
-// gzipped because the raw file is 27 MiB and a static asset may not exceed 25.
+// gzipped to keep transfer size lower.
 const ARTIFACTS =
   /\.(wasm|fmt|fmt\.gz)$|^(pdftex|xetex|dvipdfm|bibtex|bibtex8|biber|makeindex|luatex|latexml)(-checkpoint|-resolver-evidence)?(\.worker)?\.js$|^(biber|latexml)\.(data|build\.json)$|^(kpse-resolve|bundle-mode)\.js$|^(LaTeXML-(blue|marginpar|navbar-left|navbar-right)|LaTeXML|ltx-(amsart|apj|article|book|listings|report|svjour|ulem))\.css$|^latexml\.css$|^icudt[0-9]+[lb]\.dat\.gz$/
 const files = fs.readdirSync(distDir).filter((f) => ARTIFACTS.test(f) && !f.endsWith('.map')).sort()

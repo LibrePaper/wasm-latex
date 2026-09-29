@@ -117,8 +117,8 @@ in format 2.
 
 ## Serving
 
-The browser fetches everything directly from its configured HTTPS mirror,
-by default `https://latex.librepaper.workers.dev/`:
+The browser fetches directly from its configured HTTPS mirror URL. The current
+Cloudflare URL remains active until OVH uploads and browser checks pass:
 
 | Request | Answer |
 | --- | --- |
@@ -126,29 +126,23 @@ by default `https://latex.librepaper.workers.dev/`:
 | `engines/<engineRelease>/<file>` | Static, `Cache-Control: public, max-age=31536000, immutable`. |
 | `manifest.json` | `Cache-Control: no-store`. |
 
-`make push`'s `mirror/_headers` (`Makefile`) implements exactly this table.
-Cloudflare serves these files directly as static assets and applies HTTP
-compression for eligible content types when the client negotiates it. No
-compression sidecars are generated; `make push` excludes legacy `.br` files
-from uploads through `.assetsignore`.
+The shared S3 publisher applies the matching cache policy and content types, and
+serves gzip-encoded responses where applicable. Configure public bucket CORS
+explicitly during setup. Browsers decode gzip before checking payload integrity.
 
 ### Retention and platform limits
 
 The mirror contains published build releases and their receipts only. It does
 not accept, retain, or log user documents, compiler inputs, compiler outputs,
-or request bodies. A release build is published as immutable static assets;
-the deployment keeps only releases referenced by the current manifest.
+or request bodies. A release build is published as immutable objects. Existing objects on the previous Cloudflare host are unaffected by this publisher.
 No release beyond the one referenced by the current LibrePaper build is
 promised to remain available.
 
-Cloudflare's current Static Assets pricing and limits allow up to 20,000
-files on the Free plan and 100,000 on paid plans, with a 25 MiB maximum
-individual asset. Static asset requests, storage, and egress are free within
-those platform limits. Edge-negotiated compression keeps transfers smaller
-for supported clients, though cold transfers may be larger than with the
-former quality-11 Brotli sidecars. See the official [Workers limits](https://developers.cloudflare.com/workers/platform/limits/)
-and [Static Assets billing and limitations](https://developers.cloudflare.com/workers/static-assets/billing-and-limitations/)
-pages when sizing a release.
+Objects are published to OVH S3 through the shared publisher. Package bundle
+granularity and content hashes are recorded in `bundles.json` and the release
+manifest; the publisher preserves those object paths and uploads the checked
+files without altering their bytes. HTTP gzip encoding is transparent to browser fetches,
+which expose the decoded bytes for the existing manifest integrity checks.
 
 ## Building it
 
@@ -170,7 +164,7 @@ used to.
 `tools/check-mirror.mjs` verifies the result, or a deployed URL:
 
     node tools/check-mirror.mjs mirror
-    node tools/check-mirror.mjs https://latex.librepaper.workers.dev/
+    node tools/check-mirror.mjs https://<configured-mirror-url>/
 
 A directory argument gets the full check: the manifest parses, the default
 release has a complete pdfTeX engine, every engine file is on disk with a

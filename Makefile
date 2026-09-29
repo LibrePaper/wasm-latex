@@ -20,8 +20,7 @@
 #                    mirror` and `make push` commands rather than running them
 #   make mirror      build the mirror LibrePaper serves from staged/       -> mirror/
 #                    (MANIFEST_SHA256=<digest> pins a reviewed hash instead)
-#   make push        write mirror/_headers and deploy it to Cloudflare (needs
-#                    CLOUDFLARE_API_TOKEN; `make secrets` opens a shell that has it)
+#   make push        publish mirror/ to OVH object storage (needs S3 credentials)
 #
 # Engines themselves are built with Docker (see README); this file assumes
 # wasm-build/dist already holds them.
@@ -35,17 +34,10 @@ SOURCE_OUT  ?= dist-source
 IMAGE       ?= librepaper-pdftex-wasm
 FAMILIES    ?= pdftex bibtex bibtex8 biber makeindex xetex dvipdfm
 MIRROR      ?= mirror
-# Cloudflare static asset deployment. The asset-only Wrangler config serves
-# these files directly at https://latex.librepaper.workers.dev/; Cloudflare
-# negotiates/compresses responses at the edge. We do not precompress at quality
-# 11, so the largest cold downloads may be larger than the old sidecar form.
-WORKER      ?= latex
-COMPAT_DATE ?= 2026-09-01
-TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
-# The Cloudflare token `make push` needs lives sops-encrypted in the
-# application's deploy/keys.yaml, one file for every LibrePaper repo, and is
-# reached through the sibling checkout.
 KEYS        ?= ../librepaper/deploy/keys.yaml
+# Shared S3 publisher from the LibrePaper application repository.
+PUBLISHER   ?= ../librepaper/tools/publish-mirror.mjs
+TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
 
 .PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push secrets
 
@@ -153,39 +145,15 @@ mirror:  ## Build the static mirror LibrePaper serves from staged/ (MANIFEST_SHA
 	node tools/build-mirror.mjs --staged $(STAGED) --sha256 "$$HASH" --out $(MIRROR)
 	node tools/check-mirror.mjs $(MIRROR)
 
-push:  ## Write mirror/_headers and deploy the mirror to Cloudflare (needs CLOUDFLARE_API_TOKEN)
-	@node tools/check-mirror.mjs $(MIRROR)
-	@test -n "$$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not set; run make push inside \`make secrets\`, or: sops exec-env $(KEYS) 'make push'"; exit 1; }
-	@# Bundle tars and every engine file are digest-named and cached forever;
-	@# manifest.json is the one release-describing file fetched by a bare
-	@# name and must never be stale; bundles.json is the one bundling file
-	@# fetched by a bare name too, and gets a short no-cache instead of
-	@# no-store since it changes far less often than the manifest.
-	@# Cloudflare merges every matching rule, so the two exceptions detach the
-	@# header the /* rule set before setting their own. The files are public
-	@# and digest-named; a browser on any origin may fetch them.
-	@# Ignore obsolete .br sidecars that may remain in a mirror built by the
-	@# previous Worker pipeline; Cloudflare serves the original asset and
-	@# negotiates compression itself.
-	@printf '**/*.br\n' > $(MIRROR)/.assetsignore
-	@printf '/*\n  Cache-Control: public, max-age=31536000, immutable\n  Access-Control-Allow-Origin: *\n/manifest.json\n  ! Cache-Control\n  Cache-Control: no-store\n/engines/*/bundles/bundles.json\n  ! Cache-Control\n  Cache-Control: no-cache\n' > $(MIRROR)/_headers
-	@if command -v bunx >/dev/null 2>&1; then \
-	  RUNNER="bunx wrangler"; \
-	elif command -v npx >/dev/null 2>&1; then \
-	  echo "push: bunx not found on PATH; using npx wrangler instead"; \
-	  RUNNER="npx wrangler"; \
-	else \
-	  echo "push: neither bunx nor npx found on PATH; trying npx wrangler anyway"; \
-	  RUNNER="npx wrangler"; \
-	fi; \
-	$$RUNNER deploy --name $(WORKER) --compatibility-date $(COMPAT_DATE) --assets "$(abspath $(MIRROR))"
-	@echo "serve with: librepaper serve --latex https://latex.librepaper.workers.dev/"
+push:  ## Publish the checked mirror to OVH S3 (needs S3 credentials)
+	@node tools/check-mirror.mjs "$(MIRROR)"
+	node "$(PUBLISHER)" --dir "$(MIRROR)" --prefix latex
 
-# A target cannot export into the shell that ran make, so this opens a
-# subshell with the keys decrypted in its environment; exit it to drop them.
-# For one command instead of a shell: sops exec-env $(KEYS) '<command>'
-secrets:  ## Open a shell with the sops-encrypted keys in its environment
-	@test -f $(KEYS) || { echo "no $(KEYS) -- clone LibrePaper/librepaper beside this repo, or set KEYS="; exit 1; }
+# A target cannot export credentials into the shell that ran make, so this opens
+# a subshell with the shared keys decrypted in its environment; exit to drop them.
+# For one command instead of a shell: sops exec-env "$(KEYS)" '<command>'
+secrets:  ## Open a shell with S3 credentials in its environment
+	@test -f "$(KEYS)" || { echo "no $(KEYS) -- clone LibrePaper/librepaper beside this repo, or set KEYS="; exit 1; }
 	@test -t 0 || { echo "make secrets opens an interactive subshell and needs a terminal" >&2; exit 2; }
-	@echo "$(KEYS) is loaded in this shell; exit to drop it"
-	@sops exec-env $(KEYS) "$${SHELL:-/bin/sh}"
+	@echo "$(KEYS) is loaded in this shell; exit to drop them"
+	@sops exec-env "$(KEYS)" "$${SHELL:-/bin/sh}"
