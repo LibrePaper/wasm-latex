@@ -7,8 +7,8 @@
     {
       "name": "biber",
       "wasm": {
-        "bytes": 9644474,
-        "sha256": "106bf9221aa6f6337407711943bc5718bb138a20d0e22b17e9b54c13f37648b5"
+        "bytes": 9632938,
+        "sha256": "1006d61b60e3f877e24185529a0d901fc09c4c629a1b25f4a9c1bbbc945b7d31"
       },
       "archives": 64,
       "objects": 1
