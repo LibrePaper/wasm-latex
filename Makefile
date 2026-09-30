@@ -34,7 +34,7 @@ SOURCE_OUT  ?= dist-source
 IMAGE       ?= librepaper-pdftex-wasm
 FAMILIES    ?= pdftex bibtex bibtex8 biber makeindex xetex dvipdfm
 MIRROR      ?= mirror
-KEYS        ?= ../librepaper/deploy/keys.yaml
+KEYS        ?= ../librepaper/tools/deploy-keys.yaml
 # Shared S3 publisher from the LibrePaper application repository.
 PUBLISHER   ?= ../librepaper/tools/publish-mirror.mjs
 TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
