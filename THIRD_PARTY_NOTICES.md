@@ -47,7 +47,7 @@ These files are not covered by this repository's MIT license. Biber releases
 retain the AGPL terms for the derived runtime alongside the component terms
 recorded in `LINK-INVENTORY.biber.json`. Runtime notices ship under
 `biber-notices/`; the corresponding-source archive embeds the actual Biber,
-Perl, XS and compiler sources. See [`docs/biber.md`](docs/biber.md).
+Perl, XS and compiler sources. See [`docs/build.md`](docs/build.md) (Biber).
 
 ## SyncTeX
 

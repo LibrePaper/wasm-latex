@@ -55,7 +55,7 @@ and the inventory the build produces:
 
 A `.fmt` is not linked code and is unaffected by relinking. Rebuild one from
 your own TeX Live tree with `repo/tools/build-format.mjs`; see
-`repo/docs/format-generation.md`.
+`repo/docs/build.md` (Formats).
 
 ## If the recipe does not work
 

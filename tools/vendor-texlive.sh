@@ -3,7 +3,7 @@
 # then generate the font map that no archive contains. Every later step of the
 # pipeline reads from what this writes. Idempotent: an archive already on disk
 # is verified, not re-downloaded; an extracted tree is left alone; the map is
-# regenerated only when missing. docs/texlive-snapshot-2026.md records the
+# regenerated only when missing. docs/release.md (TeX Live snapshot) records the
 # values checked the first time this ran.
 #
 #   tools/vendor-texlive.sh            # defaults below

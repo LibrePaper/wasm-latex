@@ -10,7 +10,7 @@ document can be compiled without pairing.
 
 - **pdfLaTeX** with SyncTeX, from the reproducible engine in this repository.
 - **Every TeX Live 2026 package** in the macro tree, served on demand as
-  bundles (`docs/bundles.md`). A `\usepackage` that exists in TeX Live works
+  bundles (`docs/build.md`). A `\usepackage` that exists in TeX Live works
   without anyone pre-recording it.
 - **Type 1 fonts** and their map, so font packages embed. Computer Modern,
   Latin Modern, the AMS fonts, Times, Palatino and the rest of the Type 1 set.

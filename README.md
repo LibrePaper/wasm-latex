@@ -28,29 +28,11 @@ deploy/assets publish
 
 ## Docs
 
-- [`SPEC-latex.md`](SPEC-latex.md): the product plan, where the browser
-  stops and the paired local app begins, and what is done and not done.
-- [`docs/what-works-in-the-browser.md`](docs/what-works-in-the-browser.md):
-  the same seam for authors and agents deciding whether to pair.
-- [`docs/release.md`](docs/release.md): the release runbook.
-- [`docs/biber.md`](docs/biber.md): the pinned TeXlyre Biber build, release packaging and browser checks.
-- [`docs/latexml.md`](docs/latexml.md): the experimental LaTeXML HTML worker,
-  standalone CSS resources, and pinned source receipt.
-- [`docs/mirror.md`](docs/mirror.md): the mirror LibrePaper serves -- layout,
-  `release.json` format 2, and the contract `tools/build-mirror.mjs` and
-  `tools/check-mirror.mjs` implement.
-- [`docs/bundles.md`](docs/bundles.md): how packages reach the browser, and
-  what is and is not bundled.
-- [`docs/format-generation.md`](docs/format-generation.md): how the formats
-  are dumped, and why it takes two texmf trees.
-- [`docs/licensing.md`](docs/licensing.md): the obligations behind each
-  release-gate check.
-- [`docs/audit-worker-js.md`](docs/audit-worker-js.md): the shipped
-  JavaScript has no dynamic code and no embedded endpoint.
-- [`docs/provenance.md`](docs/provenance.md): where this repository came
-  from, the pinned inputs, and what "upstream" means here.
-- [`docs/texlive-snapshot-2026.md`](docs/texlive-snapshot-2026.md): the
-  dated record of how the 2026 tree was fetched and verified.
+- [`docs/release.md`](docs/release.md): make targets, TeX Live snapshot, mirror layout, `release.json`, the gate
+- [`docs/build.md`](docs/build.md): bundles, formats, Biber, LaTeXML
+- [`docs/licensing.md`](docs/licensing.md): obligations, provenance, what the workers can reach
+- [`docs/what-works-in-the-browser.md`](docs/what-works-in-the-browser.md): browser versus paired app
+- [`RELINK.md`](RELINK.md), [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md): shipped with every release
 
 ## Layout
 
