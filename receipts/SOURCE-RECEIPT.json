@@ -1,14 +1,14 @@
 {
   "biberSource": {
     "name": "BIBER-SOURCE.tar.gz",
-    "sha256": "d201c602b949945206808da09ebccb83e3f65ca8403c2e313de1eb62ec85ba1f",
-    "bytes": 96739222
+    "sha256": "831b3934271bf882c1cbf05591b000612893dae410835769809211617e1263e3",
+    "bytes": 96749485
   },
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-d95840430c13-source.tar.xz",
-  "bytes": 248549992,
-  "sha256": "498756fd3426da40258c92f7af7287091cf94c9e3ccfe712975a8f7f105835da",
-  "repositoryCommit": "d95840430c13b2e37f24d4cdbf9022feb6166001",
+  "archive": "librepaper-wasm-latex-22cc4303e051-source.tar.xz",
+  "bytes": 248421656,
+  "sha256": "70097cb96e64b81792a1db951cf1afa6c3e9e6e10ec704769ea56ebfa2a9097f",
+  "repositoryCommit": "22cc4303e051d4a0434ccba632dc8fa1d98f0262",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
@@ -41,22 +41,22 @@
     {
       "name": "biber.build.json",
       "bytes": 14697,
-      "sha256": "a37e6298604c897163e99b3bd6da289b95f1a04c8084629e2e8936293fa6e0f8"
+      "sha256": "23ce4df18ea617841aa77c5f2c816094254b9ce5d27c17c5f95b8147488a2be5"
     },
     {
       "name": "biber.data",
-      "bytes": 18261749,
-      "sha256": "260d8c9b5a7cfef62bb5437f97582d22b40f15233e49d707509afeb69993f412"
+      "bytes": 18260739,
+      "sha256": "09ab4a7e26920c5e8bab77f2de7c08de15c679e549090f53f99ce2ce8e616917"
     },
     {
       "name": "biber.js",
-      "bytes": 959313,
-      "sha256": "877285f52f641bf7cf5bdfd79a22b3abdbe9ede8a53e35b09cbf2bbea13922c3"
+      "bytes": 959317,
+      "sha256": "5b3ea68b7481b10c63ee46a30134d9a92e86e9625664e714763c2a3f4f2a5523"
     },
     {
       "name": "biber.wasm",
-      "bytes": 9644474,
-      "sha256": "106bf9221aa6f6337407711943bc5718bb138a20d0e22b17e9b54c13f37648b5"
+      "bytes": 9632938,
+      "sha256": "769c2bd28f8c608edfefb943e43e1529d291eeb8a8c3f75449ae3dbd5366a848"
     },
     {
       "name": "biber.worker.js",
@@ -126,7 +126,7 @@
     {
       "name": "latexml.build.json",
       "bytes": 42150,
-      "sha256": "0dae39b6d9a3d06b18ef31061d8523eaa4efaaf7c920f9aa7451f7471c2ba983"
+      "sha256": "6738202147e74e57ae6756813c15657304ce472935b2dfe079ba0905c80489f3"
     },
     {
       "name": "latexml.css",
@@ -140,8 +140,8 @@
     },
     {
       "name": "latexml.wasm",
-      "bytes": 21694350,
-      "sha256": "9d2eaea323dfa8d08f609a00d59144cc9098b6bec3af9d05d27edda6e12400db"
+      "bytes": 21694319,
+      "sha256": "1d070deab9e2ffd3e841034ac54971da93d596b2eec8e0d4905aecd89bc5d434"
     },
     {
       "name": "latexml.worker.js",
@@ -256,12 +256,12 @@
     {
       "name": "xetex.js",
       "bytes": 106967,
-      "sha256": "35d862da8485870b38da9e8a08b85dc1ce2a406a9a1cba89c0655d3e8d14fbf4"
+      "sha256": "2a93fcb3f921c6d54da068fa4f6ef4594f7976efc9ef8bc27cc1edca6954dba2"
     },
     {
       "name": "xetex.wasm",
-      "bytes": 3494333,
-      "sha256": "e1b80dd5cb8d53f155ca09075f8a3fe81cff85b772774919956485f51ba0d4d3"
+      "bytes": 3494340,
+      "sha256": "fd052655366ba48686b2a1d270be3b0c64fec254dde654e32a6fdc6f52548a8d"
     },
     {
       "name": "xetex.worker.js",
