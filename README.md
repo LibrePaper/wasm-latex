@@ -13,18 +13,14 @@ receipts and notices that let a reader verify that.
 ## Making a release
 
 ```sh
-make vendor                          # once
-make rebuild                         # ~2 h
+make vendor                                # once
+make rebuild                               # build engines and data (~2 h)
 git add receipts/ && git commit -m "Record receipts"
-make release TAG=engines-YYYY.MM.DD  # new tag every time
-make mirror                          # prints the hash
-
-cd ../librepaper
-deploy/assets smoke                   # tutorial in Chromium
-deploy/assets publish --test
-deploy/assets publish
-# assets.lock: latex row -> new tag and hash
+make release TAG=engines-YYYY.MM.DD        # new tag every time
+make mirror                                # prints the release hash
 ```
+
+Then publish and pin it from `../librepaper`: see its `docs/asset-mirrors.md`, "Updating the LaTeX engines".
 
 ## Docs
 
