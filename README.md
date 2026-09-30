@@ -10,19 +10,27 @@ Every engine is built here from pinned source, every format and package from
 a TeX Live tree whose signature was checked, and every release carries the
 receipts and notices that let a reader verify that.
 
-## Use it
+## Making a release
 
-    make vendor                  # fetch and verify the TeX Live tree, once
-    make test                    # every check that needs no Docker or network
-    make bundles                 # pack TeX Live into per-package bundles
-    make format                  # dump and smoke the pdfTeX and XeTeX formats
-    make release TAG=<tag>       # publish the source, stage, gate, print the manifest hash
-    make mirror                  # build the mirror LibrePaper serves from staged/
-    make push                    # publish it to OVH S3 (needs S3 credentials; `make secrets` opens a shell)
+From a clean checkout of `main`, with Docker, `gh` signed in, and LibrePaper
+cloned beside this repository:
 
-Engines themselves are built with Docker; see [`docs/release.md`](docs/release.md)
-for the whole path from source to a mirror LibrePaper serves. `make help`
-lists every target.
+    make vendor                         # once: fetch and verify the TeX Live tree
+    make rebuild                        # engines, Biber, bundles, formats, receipts (about two hours)
+    git add receipts/ && git commit -m "Record receipts from the rebuild"
+    make release TAG=engines-YYYY.MM.DD # tag, publish the source, stage and gate
+    make mirror                         # mirror/<sha256>/; prints the release hash
+
+Then, in `../librepaper`:
+
+    deploy/deploy-mirror.sh --test      # bucket, CORS, credentials
+    deploy/deploy-mirror.sh             # upload to OVH
+    # set the latex row in assets.lock to the new tag and hash, and commit
+
+Tags are never moved or reused: a failed release gets a new tag. The GitHub
+release must be public (not a draft) before `deploy-mirror.sh` will run.
+`make help` lists every target; [`docs/release.md`](docs/release.md)
+explains each step and what the release gate checks.
 
 ## Docs
 
