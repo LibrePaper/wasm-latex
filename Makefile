@@ -13,7 +13,7 @@
 #                    tag HEAD, create a GitHub Release, upload the archive; prints its URL
 #   make stage SOURCE_URL=https://github.com/.../releases/download/<tag>/<archive>
 #                    assemble staged/ and run the gate; prints the manifest SHA-256
-#   make release TAG=engines-2026.1
+#   make release [TAG=engines-2026.1]   (default: engines-YYYY.MM.DD)
 #                    test, source, publish-source, stage, and annotate the release
 #                    with the manifest hash — the whole chain, refusing early on a
 #                    dirty tree or an existing tag; ends by printing the `make
@@ -42,7 +42,7 @@ TEXLIVE_REF  = $(shell cat wasm-build/texlive-source-2026.ref)
 DOCKER_RUN   = docker run --rm --platform linux/amd64 -v $(abspath $(DIST)):/dist
 DOCKER_BUILD = docker buildx build --platform linux/amd64 --load
 
-.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push secrets engines rebuild
+.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release release-tagged clean-staged mirror push secrets engines rebuild
 
 BIBER_IMAGE ?= librepaper-biber-wasm-experimental
 BIBER_OUT ?= $(DIST)
@@ -117,7 +117,7 @@ engines:  ## Build every engine into $(DIST) with Docker (about two hours cold)
 	node tools/check-pins.mjs
 
 rebuild: engines biber-build vendor test bundles format inventory  ## Everything before make release: engines, Biber, data, receipts
-	@echo "rebuilt; commit what changed under receipts/, then: make release TAG=<new tag>"
+	@echo "rebuilt; commit what changed under receipts/, then: make release"
 
 source:  ## The corresponding-source archive and its receipt; refuses a dirty build tree
 	node tools/build-corresponding-source.mjs --dist $(DIST) --image $(IMAGE) --out $(SOURCE_OUT)/
@@ -133,8 +133,11 @@ stage:  ## Assemble the release directory and run the gate (needs SOURCE_URL=)
 check:  ## Re-run the gate on an existing staged directory
 	node tools/check-release.mjs --dir $(STAGED)
 
-release:  ## The whole chain: test, source, publish, stage, annotate (needs TAG=)
-	@test -n "$(TAG)" || { echo "usage: make release TAG=engines-2026.1"; exit 2; }
+release:  ## The whole chain: test, source, publish, stage, annotate (TAG= defaults to engines-YYYY.MM.DD)
+	@$(MAKE) --no-print-directory release-tagged TAG="$(or $(TAG),$$(tools/release.sh next-tag))"
+
+release-tagged:  # the chain itself, with TAG fixed once so it cannot drift mid-run
+	@test -n "$(TAG)" || { echo "usage: make release [TAG=engines-YYYY.MM.DD]"; exit 2; }
 	tools/release.sh preflight "$(TAG)"
 	$(MAKE) test
 	$(MAKE) inventory
@@ -149,13 +152,13 @@ release:  ## The whole chain: test, source, publish, stage, annotate (needs TAG=
 	echo ""; \
 	echo "Staged and annotated. Review $(STAGED)/MANIFEST.json, then:"; \
 	echo "  make mirror        # staged manifest $$HASH"; \
-	echo "  make push"
+	echo "  then publish and pin it from ../librepaper (docs/dev/asset-mirrors.md)"
 
 clean-staged:  ## Remove the staged directory
 	rm -rf $(STAGED)
 
 mirror:  ## Build the one-release static mirror (mirror/<id>/) LibrePaper serves from staged/ (MANIFEST_SHA256= to pin a reviewed hash)
-	@test -f $(STAGED)/MANIFEST.json || { echo "no $(STAGED)/MANIFEST.json; run make release TAG=<tag> (or make stage SOURCE_URL=<url>) first"; exit 2; }
+	@test -f $(STAGED)/MANIFEST.json || { echo "no $(STAGED)/MANIFEST.json; run make release (or make stage SOURCE_URL=<url>) first"; exit 2; }
 	@# The hash is read from the staged manifest when not given: this repository
 	@# staged it, so there is no second party whose review the hash would carry.
 	@HASH="$(MANIFEST_SHA256)"; [ -n "$$HASH" ] || HASH=$$(sha256sum $(STAGED)/MANIFEST.json | cut -d' ' -f1); \

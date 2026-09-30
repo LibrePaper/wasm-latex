@@ -4,13 +4,7 @@ The wasm-latex engines and their data are released through this repository. Libr
 
 ## Release
 
-The command sequence is in [README.md](../README.md#making-a-release).
-
-Composite targets in order of use:
-- `make rebuild`: engines, biber-build, vendor, test, bundles, format, inventory
-- `make engines`: every Docker engine build, then `node tools/check-pins.mjs`
-- `make release TAG=<tag>`: preflight, test, inventory, source, commit receipts, publish-source, stage, annotate; refuses a dirty tree, an existing tag, or no gh login
-- `make push`: alternative to `deploy/assets publish`
+Steps: LibrePaper [`docs/dev/asset-mirrors.md`](https://github.com/LibrePaper/librepaper/blob/main/docs/dev/asset-mirrors.md#updating-the-latex-engines), "Updating the LaTeX engines".
 
 ## TeX Live snapshot
 
@@ -87,22 +81,6 @@ docker run --rm --platform linux/amd64 \
 - Each build: 15 to 20 minutes
 - `node tools/check-pins.mjs` confirms source commit and Emscripten image are pinned
 - Skip when nothing under `wasm-build/` changed
-
-## Staging and committing
-
-```sh
-git add receipts/
-git commit
-
-make stage SOURCE_URL=<url>
-
-sha256sum staged/MANIFEST.json
-```
-
-- `make stage` assembles `staged/` from `wasm-build/dist` and the bundle tree, runs the gate, prints SHA-256
-- That hash is the release's identity; LibrePaper imports against it and the GitHub Release records it
-- Tags are never moved; a second release gets a new tag and archive
-- Commit `receipts/SOURCE-RECEIPT.json` after `make source` so the receipt is in the tag's history
 
 ## Mirror layout
 

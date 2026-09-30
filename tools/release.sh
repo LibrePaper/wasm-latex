@@ -2,6 +2,7 @@
 # The one step of the pipeline that publishes: put the corresponding-source
 # archive on a GitHub Release so the shipped SOURCE.md can point at it.
 #
+#   tools/release.sh next-tag                              print engines-YYYY.MM.DD, suffixed -2, -3 if taken
 #   tools/release.sh preflight       <tag>                 clean tree, tag unused, gh signed in
 #   tools/release.sh commit-receipt                        commit what make inventory and make source wrote under receipts/
 #   tools/release.sh publish-source  <tag> [dist-source]   tag HEAD, create the release, upload
@@ -48,6 +49,14 @@ archive_for() {  # <dist-source dir> -> path of the archive the receipt names
 }
 
 case "$cmd" in
+  next-tag)
+    # engines-YYYY.MM.DD, then -2, -3, ... when that day already has a release.
+    git fetch -q --tags origin 2>/dev/null || true
+    base=engines-$(date -u +%Y.%m.%d); t=$base; n=1
+    while git rev-parse -q --verify "refs/tags/$t" >/dev/null; do n=$((n + 1)); t=$base-$n; done
+    echo "$t"
+    ;;
+
   preflight)
     need_tag
     [ -z "$(git status --porcelain)" ] || die "the working tree is not clean; commit first"

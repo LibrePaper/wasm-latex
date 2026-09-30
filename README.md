@@ -12,19 +12,11 @@ receipts and notices that let a reader verify that.
 
 ## Making a release
 
-```sh
-make vendor                                # once
-make rebuild                               # build engines and data (~2 h)
-git add receipts/ && git commit -m "Record receipts"
-make release TAG=engines-YYYY.MM.DD        # new tag every time
-make mirror                                # prints the release hash
-```
-
-Then publish and pin it from `../librepaper`: see its `docs/asset-mirrors.md`, "Updating the LaTeX engines".
+Documented once, in LibrePaper: [`docs/dev/asset-mirrors.md`](https://github.com/LibrePaper/librepaper/blob/main/docs/dev/asset-mirrors.md#updating-the-latex-engines), "Updating the LaTeX engines".
 
 ## Docs
 
-- [`docs/release.md`](docs/release.md): make targets, TeX Live snapshot, mirror layout, `release.json`, the gate
+- [`docs/release.md`](docs/release.md): TeX Live snapshot, engine builds, mirror layout, `release.json`, the gate
 - [`docs/build.md`](docs/build.md): bundles, formats, Biber, LaTeXML
 - [`docs/licensing.md`](docs/licensing.md): obligations, provenance, what the workers can reach
 - [`docs/what-works-in-the-browser.md`](docs/what-works-in-the-browser.md): browser versus paired app
