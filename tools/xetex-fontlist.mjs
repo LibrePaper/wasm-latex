@@ -17,7 +17,7 @@
 //
 // Used by tools/build-format.mjs (in-process, to answer the format build's own
 // kpse format-26 request) and by the CLI below (to produce the copy that ships
-// as a bundle member, tex/xetex/fontlist/xetexfontlist.txt - see docs/bundles.md
+// as a bundle member, tex/xetex/fontlist/xetexfontlist.txt - see docs/build.md
 // and tools/build-bundles.mjs's --extra flag).
 //
 //   node tools/xetex-fontlist.mjs --texmf <dir> [--texmf <dir> ...] \

@@ -342,7 +342,7 @@ this source corresponds to:
     node repo/tools/link-inventory.mjs --root repo --dist out --family pdftex
 
 The format file is built separately and is not linked code; see
-\`repo/docs/format-generation.md\`.
+\`repo/docs/build.md\`.
 
 To substitute your own copy of an LGPL library and relink, see \`RELINK.md\`.
 

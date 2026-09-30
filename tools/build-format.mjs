@@ -194,7 +194,7 @@ function resolveFile(format, name) {
 // texmf trees. The builder itself (the otfinfo invocation, the record format,
 // the field-by-field comment) lives in tools/xetex-fontlist.mjs, shared with
 // the CLI that produces the copy shipped as a bundle member (see
-// tools/build-bundles.mjs's --extra flag and docs/bundles.md).
+// tools/build-bundles.mjs's --extra flag and docs/build.md).
 
 // --- The engine's file requests arrive as synchronous XHR --------------------
 // URL shape is <endpoint>pdftex/<format>/<name>; the endpoint is a sentinel
