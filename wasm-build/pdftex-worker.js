@@ -15,14 +15,14 @@
 //   setmainfile     — set the main .tex entry point
 //   settexliveurl   — set the TexLive package server endpoint
 //   preloadtexlive  — pre-load a texlive file into MEMFS cache
-//   loadbundleindex — load bundles.json (docs/build.md (Bundles) The index") and switch
+//   loadbundleindex — load bundles.json (SPEC-latex.md "The index") and switch
 //                     the resolver to bundle mode; preloads any bundle already
 //                     verified in Cache Storage
 //   preloadbundle   — verify and unpack one bundle the host already fetched
 //   flushcache      — clear the working directory
 //   grace           — gracefully shut down the worker
 //
-// Package delivery (docs/build.md (Bundles)):
+// Package delivery (SPEC-latex.md, "Package delivery: bundles, not files"):
 // once loadbundleindex has run, kpse_find_file_impl resolves every (format,
 // name) request against the index instead of issuing one XHR per file. A
 // bundle not yet unpacked is fetched once (one synchronous XHR, same as the
@@ -547,7 +547,7 @@ function bloomMaybe(format, reqname) {
 // authored engine worker; self.bundleMode is created near the bottom of this
 // file, after bundle-mode.js loads.
 
-// Bundle-mode resolution for kpse_find_file_impl (docs/build.md (Bundles) The
+// Bundle-mode resolution for kpse_find_file_impl (SPEC-latex.md "The
 // resolver"). Returns a heap pointer (hit), 0 (a definitive miss — recorded in
 // texlive404_cache so it costs nothing next time), or `undefined` for the one
 // case that still needs the legacy per-file path: a format-10 (.fmt) request
@@ -617,7 +617,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
         return allocateString(savepath);
     }
 
-    // Bundle mode (docs/build.md (Bundles) The resolver"): once an index is loaded it
+    // Bundle mode (SPEC-latex.md "The resolver"): once an index is loaded it
     // is authoritative and replaces the per-file bloom+XHR path below entirely,
     // except for a format-10 request the index has no entry for (see
     // resolveViaBundleIndex).
@@ -1383,9 +1383,9 @@ function writeFileRoutine(filename, content) {
 }
 
 // After loadbundleindex parses the index, preload bundles a previous session
-// already verified and stashed in Cache Storage (docs/build.md, Bundles): the
-// worker checks the cache before the network, so a warm session makes no
-// request at all for a package it has used before. Without
+// already verified and stashed in Cache Storage (SPEC-latex.md "Browser
+// cache"): "the worker checks the cache before the network", so a warm
+// session makes no request at all for a package it has used before. Without
 // `preload`, every cached bundle matching the index is restored (legacy
 // behaviour); with it, only the named bundles are — the rest are reported in
 // `skipped`, still in Cache Storage, restorable later by name (`preloadbundle`
@@ -1493,8 +1493,8 @@ self["onmessage"] = function(ev) {
             }
         }
     } else if (cmd === "loadbundleindex") {
-        // Load bundles.json and switch the resolver to bundle mode
-        // (docs/build.md, Bundles). data: {data: string|ArrayBuffer, msgId,
+        // Load bundles.json and switch the resolver to bundle mode (SPEC-latex.md
+        // "The index" / "The resolver"). data: {data: string|ArrayBuffer, msgId,
         // preload?: string[]}. `preload`, when present, scopes the Cache Storage
         // preload to just those bundle names (item 7: "scope the preload");
         // without it every cached bundle matching the index is restored.

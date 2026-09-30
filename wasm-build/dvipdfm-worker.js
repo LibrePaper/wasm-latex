@@ -42,7 +42,7 @@ Module.preRun = () => {
   FS.mkdir(TEXMFROOT)
 }
 
-// Bundle-mode resolver (docs/build.md (Bundles)); shared logic lives in
+// Bundle-mode resolver (SPEC-latex.md "The resolver"); shared logic lives in
 // wasm-build/bundle-mode.js. self.bundleMode.index stays null until
 // loadbundleindex succeeds; kpse_find_file_impl consults it first, after the
 // session caches, and falls through to the legacy per-file XHR path only
@@ -269,7 +269,7 @@ self.onmessage = (ev) => {
   } else if (cmd === 'flushcache') {
     cleanDir(WORKROOT)
   } else if (cmd === 'loadbundleindex') {
-    // docs/build.md (Bundles). data: {data, msgId, preload?}.
+    // SPEC-latex.md "The index" / "The resolver". data: {data, msgId, preload?}.
     const msgId = data.msgId
     try {
       self.bundleMode.loadIndex(data.data)

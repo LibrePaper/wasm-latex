@@ -31,7 +31,7 @@ Module["preRun"] = function() {
   FS.chdir(WORKROOT);
 };
 
-// Bundle-mode resolver (docs/build.md (Bundles)); shared logic lives in
+// Bundle-mode resolver (SPEC-latex.md "The resolver"); shared logic lives in
 // wasm-build/bundle-mode.js. self.bundleMode.index stays null until
 // loadbundleindex succeeds; kpse_find_file_impl consults it first, after the
 // session caches, and falls through to the legacy per-file XHR path only
@@ -277,7 +277,7 @@ self["onmessage"] = function(ev) {
   } else if (cmd === "settexliveurl") {
     self.texlive_endpoint = data.url;
   } else if (cmd === "loadbundleindex") {
-    // docs/build.md (Bundles). data: {data, msgId, preload?}.
+    // SPEC-latex.md "The index" / "The resolver". data: {data, msgId, preload?}.
     var libMsgId = data.msgId;
     try {
       self.bundleMode.loadIndex(data.data);

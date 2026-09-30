@@ -35,7 +35,7 @@ Module["preRun"] = function() {
   FS.chdir(WORKROOT);
 };
 
-// Bundle-mode resolver (docs/build.md (Bundles)); shared logic lives in
+// Bundle-mode resolver (SPEC-latex.md "The resolver"); shared logic lives in
 // wasm-build/bundle-mode.js. self.bundleMode.index stays null until
 // loadbundleindex succeeds; kpse_find_file_impl consults it first, after the
 // session caches, and falls through to the legacy per-file XHR path only
