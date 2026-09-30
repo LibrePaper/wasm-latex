@@ -20,8 +20,9 @@ make release TAG=engines-YYYY.MM.DD  # new tag every time
 make mirror                          # prints the hash
 
 cd ../librepaper
-deploy/deploy-mirror.sh --test
-deploy/deploy-mirror.sh
+deploy/assets smoke                   # tutorial in Chromium
+deploy/assets publish --test
+deploy/assets publish
 # assets.lock: latex row -> new tag and hash
 ```
 
