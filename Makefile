@@ -22,8 +22,8 @@
 #                    (MANIFEST_SHA256=<digest> pins a reviewed hash instead)
 #   make push        publish mirror/ to OVH object storage (needs S3 credentials)
 #
-# Engines themselves are built with Docker (see README); this file assumes
-# wasm-build/dist already holds them.
+# `make engines` builds every engine into wasm-build/dist with Docker;
+# `make rebuild` does that and then regenerates all the data and receipts.
 
 TEXMF_DIST  ?= vendor/texlive-2026/texlive-20260301-texmf/texmf-dist
 TEXMF_VAR   ?= vendor/texlive-2026/texmf-var
@@ -38,8 +38,11 @@ KEYS        ?= ../librepaper/deploy/keys.yaml
 # Shared S3 publisher from the LibrePaper application repository.
 PUBLISHER   ?= ../librepaper/tools/publish-mirror.mjs
 TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
+TEXLIVE_REF  = $(shell cat wasm-build/texlive-source-2026.ref)
+DOCKER_RUN   = docker run --rm --platform linux/amd64 -v $(abspath $(DIST)):/dist
+DOCKER_BUILD = docker buildx build --platform linux/amd64 --load
 
-.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push secrets
+.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release clean-staged mirror push secrets engines rebuild
 
 BIBER_IMAGE ?= librepaper-biber-wasm-experimental
 BIBER_OUT ?= $(DIST)
@@ -100,6 +103,21 @@ inventory:  ## Link inventories for every built family
 	@for f in $(FAMILIES); do \
 	  node tools/link-inventory.mjs --family $$f --dist $(DIST) --quiet \
 	    --out receipts/LINK-INVENTORY.$$f.json || exit 1; done
+
+engines:  ## Build every engine into $(DIST) with Docker (about two hours cold)
+	$(DOCKER_BUILD) --build-arg TEXLIVE_REF=$(TEXLIVE_REF) -t $(IMAGE) wasm-build/
+	$(DOCKER_RUN) $(IMAGE)
+	@for e in makeindex bibtex8; do \
+	  $(DOCKER_BUILD) --build-arg TEXLIVE_REF=$(TEXLIVE_REF) -f wasm-build/Dockerfile.$$e -t librepaper-$$e-wasm wasm-build/ && \
+	  $(DOCKER_RUN) librepaper-$$e-wasm || exit 1; done
+	TEXLIVE_YEAR=2026 bash wasm-build/build-xetex-fromsource.sh $(DIST)
+	bash wasm-build/build-icu-data.sh
+	$(DOCKER_BUILD) -f wasm-build/Dockerfile.latexml -t librepaper-latexml-wasm .
+	$(DOCKER_RUN) -e LATEXML_DIST_DIR=/dist librepaper-latexml-wasm
+	node tools/check-pins.mjs
+
+rebuild: engines biber-build vendor test bundles format inventory  ## Everything before make release: engines, Biber, data, receipts
+	@echo "rebuilt; commit what changed under receipts/, then: make release TAG=<new tag>"
 
 source:  ## The corresponding-source archive and its receipt; refuses a dirty build tree
 	node tools/build-corresponding-source.mjs --dist $(DIST) --image $(IMAGE) --out $(SOURCE_OUT)/

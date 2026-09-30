@@ -5,6 +5,9 @@ runs. Every step is a `make` target here or in LibrePaper; the only step that
 publishes anything is `make publish-source`, and `make release` refuses to
 start if the tree is dirty, the tag exists, or `gh` is not signed in.
 
+`make rebuild` runs steps 1 and 2 in order and stops at the first failure;
+`make engines` runs step 1 alone. The commands below are what they run.
+
 ## 1. Build the engines (Docker, once per TeX Live source pin)
 
     docker buildx build --platform linux/amd64 --load \
