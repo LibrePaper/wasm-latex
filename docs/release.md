@@ -1,121 +1,243 @@
 # Releasing
 
-The whole path from source to a mirror LibrePaper serves, in the order it
-runs. Every step is a `make` target here or in LibrePaper; the only step that
-publishes anything is `make publish-source`, and `make release` refuses to
-start if the tree is dirty, the tag exists, or `gh` is not signed in.
+The wasm-latex engines and their data are released through this repository. LibrePaper imports them by pinning the manifest digest.
 
-`make rebuild` runs steps 1 and 2 in order and stops at the first failure;
-`make engines` runs step 1 alone. The commands below are what they run.
+## Release
 
-## 1. Build the engines (Docker, once per TeX Live source pin)
+The full sequence from source to deployed mirror.
 
-    docker buildx build --platform linux/amd64 --load \
-      --build-arg TEXLIVE_REF=$(cat wasm-build/texlive-source-2026.ref) \
-      -t librepaper-pdftex-wasm wasm-build/
-    docker run --rm --platform linux/amd64 -v $PWD/wasm-build/dist:/dist librepaper-pdftex-wasm
+```sh
+# Fetch, verify and unpack TeX Live 2026; generate font map
+make vendor
 
-The same shape with `Dockerfile.makeindex`, `Dockerfile.bibtex8`, and
-`Dockerfile.luatex` builds those engines; XeTeX and dvipdfm come from
-`TEXLIVE_YEAR=2026 bash wasm-build/build-xetex-fromsource.sh wasm-build/dist`,
-and XeTeX's ICU data from `bash wasm-build/build-icu-data.sh`, which writes
-the gzip the release ships. Each takes 15 to 20 minutes. `node
-tools/check-pins.mjs` confirms the source commit and the Emscripten image are
-the pinned ones. Skip this step when nothing under `wasm-build/` changed.
+# Build engines with Docker; build Biber, data, receipts (about two hours cold)
+make rebuild
 
-The experimental LaTeXML renderer has a separate pinned Rust/native build:
+# Commit receipts/ changes
+git add receipts/
+git commit -m "..."
 
-    docker buildx build --platform linux/amd64 --load \
-      -f wasm-build/Dockerfile.latexml -t librepaper-latexml-wasm .
-    docker run --rm --platform linux/amd64 \
-      -e LATEXML_DIST_DIR=/dist -v $PWD/wasm-build/dist:/dist \
-      librepaper-latexml-wasm
+# Tag HEAD and create GitHub Release; assemble and gate the release
+make release TAG=engines-2026.1
 
-This writes the worker, glue/WASM, upstream CSS resources, and
-`latexml.build.json`. The receipt is required for staging and records the
-LaTeXML checkout, libxml2/libxslt/kpathsea inputs, and the wrapper Cargo lock
-graph separately from the TeX Live source receipt. See
-It uses Emscripten 6.0.9
-and nightly Rust `2026-08-02`; the other engine images remain on Emscripten
-3.1.46. See
-[`docs/latexml.md`](latexml.md).
+# Verify the staged manifest, then build the mirror
+make mirror
 
-## 2. Build the data from the vendored tree
+# From ../librepaper, check the mirror and publish it
+deploy/assets check
+deploy/assets smoke
+deploy/assets publish --test
+deploy/assets publish
 
-    make biber-build  # Biber WASM, worker, data, link map, source archive and build receipt
-    make test         # unit tests, pin check, resolver tests
-    make bundles      # font list, per-package bundles, receipt
-    make format       # pdfTeX and XeTeX formats, smoked, with receipts
-    make inventory    # link inventories for every engine family
+# Update the latex row of assets.lock
+```
 
-`vendor/` must hold the verified TeX Live tree; `make vendor` fetches,
-verifies and unpacks it and generates the font map
-(`docs/texlive-snapshot-2026.md`). `make bundles` and `make format` are
-deterministic; rerunning them changes nothing unless the tree or the engines
-did.
+`make rebuild` runs `make engines` (Docker, once per TeX Live pin) followed by `make vendor`, `make test`, `make bundles`, `make format`, `make inventory`, and `make biber-build` in order.
 
-## 3. Commit
+`make release TAG=<tag>` runs the full chain: `make source`, `make publish-source TAG=<tag>`, `make stage`, and annotates the release with the manifest SHA-256. It refuses to start if the tree is dirty, the tag exists, or `gh` is not signed in. After it prints the staged manifest hash, review `staged/MANIFEST.json` and run `make mirror` manually.
 
-Everything under `receipts/` that changed is release evidence and is
-committed. `make source` refuses a tree with uncommitted changes under
-`wasm-build/`, `tools/`, `third-party/`, `Makefile` or `linked-components.json`, because the archive it
-builds is `git archive HEAD` and would not be the source of the artifacts.
+Legacy alternative: `make push` (from this repository) publishes `mirror/` through `../librepaper/tools/publish-mirror.mjs`.
 
-## 4. Publish the source and stage the release
+## TeX Live snapshot
 
-    make release TAG=engines-2026.1
+One place provides all TeX Live inputs: the official TeX Live 2026 texmf release archive, verified against TUG's signed hash.
 
-which is, step by step:
+### Obtaining and verifying
 
-    make source                              # dist-source/<archive>.tar.xz and receipts/SOURCE-RECEIPT.json
-    make publish-source TAG=engines-2026.1   # tags HEAD, creates the GitHub Release, uploads the archive
-    make stage SOURCE_URL=<the URL it printed>
-    tools/release.sh annotate engines-2026.1 # writes the manifest hash into the release notes
+```sh
+mkdir -p vendor/texlive-2026 && cd vendor/texlive-2026
+B=https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2026
+curl -O $B/texlive-20260301-texmf.tar.xz.sha512 \
+     -O $B/texlive-20260301-texmf.tar.xz.sha512.asc \
+     -O https://tug.org/texlive/files/texlive.asc
 
-`make stage` assembles `staged/` and runs the gate. When it passes it prints
-the SHA-256 of `staged/MANIFEST.json`. That hash is the release's identity;
-it is what LibrePaper imports against and what the GitHub Release records.
-Commit `receipts/SOURCE-RECEIPT.json` after `make source` so the receipt of
-the published archive is in the history the tag names.
+# Verify the hash file is signed by the TeX Live distribution key
+export GNUPGHOME=$(mktemp -d) && chmod 700 $GNUPGHOME
+gpg -q --import texlive.asc && gpg -q --export > tl.gpg
+gpgv --keyring ./tl.gpg texlive-20260301-texmf.tar.xz.sha512{.asc,}
 
-Tags are never moved. A second release gets a new tag and a new archive.
+# Verify the archive
+curl -C - -O $B/texlive-20260301-texmf.tar.xz
+sha512sum -c texlive-20260301-texmf.tar.xz.sha512
+tar -xJf texlive-20260301-texmf.tar.xz
+```
 
-## 5. Build the mirror and push it
+Verified 2026-09-08: `texlive-20260301-texmf.tar.xz` (4 963 412 512 bytes), sha512 matched, signed by TeX Live Distribution, extracted to `texlive-20260301-texmf/texmf-dist` (9.1 GB).
 
-This repository builds and deploys the mirror itself; LibrePaper keeps only
-a URL. In this repository:
+### Font map generation
 
-    make mirror                            # reads the hash from staged/MANIFEST.json
+`texmf-dist` does not contain `pdftex.map`; `updmap` writes it.
 
-which runs `tools/build-mirror.mjs` (verifies the manifest against the hash
-and every payload file against the manifest, then writes the release under
-`mirror/<id>/`, emptying `mirror/` first) and `tools/check-mirror.mjs` on the
-result. See [`docs/mirror.md`](mirror.md) for the layout and `release.json` shape
-this writes -- it is the contract LibrePaper's `check-mirror.mjs` and
-`web/src/lib/latex/worker.js` consume. Then, with the S3 endpoint, region, bucket
-and AWS credentials set in the environment (or loaded with `make secrets`), run:
+```sh
+T=vendor/texlive-2026/texlive-20260301-texmf/texmf-dist
+V=vendor/texlive-2026/texmf-var
+TEXMFDIST=$T TEXMFMAIN=$T TEXMFVAR=$V TEXMFSYSVAR=$V \
+TEXMFCONFIG=$V TEXMFSYSCONFIG=$V TEXMFHOME=$V \
+  updmap --quiet --nohash --cnffile $T/web2c/updmap.cfg
+```
 
-    make push
+This runs a local TeX Live's `updmap` with all inputs from the 2026 tree. Verify by size: the 2026 map is 5 541 403 bytes.
 
-which publishes `mirror/` through the shared `../librepaper/tools/publish-mirror.mjs`
-command. The publisher sets content types and cache metadata (every object is
-immutable; nothing is `no-store` or `no-cache`) and serves gzip-encoded responses
-where applicable. Configure bucket CORS once with the publisher's explicit
-`--configure-cors` option (or configure it in OVH); ordinary `make push` only
-uploads mirror objects. There is no provider-specific object-size gate.
+### Where it lives
 
-After the OVH URL passes the deployed mirror check, configure LibrePaper to use
-it: `librepaper serve --latex <OVH mirror URL>`, or use its own
-`latex/tools/check-mirror.mjs <url>` to verify it first. Releases with
-`engines.biber` supply Biber directly through this mirror; no `--biber-vm`
-setting is required. Before deployment, test the app against the generated
-mirror with `node tools/biber-app-browser-check.mjs --mirror mirror --app ../librepaper/web`.
+`vendor/texlive-2026/` is gitignored and contains the archive, hash, signature, extracted `texmf-dist`, and generated `texmf-var` (14 GB total). The repository keeps only the receipt naming what was used and the hash of every file that went in, so the tree can be rebuilt from the commands above and checked against it.
+
+## Engine builds
+
+Every engine builds once per TeX Live source pin with Docker.
+
+```sh
+# pdftex, bibtex, bibtex8, makeindex
+docker buildx build --platform linux/amd64 --load \
+  --build-arg TEXLIVE_REF=$(cat wasm-build/texlive-source-2026.ref) \
+  -t librepaper-pdftex-wasm wasm-build/
+docker run --rm --platform linux/amd64 -v $PWD/wasm-build/dist:/dist librepaper-pdftex-wasm
+
+# Same pattern with Dockerfile.makeindex, Dockerfile.bibtex, Dockerfile.bibtex8
+
+# XeTeX and dvipdfm
+TEXLIVE_YEAR=2026 bash wasm-build/build-xetex-fromsource.sh wasm-build/dist
+bash wasm-build/build-icu-data.sh
+
+# LaTeXML (experimental, separate pinned Rust build)
+docker buildx build --platform linux/amd64 --load \
+  -f wasm-build/Dockerfile.latexml -t librepaper-latexml-wasm .
+docker run --rm --platform linux/amd64 \
+  -e LATEXML_DIST_DIR=/dist -v $PWD/wasm-build/dist:/dist \
+  librepaper-latexml-wasm
+```
+
+Each build is 15 to 20 minutes. `node tools/check-pins.mjs` confirms the source commit and Emscripten image are the pinned ones. Skip when nothing under `wasm-build/` changed.
+
+## Staging and committing
+
+```sh
+# Commit receipts/ that changed
+git add receipts/
+git commit
+
+# Assemble staged/ and run the gate
+make stage SOURCE_URL=<url>
+
+# The hash of staged/MANIFEST.json is the release's identity
+sha256sum staged/MANIFEST.json
+```
+
+`make stage` assembles `staged/` from `wasm-build/dist` and the bundle tree, runs the gate, and prints the SHA-256 of `staged/MANIFEST.json`. That hash is what LibrePaper imports against and what the GitHub Release records. Tags are never moved; a second release gets a new tag and a new archive. Commit `receipts/SOURCE-RECEIPT.json` after `make source` so the receipt of the published archive is in the history the tag names.
+
+## Mirror layout
+
+```
+mirror/
+  _headers                                 everything immutable, plus CORS
+  <id>/                                    one release; <id> = sha256 of MANIFEST.json
+    MANIFEST.json                          byte copy of the staged manifest
+    release.json                           the loader entry for this release
+    pdftex.worker.js pdftex.js pdftex.wasm
+    pdftex.fmt pdftex-resolver-evidence.js
+    kpse-resolve.js bundle-mode.js
+    bibtex.* bibtex8.* makeindex.* biber.* biber-notices/
+    xetex.* xetex.fmt.gz icudt68l.dat.gz dvipdfm.*
+    latexml.worker.js latexml.js latexml.wasm latexml.css LaTeXML.css
+    LaTeXML-blue.css LaTeXML-marginpar.css LaTeXML-navbar-left.css LaTeXML-navbar-right.css
+    ltx-amsart.css ltx-apj.css ltx-article.css ltx-book.css ltx-listings.css
+    ltx-report.css ltx-svjour.css ltx-ulem.css
+    LICENSE THIRD_PARTY_NOTICES.md SOURCE.md SOURCE-RECEIPT.json RELINK.md
+    LICENSES/  LINK-INVENTORY.*.json  FORMAT-RECEIPT.*.json  BUNDLE-RECEIPT.*.json
+    bundles/bundles.json                   package index
+    bundles/b/<sha256>/<slug>.tar          one tar per package directory
+```
+
+`<id>` is the SHA-256 of the staged `MANIFEST.json`. Nothing in the mirror is mutable: there is no top-level manifest, no default release, no file whose bytes change under a fixed name. A release is found by its id, which LibrePaper's build pins; a new digest is a new directory. `make mirror` holds exactly the one staged release and clears whatever an earlier build left. Biber WASM travels with the release. The separate `--biber-vm` server setting is only a legacy fallback for mirrors that do not advertise `engines.biber`.
+
+## release.json, format 2
+
+Every path is relative to the release directory (`<mirror URL>/<id>/`). There is no `base`.
+
+```json
+{
+  "format": 2,
+  "id": "<sha256>",
+  "engine_release": "<sha256>",
+  "engines": {
+    "pdftex":  { "worker": "pdftex.worker.js", "format": "pdftex.fmt", "files": ["..."] },
+    "xetex":   { "worker": "xetex.worker.js",  "format": "xetex.fmt.gz", "icu": "icudt68l.dat.gz", "files": ["..."] },
+    "dvipdfm": { "worker": "dvipdfm.worker.js", "files": ["..."] },
+    "bibtex":  { "worker": "bibtex.worker.js", "files": ["..."] },
+    "bibtex8": { "worker": "bibtex8.worker.js", "files": ["..."] },
+    "biber": { "worker": "biber.worker.js", "files": ["biber.worker.js", "biber.js", "biber.wasm", "biber.data", "biber.build.json"] },
+    "makeindex": { "worker": "makeindex.worker.js", "files": ["..."] },
+    "latexml": { "worker": "latexml.worker.js", "files": ["latexml.worker.js", "..."] }
+  },
+  "files": { "<name>": { "url": "<name>", "sha256": "...", "size": 123 } },
+  "bibliography": {
+    "bibtex": "0.99e",
+    "biblatex": "3.22",
+    "control_file": "3.11",
+    "biber": { "version": "2.22", "compatible": ["2.22"], "incompatible_hint": "..." }
+  },
+  "bundles": { "index": "bundles/bundles.json", "sha256": "...", "snapshot": "texlive-20260301-texmf", "count": 5501, "bytes": 3492000000 },
+  "vm": null,
+  "source": {
+    "corresponding_source": { "url": "https://...", "sha256": "..." },
+    "manifest": { "url": "MANIFEST.json", "sha256": "...", "size": 0 },
+    "build_receipts": ["FORMAT-RECEIPT.pdftex-2026.json", "..."],
+    "reproduced": false
+  },
+  "licences": { "pdftex": "GPL-2.0-only", "xetex": "GPL-2.0-only AND LicenseRef-XeTeX", "..." },
+  "sizes": { "pdftex": 5807474, "..." },
+  "digest": "<sha256 hex of canonical JSON without digest>"
+}
+```
+
+Fields consumed by LibrePaper's `configure()` in `web/src/lib/latex/worker.js`:
+- `engines`, `files`, `bibliography`, `bundles`, `source`: every `url` and `bundles.index` are resolved against the release directory
+- Extra fields (`format`, `id`, `engine_release`, `digest`, `licences`, `sizes`, `vm`) are provenance, not protocol
+
+`luatex` is absent from `engines` on every release this repository ships: its engine is unbuilt, so its file set is never complete, and an engine whose file set is not complete is not advertised. LibrePaper's `configure()` treats missing `engines.luatex` as "this release has no LuaTeX", which is correct.
+
+`vm` is always `null`. The field survives from when the Biber VM was registered into the mirror. Older releases can find their VM through the `--biber-vm <url>#<sha256>` flag.
+
+`bibliography.control_file` and `bibliography.biblatex` are read from the release's bundled `tex/latex/biblatex/biblatex.sty`, found via `bundles.json` and unpacked with the tar reader in `wasm-build/kpse-resolve.cjs`. This needs no network: the old CDN fetch of `biblatex.sty` at import time is gone.
+
+## Serving the mirror
+
+Every object under `<id>/` is immutable. Set cache headers once in `mirror/_headers`:
+
+```
+Cache-Control: public, max-age=31536000, immutable
+```
+
+Add CORS headers and configure bucket CORS explicitly during setup. The shared S3 publisher applies matching cache policy and content types, serves gzip-encoded responses where applicable, and preserves object paths without altering bytes. Browsers decode gzip before checking payload integrity.
+
+No release beyond the one referenced by the current LibrePaper build is promised to remain available. The mirror contains published build releases and their receipts only; it does not accept, retain, or log user documents, compiler inputs, compiler outputs, or request bodies.
+
+## Building and checking the mirror
+
+```sh
+# Build the mirror from staged/ and the reviewed manifest hash
+node tools/build-mirror.mjs --staged staged --sha256 <hash> --out mirror
+
+# Verify the local mirror
+node tools/check-mirror.mjs mirror
+
+# Verify a deployed mirror
+node tools/check-mirror.mjs https://<mirror-url>/ <release-id>
+```
+
+`build-mirror.mjs` verifies every payload file against the staged manifest before writing anything (the same check `check-release.mjs` already ran at stage time, re-run here because the mirror is a separate trust boundary). It owns `--out`: the directory is emptied first, so the result is exactly the one release.
+
+`check-mirror.mjs` with a directory argument runs the full check: only release directories (each named by the SHA-256 of its `MANIFEST.json`) and `_headers` are present, each `release.json` is format 2 and lists exactly the files on disk with matching digests and sizes, the release has a complete pdfTeX engine, `bundles.json`'s digest matches the release entry, and every bundle tar it names is on disk with matching digest. A URL argument checks the shape of `<url>/<id>/release.json` and downloads the largest advertised file, verifying its decoded size and digest.
 
 ## What the gate checks
 
-`make check` runs `tools/check-release.mjs` on `staged/`: every artifact
-named and unmodified, every linked component classified with its notice
-present, the LGPL relink recipe shipped, the corresponding source named,
-hashed and built for these exact bytes, every format's inputs receipted, and
-every bundle matching the index and the index matching the manifest. It
-fails closed. `docs/licensing.md` explains the obligations behind each check.
+`make check` runs `tools/check-release.mjs` on `staged/`:
+
+- Every artifact named and unmodified
+- Every linked component classified with its notice present
+- LGPL relink recipe shipped
+- Corresponding source named, hashed and built for these exact bytes
+- Every format's inputs receipted
+- Every bundle matching the index and the index matching the manifest
+
+It fails closed. See `docs/licensing.md` for the obligations behind each check.
