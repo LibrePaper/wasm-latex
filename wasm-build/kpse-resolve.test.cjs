@@ -119,8 +119,8 @@ test("sha256Hex matches node:crypto on various sizes", () => {
 
 // --- readTar --------------------------------------------------------------------
 
-// A tiny ustar writer, following the contract in SPEC-latex.md: regular files
-// only (typeflag '0'), sorted by path, GNU long-name ('L', name
+// A tiny ustar writer, following tar bundle format (docs/build.md, Bundles):
+// regular files only (typeflag '0'), sorted by path, GNU long-name ('L', name
 // "././@LongLink") entries preceding members whose path is >= 100 bytes, two
 // zero blocks at the end, ustar prefix field never used.
 function padBlock(buf) {

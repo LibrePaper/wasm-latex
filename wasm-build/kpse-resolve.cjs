@@ -9,14 +9,13 @@
 // and \input/source files bare as "xkeyval" where the bucket stores
 // "xkeyval.tex"). The worker must reconcile those namespaces.
 //
-// Bundle mode (see SPEC-latex.md, "Package delivery: bundles, not files") adds
-// three more pieces of shared logic: FORMAT_SEARCH_ORDER (moved here from
-// tools/build-format.mjs so the format build and the runtime resolver rank
-// candidate paths identically), buildNameIndex/rankPaths/resolveName (turning
-// the index's flat "files" map into a resolver over ranked paths), and
-// sha256Hex/readTar (verifying and unpacking a bundle without a browser crypto
-// API, since kpathsea's callback into JS is synchronous and crypto.subtle is
-// not).
+// Bundle mode (see docs/build.md, Bundles) adds three more pieces of shared
+// logic: FORMAT_SEARCH_ORDER (moved here from tools/build-format.mjs so the
+// format build and the runtime resolver rank candidate paths identically),
+// buildNameIndex/rankPaths/resolveName (turning the index's flat "files" map
+// into a resolver over ranked paths), and sha256Hex/readTar (verifying and
+// unpacking a bundle without a browser crypto API, since kpathsea's callback
+// into JS is synchronous and crypto.subtle is not).
 
 // Extensions the XHR fallback appends for a given kpathsea format id.
 function retryExtensions(format) {

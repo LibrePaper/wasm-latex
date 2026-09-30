@@ -2,7 +2,7 @@
 
 ## Bundles
 
-The browser engines do not fetch TeX Live one file at a time. `tools/build-bundles.mjs` packs the verified texmf tree into one tar per package directory, indexed by `bundles.json`, and the worker fetches a whole bundle the first time any file in it is asked for. SPEC-latex.md explains why: package bundles fetch related files together while keeping unrelated packages on demand.
+The browser engines do not fetch TeX Live one file at a time. A cold compile of a plain article touches about 50 files, TikZ or beamer about 400. `tools/build-bundles.mjs` packs the verified texmf tree into one tar per package directory, indexed by `bundles.json`, and the worker fetches a whole bundle the first time any file in it is asked for. Bundling reduces requests by an order of magnitude while preserving package-level on-demand downloads.
 
 ### Building bundles
 
@@ -16,20 +16,31 @@ node tools/build-bundles.mjs \
 
 The first tree is the signed release archive. The second contributes only its `fonts/map/` directory, the `pdftex.map` and friends that `updmap-sys` generates; for those paths the later tree wins. Any other path present in both trees is an error.
 
-`--epoch` (or `SOURCE_DATE_EPOCH`) fixes every tar member's mtime, entries are written in sorted order with uid, gid and mode fixed, and a tar whose digested path already exists is not rewritten. The same tree yields the same bytes; the receipt records the index hash so a rebuild can be checked against it.
+Bundles are deterministic: tar entries are written in sorted path order, mtime is fixed at `SOURCE_DATE_EPOCH`, uid and gid are zero, and a tar whose digested path already exists is not rewritten. The same tree yields the same bytes; the receipt records the index hash so a rebuild can be checked against it.
 
 ### What is in a bundle
 
 The grouping rules are in `tools/bundle-rules.mjs` and have no input beyond the tree:
 
-- `tex/<format>/<package>/` is one bundle.
-- A font family is one bundle across every kind that ships it: `fonts/tfm`, `vf`, `type1`, `enc`, `map`, `opentype`, `truetype` under the same `<foundry>/<name>` fold into `fonts/<foundry>/<name>`.
-- `bibtex/bst/<package>`, `bibtex/bib/<package>`, `makeindex/<package>`, `web2c`, and `scripts/<package>` for Lua files only.
-- `tex/xetex/fontlist`: `xetexfontlist.txt`, the by-name font database XeTeX's fontconfig shim reads (kpse format 26). It has no counterpart in TeX Live; `tools/xetex-fontlist.mjs` generates it with `otfinfo` and `tools/build-bundles.mjs --extra` adds it to the index under `tex/xetex/fontlist/xetexfontlist.txt`.
-- `core` merges the kernel and what nearly every pdfLaTeX document loads: `tex/latex/base`, l3kernel, l3backend, amsmath, graphics, hyperref, geometry, babel, the small generic helpers, and the Computer Modern fonts. The list is `DEFAULT_CORE` in the rules module, measured from four representative documents. The measurement also found two files that dragged whole packages in: `supp-pdf.mkii` (47 MB of ConTeXt) is its own half-megabyte bundle and part of core, and `pdftex.map` (5.5 MB variant) is its own bundle. `fonts/public/amsfonts` (4.6 MB, for `amssymb`) stays separate. A plain article fetches core, the map, amsfonts, then its own packages.
-- A bundle over 20 MiB of tar bytes is split into `<name>.part1`, `<name>.part2`, ... to keep downloads at useful granularity. The resolver sees parts as ordinary bundles. XeTeX's ICU data is shipped gzipped; the host inflates it before `loadicudata`.
+- For macros: `tex/<format>/<package>/` is one bundle (e.g. `tex/latex/amsmath/`, `tex/generic/pgf/`).
+- For fonts: the union of `fonts/<kind>/<foundry>/<name>/` across every `<kind>` (`tfm`, `vf`, `type1`, `enc`, `map`, `opentype`, `truetype`) is one bundle named `fonts/<foundry>/<name>`. A font package's metrics and glyphs arrive together.
+- `bibtex/bst/<package>/`, `bibtex/bib/<package>/`, `makeindex/<package>/`, `tex/latex/base/`, and `web2c/` follow the macro rule.
+- `tex/xetex/fontlist`: `xetexfontlist.txt`, the by-name font database XeTeX's fontconfig shim reads (kpse format 26). It has no counterpart in TeX Live; `tools/xetex-fontlist.mjs` generates it with `otfinfo` and `tools/build-bundles.mjs --extra` adds it to the index.
+- Any bundle over 20 MiB of tar bytes is split into numbered parts by file order; the resolver sees parts as ordinary bundles.
+- `texmf-var/fonts/map/` (the `pdftex.map` and variants) joins the `core` bundle; nothing else in `texmf-var` is bundled.
+- Never bundled (no browser engine reads them): `doc/`, `source/`, Metafont sources, PK bitmaps, AFM metrics, Type 3 fonts, non-Lua scripts, and trees of tools not shipped (tex4ht, MetaPost, dvips, xindy, Asymptote and the rest).
+- `tex/latex-dev` is excluded by default (`--include-latex-dev` re-enables it): the format build already has to rank it below `tex/latex`, and serving it invites the same mistake at runtime.
+- A file that would drag a whole package in for one member is named in `FILE_BUNDLE_OVERRIDES`: `supp-pdf.mkii` (which `pdftex.def` loads and which sat in 47 MB of ConTeXt) goes into core; `pdftex.map` (a 5.5 MB variant) is its own bundle.
 
-Never bundled (no browser engine can read them): `doc/`, `source/`, Metafont sources, PK bitmaps, AFM metrics, Type 3 fonts, non-Lua scripts, and trees belonging to tools not shipped (tex4ht, MetaPost, dvips, xindy, Asymptote and the rest). `tex/latex-dev` is excluded by default (`--include-latex-dev` re-enables it).
+### The core bundle
+
+One bundle, `core`, pre-merges what nearly every pdfLaTeX document loads before its first preamble line: `tex/latex/base`, `tex/latex/l3kernel`, `tex/latex/l3backend`, `tex/latex/l3packages`, `tex/latex/amsmath`, `tex/latex/graphics`, `tex/latex/graphics-cfg`, `tex/latex/graphics-def`, `tex/latex/hyperref`, `tex/latex/geometry`, `tex/latex/tools`, `tex/latex/babel`, `tex/generic/babel`, `tex/latex/kvoptions`, `tex/generic/iftex`, `tex/generic/infwarerr`, `tex/generic/ltxcmds`, `tex/generic/kvsetkeys`, `tex/generic/pdftexcmds`, `tex/latex/auxhook`, `tex/latex/rerunfilecheck`, `tex/latex/url`, the Computer Modern and AMS font bundles, `pdftex.map`, and the encoding files those fonts reference.
+
+- The list is measured, not guessed: the format's own inputs plus what two ordinary papers load, resolved through `tools/build-format.mjs --smoke-doc --smoke-evidence` measured 2026-09-09.
+- Size: 18.3 MB in one part, 2,185 files. `DEFAULT_CORE` in `tools/bundle-rules.mjs` is the list.
+- `fonts/public/amsfonts` (4.6 MB, for `amssymb`) stays separate.
+- Files in `core` are not repeated in their own package bundles; the index points to `core`.
+- Most papers then make one to three requests on a cold cache, and none on a warm one.
 
 ### The 2026 build
 
@@ -57,15 +68,35 @@ Never bundled (no browser engine can read them): `doc/`, `source/`, Metafont sou
 
 `RECEIPT-FILES.json.gz` beside the index lists every member of every bundle with its size and sha256. The committed `receipts/BUNDLE-RECEIPT.*.json` is the summary: inputs, epoch, exclusions, core list, the index hash, and one line per bundle.
 
-### How the worker uses bundles
+### How the worker resolves files
 
-`wasm-build/pdftex-worker.js` accepts `loadbundleindex` with the index text. From then on `kpse_find_file_impl` resolves a (format, name) pair by the same `FORMAT_SEARCH_ORDER` ranking the format build uses, now shared from `wasm-build/kpse-resolve.cjs`; the path's bundle is fetched once by synchronous XHR, its sha256 is checked in pure JS, its members are unpacked under `/texmf/` in the virtual filesystem, and later requests for siblings are answered from there. Where the Cache Storage API is available, fetched bundles are written to the `librepaper-bundles` cache and preloaded on the next `loadbundleindex`, so a warm session makes no network requests.
+Bundle-mode resolution in `kpse_find_file_impl` (once `loadbundleindex` has loaded the index):
+
+1. Resolves the (format, name) request to a texmf path. At load the worker inverts `files` once into a name-to-paths map; a name with several paths (`latex.ltx` in both `base` and `latex-dev/base`, `hyphen.cfg` in three packages) is ranked by the same `FORMAT_SEARCH_ORDER` `tools/build-format.mjs` uses for the format build. The ranking is in `wasm-build/kpse-resolve.cjs`, so the format and the runtime resolve identically.
+2. Looks the path up in `files`. Absent means absent: record it in `texlive404_cache` and return 0, no request.
+3. If the bundle is not yet loaded, fetches it with one synchronous XHR, verifies its digest against the index, and unpacks every member into the virtual filesystem under `/texmf/`. Members are written once; later requests for siblings hit `texlive200_cache`.
+4. Returns the path.
+
+The XHR stays synchronous because kpathsea is synchronous and the engine is not re-entrant. The worker's `downloading` message gains the bundle name and size, so progress indicators report "amsmath, 1.2 MB" instead of a stream of file names.
+
+Where the Cache Storage API is available, verified bundles are stored in the `librepaper-bundles` cache keyed by their digested URL, and preloaded on the next `loadbundleindex`. Editing sessions then make no requests; the count is driven only by new users and new packages. A warm compile of any corpus document makes no request.
 
 Without `loadbundleindex` the worker behaves as before, one file per request, which the format harness and the previous LibrePaper mirror still use.
 
 ### Format build through bundles
 
 `tools/build-format.mjs --bundles wasm-build/dist/bundles` serves the index and the tars to the worker instead of individual files, and `--expect-inputs receipts/FORMAT-RECEIPT.pdftex-2026.json` asserts that it resolved exactly the files the per-file build did, hash for hash, with no per-file request during the smoke compile. The two `.fmt` files are not byte-identical (TeX records the path it opened hyphenation loaders under, and bundle mode nests those under `/texmf/`). Both typeset the same. The committed format stays the per-file build, whose hash `docs/texlive-snapshot-2026.md` pins.
+
+### Performance targets
+
+With bundles, a cold compile makes far fewer requests than the per-file model:
+
+| Document | Per-file requests | Bundled, cold | Bundled, warm |
+|---|---|---|---|
+| Plain article | about 50 | about 5 | 0 |
+| TikZ or beamer | about 400 | about 20 | 0 |
+
+A cold plain article after `core` fetches amsfonts, the map, and cm-super's one Type 1 file for OT1's TS1 symbols; more than that means the core list is wrong. If a warm compile of any corpus document makes a request, the cache is wrong.
 
 ### Release
 

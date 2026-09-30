@@ -2,12 +2,12 @@
 // Build the delivery bundles the browser resolver fetches, from the same
 // vendored texmf trees the format build takes.
 //
-// SPEC-latex.md ("Package delivery: bundles, not files") explains why: the
-// worker's per-file XHR model would make one request per .sty/.tfm/.map.
-// Bundling instead makes a cold compile fetch one tar for each package it needs,
-// while leaving unrelated packages on demand. A warm session can reuse its cache.
-// Grouping the tree into one tar per texmf package directory (tools/bundle-rules.mjs
-// decides the grouping) keeps those downloads useful without bundling the full tree.
+// docs/build.md (Bundles) explains why: the worker's per-file XHR model would
+// make one request per .sty/.tfm/.map. Bundling instead makes a cold compile
+// fetch one tar for each package it needs, while leaving unrelated packages on
+// demand. A warm session can reuse its cache. Grouping the tree into one tar
+// per texmf package directory (tools/bundle-rules.mjs decides the grouping)
+// keeps those downloads useful without bundling the full tree.
 //
 //   node tools/build-bundles.mjs --texmf <texmf-dist> [--texmf <texmf-var>] \
 //     --out <dir> [--evidence <file>] [--epoch N] [--core <file>] \

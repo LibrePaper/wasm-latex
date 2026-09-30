@@ -1,6 +1,6 @@
 // Rules for grouping texmf-relative paths into delivery bundles.
 //
-// SPEC-latex.md ("The unit") defines a bundle as one texmf package directory:
+// docs/build.md (Bundles) defines a bundle as one texmf package directory:
 // a macro format/package pair (tex/<fmt>/<pkg>), a font family across every
 // kind that ships it (fonts/<kind>/<foundry>/<name> -> fonts/<foundry>/<name>),
 // or one of a short list of other package-shaped trees (bibtex, makeindex,
@@ -36,8 +36,8 @@ const EXCLUDED_TOP = new Set([
 // on 2026-09-09: every pdfLaTeX document loads supp-pdf.mkii (pdftex.def does
 // it at \begin{document}), which sat in tex/context/base, 47 MB in two parts;
 // and every document that embeds a font reads pdftex.map, which sat beside its
-// two 5.5 MB variants. These are the "babel-shaped" cases SPEC-latex.md warned
-// about, fixed by naming the files rather than by splitting packages in general.
+// two 5.5 MB variants. These are file-level overrides for package-sized cases,
+// as documented in docs/build.md (Bundles).
 const FILE_BUNDLE_OVERRIDES = [
   [/^tex\/context\/base\/mkii\/supp-[^/]+\.mkii$/, 'tex/context/supp-mkii'],
   [/^fonts\/map\/pdftex\/updmap\/pdftex\.map$/, 'fonts/pdftex/pdftex-map'],
@@ -140,10 +140,9 @@ export function slugFor(bundleName) {
 // --include-latex-dev re-enables it.
 export const EXCLUDED_BUNDLE_PREFIXES = ['tex/latex-dev']
 
-// The "core" list, replacing the spec's guessed starting point with a
-// measurement (SPEC-latex.md follow-up item 4, "Trimming it from corpus
-// measurement is still open"). Measured 2026-09-09 by resolving four
-// documents through tools/build-format.mjs --smoke-doc --smoke-evidence
+// The "core" list, replacing an earlier guessed starting point with a
+// measurement. Measured 2026-09-09 by resolving four documents through
+// tools/build-format.mjs --smoke-doc --smoke-evidence (docs/build.md, Bundles)
 // against the pdftex format build (238 format inputs), against the vendored
 // TeX Live 2026 texmf tree:
 //   a) a plain article: amsmath, amssymb, graphicx, hyperref, geometry,

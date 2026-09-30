@@ -2,7 +2,7 @@
 // bundle-mode.js — bundle-mode resolver shared by every authored engine worker
 // =============================================================================
 //
-// SPEC-latex.md, "Package delivery: bundles, not files" and "The resolver".
+// docs/build.md (Bundles, resolver and browser cache).
 // This used to be duplicated (badly — only pdftex-worker.js had it) as
 // writeBundleMember/unpackBundle/fetchAndUnpackBundle/resolveViaBundleIndex/
 // loadBundleIndexPreload plus the loadbundleindex/preloadbundle message
@@ -82,7 +82,7 @@ var BundleMode = (function() {
         // failure or non-200 — never poisons a 404 cache, since the file may
         // well exist; only the transport failed), or "digest-mismatch". On
         // success also stashes the bytes in Cache Storage (fire-and-forget) so
-        // the next session skips the network entirely (SPEC-latex.md "Browser
+        // the next session skips the network entirely (docs/build.md (Bundles) Browser
         // cache").
         function fetchAndUnpackBundle(name, meta, reqname, format) {
             if (typeof env.postMessage === "function") {
@@ -131,7 +131,7 @@ var BundleMode = (function() {
         }
 
         // Restore bundles previously verified and stashed in Cache Storage
-        // (SPEC-latex.md "Browser cache"). Without `names`, every cached bundle
+        // (docs/build.md (Bundles) Browser cache"). Without `names`, every cached bundle
         // whose URL matches the index is restored (legacy/default behaviour).
         // With `names` (an array of bundle names), only those bundles are
         // restored — item 7's scoped preload — and any bundle present in the
@@ -218,7 +218,7 @@ var BundleMode = (function() {
             return "ok";
         }
 
-        // Bundle-mode resolution for kpse_find_file_impl (SPEC-latex.md "The
+        // Bundle-mode resolution for kpse_find_file_impl (docs/build.md (Bundles) The
         // resolver"). Returns:
         //   { path: fsPath, bundle, relpath }  — hit, ready to allocate
         //   { absent: true }                   — definitive miss

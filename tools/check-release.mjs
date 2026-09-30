@@ -231,9 +231,9 @@ else {
   }
 }
 
-// 7. Bundles (SPEC-latex.md, "The index" and "Hosting"): package delivery for
-// the browser tier, staged only when tools/stage-release.mjs was run with
-// --bundles. The index is the existence check the worker trusts, so every
+// 7. Bundles (docs/build.md, Bundles): package delivery for the browser tier,
+// staged only when tools/stage-release.mjs was run with --bundles. The index
+// is the existence check the worker trusts, so every
 // claim it makes about a bundle must hold, and nothing may exist on disk that
 // the index does not name.
 if (manifest.bundles) {
