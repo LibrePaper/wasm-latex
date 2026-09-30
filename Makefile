@@ -136,12 +136,12 @@ release:  ## The whole chain: test, source, publish, stage, annotate (needs TAG=
 clean-staged:  ## Remove the staged directory
 	rm -rf $(STAGED)
 
-mirror:  ## Build the static mirror LibrePaper serves from staged/ (MANIFEST_SHA256= to pin a reviewed hash)
+mirror:  ## Build the one-release static mirror (mirror/<id>/) LibrePaper serves from staged/ (MANIFEST_SHA256= to pin a reviewed hash)
 	@test -f $(STAGED)/MANIFEST.json || { echo "no $(STAGED)/MANIFEST.json; run make release TAG=<tag> (or make stage SOURCE_URL=<url>) first"; exit 2; }
 	@# The hash is read from the staged manifest when not given: this repository
 	@# staged it, so there is no second party whose review the hash would carry.
 	@HASH="$(MANIFEST_SHA256)"; [ -n "$$HASH" ] || HASH=$$(sha256sum $(STAGED)/MANIFEST.json | cut -d' ' -f1); \
-	echo "mirror: staged manifest $$HASH"; \
+	echo "mirror: staged manifest $$HASH becomes mirror/$$HASH/ (mirror/ is emptied first)"; \
 	node tools/build-mirror.mjs --staged $(STAGED) --sha256 "$$HASH" --out $(MIRROR)
 	node tools/check-mirror.mjs $(MIRROR)
 

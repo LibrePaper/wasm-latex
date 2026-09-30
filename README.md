@@ -35,7 +35,7 @@ lists every target.
 - [`docs/latexml.md`](docs/latexml.md): the experimental LaTeXML HTML worker,
   standalone CSS resources, and pinned source receipt.
 - [`docs/mirror.md`](docs/mirror.md): the mirror LibrePaper serves -- layout,
-  manifest format 1, and the contract `tools/build-mirror.mjs` and
+  `release.json` format 2, and the contract `tools/build-mirror.mjs` and
   `tools/check-mirror.mjs` implement.
 - [`docs/bundles.md`](docs/bundles.md): how packages reach the browser, and
   what is and is not bundled.

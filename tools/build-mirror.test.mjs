@@ -188,11 +188,19 @@ try {
   const built = runBuildMirror(digest)
   assert.equal(built.status, 0, built.stderr)
 
-  const mirror = JSON.parse(fs.readFileSync(path.join(root, 'mirror/manifest.json'), 'utf8'))
-  assert.equal(mirror.format, 1, 'manifest.format must be 1')
-  const releaseId = mirror.default_release
-  const entry = mirror.releases[releaseId]
-  assert.ok(entry, 'default_release must resolve to a release entry')
+  // Exactly one release directory plus _headers; no top-level manifest, no
+  // engines/ level.
+  assert.deepEqual(fs.readdirSync(path.join(root, 'mirror')).sort(), [digest, '_headers'].sort())
+  const releaseId = digest
+  const releaseRoot = path.join(root, 'mirror', releaseId)
+  assert.deepEqual(fs.readFileSync(path.join(releaseRoot, 'MANIFEST.json')), fs.readFileSync(path.join(root, 'staged/MANIFEST.json')))
+  const headers = fs.readFileSync(path.join(root, 'mirror/_headers'), 'utf8')
+  assert.match(headers, /immutable/)
+  assert.doesNotMatch(headers, /no-store|no-cache/)
+  const entry = JSON.parse(fs.readFileSync(path.join(releaseRoot, 'release.json'), 'utf8'))
+  assert.equal(entry.format, 2, 'release.json format must be 2')
+  assert.equal(entry.id, releaseId)
+  assert.equal(entry.base, undefined, 'paths are release-relative; there is no base')
 
   // Engines: pdftex advertised, xetex withheld because its file set is
   // incomplete.
@@ -202,13 +210,15 @@ try {
   // No legacy texlive/snapshot fields.
   assert.equal(entry.snapshot, undefined)
   assert.equal(entry.texlive_base, undefined)
-  assert.equal(mirror.texlive, undefined)
 
-  // Bundles entry rewritten to the mirror URL, under engines/<engineRelease>/.
+  // Every file url is its release-relative name.
+  for (const [name, info] of Object.entries(entry.files)) assert.equal(info.url, name)
+
+  // Bundles entry is release-relative.
   assert.ok(entry.bundles, 'release must carry a bundles entry')
-  assert.equal(entry.bundles.index, `${entry.base}bundles/bundles.json`)
-  const indexPath = path.join(root, 'mirror', entry.bundles.index)
-  assert.ok(fs.existsSync(indexPath), 'bundles.json must be written into the mirror')
+  assert.equal(entry.bundles.index, 'bundles/bundles.json')
+  const indexPath = path.join(releaseRoot, entry.bundles.index)
+  assert.ok(fs.existsSync(indexPath), 'bundles.json must be written into the release')
   assert.equal(hash(fs.readFileSync(indexPath)), entry.bundles.sha256)
 
   // Bibliography identity read out of the bundle tar, not the network.
@@ -216,10 +226,10 @@ try {
   assert.equal(entry.bibliography.biblatex, '3.22')
   assert.deepEqual(entry.bibliography.biber.compatible, ['2.21'])
 
-  const fmtPath = path.join(root, 'mirror', entry.files['pdftex.fmt'].url)
+  const fmtPath = path.join(releaseRoot, entry.files['pdftex.fmt'].url)
   assert.deepEqual(fs.readFileSync(fmtPath), FMT, 'the mirror must preserve original payload bytes')
 
-  console.log('build-mirror: manifest shape, engine advertisement, bundles rewrite, and bibliography identity checked')
+  console.log('build-mirror: layout, release.json shape, engine advertisement, bundles path, and bibliography identity checked')
 
   // A tampered payload file must be rejected.
   const tamperPath = path.join(root, 'staged', 'pdftex.wasm')
@@ -233,24 +243,46 @@ try {
   console.log('build-mirror: tampered payload file rejected')
 
   // Idempotent: a second run over the same input changes nothing.
-  const before = fs.readdirSync(path.join(root, 'mirror', entry.base), { recursive: true }).sort()
+  const before = fs.readdirSync(path.join(root, 'mirror'), { recursive: true }).sort()
   const beforeBytes = fs.readFileSync(indexPath)
+  const beforeRelease = fs.readFileSync(path.join(releaseRoot, 'release.json'))
   const rerun = runBuildMirror(digest)
   assert.equal(rerun.status, 0, rerun.stderr)
-  const after = fs.readdirSync(path.join(root, 'mirror', entry.base), { recursive: true }).sort()
+  const after = fs.readdirSync(path.join(root, 'mirror'), { recursive: true }).sort()
   assert.deepEqual(before, after, 'a second run must not add or remove files')
   assert.deepEqual(beforeBytes, fs.readFileSync(indexPath), 'a second run must not change existing bytes')
-  const mirrorAfter = JSON.parse(fs.readFileSync(path.join(root, 'mirror/manifest.json'), 'utf8'))
-  assert.deepEqual(mirrorAfter, mirror, 'a second run must produce an identical manifest')
+  assert.deepEqual(beforeRelease, fs.readFileSync(path.join(releaseRoot, 'release.json')), 'a second run must produce an identical release.json')
   console.log('build-mirror: idempotent re-run checked')
+
+  // The out directory is owned by the build: stale layout is cleared.
+  write('mirror/manifest.json', '{}')
+  write(`mirror/engines/${releaseId}/stale.js`, 'stale')
+  write(`mirror/${'0'.repeat(64)}/release.json`, '{}')
+  assert.equal(runBuildMirror(digest).status, 0)
+  assert.deepEqual(fs.readdirSync(path.join(root, 'mirror')).sort(), [digest, '_headers'].sort(), 'a rebuild must clear stale content')
+  console.log('build-mirror: stale layout cleared on rebuild')
 
   // check-mirror.mjs passes on the built mirror.
   const passing = runCheckMirror('mirror')
   assert.equal(passing.status, 0, passing.stderr)
   console.log('check-mirror: passes on a well-formed mirror')
 
+  // ... and rejects a stray top-level file, an unlisted file in the release,
+  // and a directory that is not the sha256 of its MANIFEST.json.
+  write('mirror/manifest.json', '{}')
+  assert.notEqual(runCheckMirror('mirror').status, 0, 'a top-level manifest.json must fail check-mirror')
+  fs.rmSync(path.join(root, 'mirror/manifest.json'))
+  write(`mirror/${releaseId}/extra.txt`, 'unlisted')
+  assert.notEqual(runCheckMirror('mirror').status, 0, 'an unlisted file must fail check-mirror')
+  fs.rmSync(path.join(root, `mirror/${releaseId}/extra.txt`))
+  fs.renameSync(path.join(root, 'mirror', releaseId), path.join(root, 'mirror', 'a'.repeat(64)))
+  assert.notEqual(runCheckMirror('mirror').status, 0, 'a misnamed release directory must fail check-mirror')
+  fs.renameSync(path.join(root, 'mirror', 'a'.repeat(64)), path.join(root, 'mirror', releaseId))
+  assert.equal(runCheckMirror('mirror').status, 0)
+  console.log('check-mirror: fails on stray files and a misnamed release directory')
+
   // ... and fails on a corrupted bundle tar.
-  const corePath = path.join(root, 'mirror', entry.base, 'bundles', 'b')
+  const corePath = path.join(releaseRoot, 'bundles', 'b')
   const coreDigestDir = fs.readdirSync(corePath)[0]
   const coreTarPath = path.join(corePath, coreDigestDir, 'core.tar')
   const coreBytes = fs.readFileSync(coreTarPath)
@@ -290,8 +322,8 @@ try {
   write('receipts/SOURCE-RECEIPT.json', sourceReceipt)
   const biberStage = runStage('bundle-src')
   assert.equal(runBuildMirror(biberStage.digest, 'biber-mirror').status, 0)
-  const bm = JSON.parse(fs.readFileSync(path.join(root, 'biber-mirror/manifest.json')))
-  const br = bm.releases[bm.default_release]
+  const bm = JSON.parse(fs.readFileSync(path.join(root, 'biber-mirror', biberStage.digest, 'release.json')))
+  const br = bm
   assert.deepEqual(br.engines.biber.files, [...biberNames, 'biber.build.json'])
   assert.equal(br.files['biber.data'].sha256, biberArtifacts.find(a => a.name === 'biber.data').sha256)
   assert.equal(br.bibliography.biber.version, '2.22')

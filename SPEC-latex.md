@@ -198,12 +198,13 @@ a custom format because the reader is thirty lines and every tool on earth can
 inspect it.
 
 Digests are over the bundle bytes; the bundle URL carries the digest, as the
-engine release directory already does in LibrePaper's `latex/tools/mirror.mjs`,
+engine release directory does,
 so `Cache-Control: public, max-age=31536000, immutable` is correct and the
 edge cache absorbs every repeat.
 
-The index is the one file fetched by a name without a digest. It is small,
-`no-cache`, and its own digest is in the release `MANIFEST.json`.
+The index lives at `bundles/bundles.json` inside the release directory the
+manifest digest names, so it never changes. It is small,
+immutable like the rest of the release directory, and its own digest is in the release `MANIFEST.json`.
 
 The index doubles as the existence check. With it loaded, the bloom filter is
 redundant and is retired. The extension-candidate logic in `fetchCandidates`,
@@ -290,7 +291,7 @@ layout, and they are volunteer mirrors, not an application CDN.
 The mirror LibrePaper serves is built and deployed from this repository, not
 from LibrePaper's. `tools/build-mirror.mjs` turns a staged release plus its
 reviewed manifest hash into `mirror/`, in the layout and manifest shape
-(format 1, bundled releases only, documented in `docs/mirror.md`)
+(`release.json` format 2, bundled releases only, documented in `docs/mirror.md`)
 LibrePaper's browser code already reads; `make mirror` builds and checks it,
 `make push` publishes it to OVH S3 through the shared publisher. LibrePaper keeps
 only the URL and a consumer-side check (`latex/tools/check-mirror.mjs`) --

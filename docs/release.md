@@ -86,8 +86,8 @@ a URL. In this repository:
 
 which runs `tools/build-mirror.mjs` (verifies the manifest against the hash
 and every payload file against the manifest, then writes the release under
-`mirror/engines/<engineRelease>/`) and `tools/check-mirror.mjs` on the
-result. See [`docs/mirror.md`](mirror.md) for the layout and manifest shape
+`mirror/<id>/`, emptying `mirror/` first) and `tools/check-mirror.mjs` on the
+result. See [`docs/mirror.md`](mirror.md) for the layout and `release.json` shape
 this writes -- it is the contract LibrePaper's `check-mirror.mjs` and
 `web/src/lib/latex/worker.js` consume. Then, with the S3 endpoint, region, bucket
 and AWS credentials set in the environment (or loaded with `make secrets`), run:
@@ -95,8 +95,8 @@ and AWS credentials set in the environment (or loaded with `make secrets`), run:
     make push
 
 which publishes `mirror/` through the shared `../librepaper/tools/publish-mirror.mjs`
-command. The publisher sets content types and cache metadata (`manifest.json` uses
-`no-store`; `bundles.json` uses `no-cache`) and serves gzip-encoded responses
+command. The publisher sets content types and cache metadata (every object is
+immutable; nothing is `no-store` or `no-cache`) and serves gzip-encoded responses
 where applicable. Configure bucket CORS once with the publisher's explicit
 `--configure-cors` option (or configure it in OVH); ordinary `make push` only
 uploads mirror objects. There is no provider-specific object-size gate.

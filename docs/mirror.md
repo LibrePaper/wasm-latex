@@ -17,8 +17,10 @@ files").
 
 ```
 mirror/
-  manifest.json
-  engines/<engineRelease>/                 engine files from a staged release
+  _headers                                 everything immutable, plus CORS
+  <id>/                                    one release; <id> = sha256 of its MANIFEST.json
+    MANIFEST.json                          byte copy of the staged manifest
+    release.json                           the loader entry for this release
     pdftex.worker.js pdftex.js pdftex.wasm
     pdftex.fmt pdftex-resolver-evidence.js ...
     kpse-resolve.js bundle-mode.js   -- imported by every worker
@@ -30,59 +32,57 @@ mirror/
     ltx-report.css ltx-svjour.css ltx-ulem.css kpse-resolve.js bundle-mode.js
     LICENSE THIRD_PARTY_NOTICES.md SOURCE.md SOURCE-RECEIPT.json RELINK.md
     LICENSES/  LINK-INVENTORY.*.json  FORMAT-RECEIPT.*.json  BUNDLE-RECEIPT.*.json
-  engines/<engineRelease>/bundles/bundles.json     package index
-  engines/<engineRelease>/bundles/b/<sha256>/<slug>.tar   one tar per package directory
+    bundles/bundles.json                   package index
+    bundles/b/<sha256>/<slug>.tar          one tar per package directory
 ```
 
-`<engineRelease>` is the bare `<sha256 of the staged MANIFEST.json>`.
-Directories are immutable; a new digest is a new directory, and every
-release this repository has ever imported stays in `manifest.releases` --
-only `default_release` moves. Biber WASM travels with the engine release.
-The separate `--biber-vm` server setting is only a legacy fallback for mirrors
-that do not advertise `engines.biber`.
+`<id>` is the bare `<sha256 of the staged MANIFEST.json>`. Nothing in the
+mirror is mutable: there is no top-level manifest, no default release and no
+file whose bytes change under a fixed name. A release is found by its id,
+which LibrePaper's build pins; a new digest is a new directory. `make mirror`
+holds exactly the one staged release and clears whatever an earlier build left
+in the output directory. Biber WASM travels with the release. The separate
+`--biber-vm` server setting is only a legacy fallback for mirrors that do not
+advertise `engines.biber`.
 
-## Manifest, format 1
+## release.json, format 2
+
+Every path in `release.json` is relative to the release directory
+(`<mirror URL>/<id>/`). There is no `base`.
 
 ```json
 {
-  "format": 1,
-  "version": 1,
-  "default_release": "<sha256>",
-  "releases": {
-    "<sha256>": {
-      "id": "<sha256>",
-      "digest": "<sha256 hex of the canonical JSON of this entry without `digest`>",
-      "engine_release": "<sha256>",
-      "base": "engines/<sha256>/",
-      "engines": {
-        "pdftex":  { "worker": "pdftex.worker.js", "format": "pdftex.fmt", "files": ["pdftex.worker.js", "pdftex.js", "pdftex.wasm", "pdftex-resolver-evidence.js", "kpse-resolve.js", "bundle-mode.js", "pdftex.fmt"] },
-        "xetex":   { "worker": "xetex.worker.js",  "format": "xetex.fmt.gz", "icu": "icudt68l.dat.gz", "files": [...] },
-        "dvipdfm": { "worker": "dvipdfm.worker.js", "files": [...] },
-        "bibtex":  { "worker": "bibtex.worker.js", "files": [...] },
-        "bibtex8": { "worker": "bibtex8.worker.js", "files": [...] },
-        "biber": { "worker": "biber.worker.js", "files": ["biber.worker.js", "biber.js", "biber.wasm", "biber.data", "biber.build.json"] },
-        "makeindex": { "worker": "makeindex.worker.js", "files": [...] },
-        "latexml": { "worker": "latexml.worker.js", "files": ["latexml.worker.js", "latexml.js", "latexml.wasm", "latexml.css", "LaTeXML.css", "LaTeXML-blue.css", "LaTeXML-marginpar.css", "LaTeXML-navbar-left.css", "LaTeXML-navbar-right.css", "ltx-amsart.css", "ltx-apj.css", "ltx-article.css", "ltx-book.css", "ltx-listings.css", "ltx-report.css", "ltx-svjour.css", "ltx-ulem.css", "kpse-resolve.js", "bundle-mode.js", "latexml.build.json"] }
-      },
-      "files": { "<name>": { "url": "engines/<sha256>/<name>", "sha256": "...", "size": 123 } },
-      "bibliography": {
-        "bibtex": "0.99e",
-        "biblatex": "3.22",
-        "control_file": "3.11",
-        "biber": { "version": "2.22", "compatible": ["2.22"], "incompatible_hint": "..." }
-      },
-      "bundles": { "index": "engines/<sha256>/bundles/bundles.json", "sha256": "...", "snapshot": "texlive-20260301-texmf", "count": 5501, "bytes": 3492000000 },
-      "vm": null,
-      "source": {
-        "corresponding_source": { "url": "https://...", "sha256": "..." },
-        "manifest": { "url": "engines/<sha256>/MANIFEST.json", "sha256": "...", "size": 0 },
-        "build_receipts": ["FORMAT-RECEIPT.pdftex-2026.json", "..."],
-        "reproduced": false
-      },
-      "licences": { "pdftex": "GPL-2.0-only", "xetex": "GPL-2.0-only AND LicenseRef-XeTeX", "...": "...", "notices": "engines/<sha256>/" },
-      "sizes": { "pdftex": 5807474, "xetex": 0, "...": 0 }
-    }
-  }
+  "format": 2,
+  "id": "<sha256>",
+  "engine_release": "<sha256>",
+  "engines": {
+    "pdftex":  { "worker": "pdftex.worker.js", "format": "pdftex.fmt", "files": ["pdftex.worker.js", "pdftex.js", "pdftex.wasm", "pdftex-resolver-evidence.js", "kpse-resolve.js", "bundle-mode.js", "pdftex.fmt"] },
+    "xetex":   { "worker": "xetex.worker.js",  "format": "xetex.fmt.gz", "icu": "icudt68l.dat.gz", "files": [...] },
+    "dvipdfm": { "worker": "dvipdfm.worker.js", "files": [...] },
+    "bibtex":  { "worker": "bibtex.worker.js", "files": [...] },
+    "bibtex8": { "worker": "bibtex8.worker.js", "files": [...] },
+    "biber": { "worker": "biber.worker.js", "files": ["biber.worker.js", "biber.js", "biber.wasm", "biber.data", "biber.build.json"] },
+    "makeindex": { "worker": "makeindex.worker.js", "files": [...] },
+    "latexml": { "worker": "latexml.worker.js", "files": ["latexml.worker.js", "latexml.js", "latexml.wasm", "latexml.css", "LaTeXML.css", "LaTeXML-blue.css", "LaTeXML-marginpar.css", "LaTeXML-navbar-left.css", "LaTeXML-navbar-right.css", "ltx-amsart.css", "ltx-apj.css", "ltx-article.css", "ltx-book.css", "ltx-listings.css", "ltx-report.css", "ltx-svjour.css", "ltx-ulem.css", "kpse-resolve.js", "bundle-mode.js", "latexml.build.json"] }
+  },
+  "files": { "<name>": { "url": "<name>", "sha256": "...", "size": 123 } },
+  "bibliography": {
+    "bibtex": "0.99e",
+    "biblatex": "3.22",
+    "control_file": "3.11",
+    "biber": { "version": "2.22", "compatible": ["2.22"], "incompatible_hint": "..." }
+  },
+  "bundles": { "index": "bundles/bundles.json", "sha256": "...", "snapshot": "texlive-20260301-texmf", "count": 5501, "bytes": 3492000000 },
+  "vm": null,
+  "source": {
+    "corresponding_source": { "url": "https://...", "sha256": "..." },
+    "manifest": { "url": "MANIFEST.json", "sha256": "...", "size": 0 },
+    "build_receipts": ["FORMAT-RECEIPT.pdftex-2026.json", "..."],
+    "reproduced": false
+  },
+  "licences": { "pdftex": "GPL-2.0-only", "xetex": "GPL-2.0-only AND LicenseRef-XeTeX", "...": "...", "notices": "" },
+  "sizes": { "pdftex": 5807474, "xetex": 0, "...": 0 },
+  "digest": "<sha256 hex of the canonical JSON of this entry without `digest`>"
 }
 ```
 
@@ -96,11 +96,11 @@ before it ever needs `release.texlive_base` (also absent, on purpose --
 there is no legacy per-file snapshot).
 
 `engines`, `files`, `bibliography`, `bundles`, `vm` and `source` are read
-directly by `configure()` in LibrePaper's `web/src/lib/latex/worker.js`;
-`default_release` and `releases` are read by the same file and by
-`check-mirror.mjs`. No other top-level or per-release field is consumed by
-anything on LibrePaper's side; extra fields (`digest`, `licences`, `sizes`)
-are provenance, not protocol.
+directly by `configure()` in LibrePaper's `web/src/lib/latex/worker.js`,
+which resolves every `url` and `bundles.index` against the release
+directory. No other field is consumed by anything on LibrePaper's side;
+extra fields (`format`, `digest`, `licences`, `sizes`) are provenance, not
+protocol.
 
 `bibliography.control_file`/`biblatex` are read out of the release's own
 bundled `tex/latex/biblatex/biblatex.sty` (`\blx@bcfversion`,
@@ -112,23 +112,24 @@ because the file is already part of the staged release's `core` bundle.
 
 `vm` is always `null`. The field survives from the time the Biber VM was
 registered into the mirror; older releases can find their VM through the
-`--biber-vm <url>#<sha256>` flag and ignores this field. It will be dropped
-in format 2.
+`--biber-vm <url>#<sha256>` flag and ignores this field.
 
 ## Serving
 
-The browser fetches directly from its configured HTTPS mirror URL. The current
-Cloudflare URL remains active until OVH uploads and browser checks pass:
+The browser fetches directly from its configured HTTPS mirror URL, at
+`<mirror URL>/<id>/release.json` and the paths it names. Every object is
+immutable, so one rule covers the tree (`mirror/_headers`):
 
 | Request | Answer |
 | --- | --- |
-| `engines/<engineRelease>/bundles/bundles.json` | `Cache-Control: no-cache`; the one bundle file named without a digest. |
-| `engines/<engineRelease>/<file>` | Static, `Cache-Control: public, max-age=31536000, immutable`. |
-| `manifest.json` | `Cache-Control: no-store`. |
+| anything under `<id>/` | Static, `Cache-Control: public, max-age=31536000, immutable`, with CORS. |
 
-The shared S3 publisher applies the matching cache policy and content types, and
-serves gzip-encoded responses where applicable. Configure public bucket CORS
-explicitly during setup. Browsers decode gzip before checking payload integrity.
+No path is served `no-store` or `no-cache`: `bundles/bundles.json` is
+inside the release directory the digest already names, so it never changes
+either. The shared S3 publisher applies the matching cache policy and content
+types, and serves gzip-encoded responses where applicable. Configure public
+bucket CORS explicitly during setup. Browsers decode gzip before checking
+payload integrity.
 
 ### Retention and platform limits
 
@@ -155,22 +156,21 @@ which expose the decoded bytes for the existing manifest integrity checks.
 It verifies every payload file against the staged manifest before writing
 anything (the same check `tools/check-release.mjs` already ran once at stage
 time, re-run here because the mirror is a separate trust boundary: nothing
-stops staged/ from being edited between staging and importing). It is
-idempotent -- a file already on disk with the right digest is left alone --
-and it keeps every release already in `--out`'s `manifest.json`, only moving
-`default_release` to the one just built, exactly as LibrePaper's importer
-used to.
+stops staged/ from being edited between staging and importing). It owns
+`--out`: the directory is emptied first, so the result is exactly the one
+release and a rebuild with the same input writes the same bytes.
 
 `tools/check-mirror.mjs` verifies the result, or a deployed URL:
 
     node tools/check-mirror.mjs mirror
-    node tools/check-mirror.mjs https://<configured-mirror-url>/
+    node tools/check-mirror.mjs https://<configured-mirror-url>/ <release id>
 
-A directory argument gets the full check: the manifest parses, the default
-release has a complete pdfTeX engine, every engine file is on disk with a
-matching digest and size, `bundles.json`'s own digest matches the release
-entry, and every bundle tar it names is on disk with a matching digest. A
-URL argument checks the manifest shape (`manifest.json` fetched with
-`no-store`) and downloads the largest advertised file, verifying its decoded
-size and digest. LibrePaper's browser smoke test exercises rendering against
-the deployed mirror.
+A directory argument gets the full check: it holds only release directories
+(each named by the sha256 of its `MANIFEST.json`) and `_headers`; each
+`release.json` is format 2 and lists exactly the files on disk, with matching
+digests and sizes; the release has a complete pdfTeX engine; `bundles.json`'s
+own digest matches the release entry; and every bundle tar it names is on disk
+with a matching digest. A URL argument checks the shape of
+`<url>/<id>/release.json` and downloads the largest advertised file, verifying
+its decoded size and digest. LibrePaper's browser smoke test exercises
+rendering against the deployed mirror.

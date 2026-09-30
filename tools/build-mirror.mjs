@@ -4,25 +4,22 @@
 // MANIFEST.json.
 //
 // This is the repository-owned replacement for the release-import half of
-// LibrePaper's former importer (`mirrorRelease`, `bundlesEntry`,
-// `bibliographyIdentity`): LibrePaper used to build and hold the mirror
+// LibrePaper's former importer: LibrePaper used to build and hold the mirror
 // itself; now this repository builds it and LibrePaper just points a URL at
-// it (SPEC-latex.md, "Hosting"). The layout and manifest shape are unchanged
-// from what that importer wrote, so LibrePaper's `configure()` worker code
-// (`web/src/lib/latex/worker.js`) needs no change to read it -- with one
-// addition, a top-level `"format": 1` on manifest.json, and one omission:
-// this repository ships bundles only, so there is no legacy per-file
+// it (SPEC-latex.md, "Hosting"). The mirror holds exactly one release, in one
+// directory named by the sha256 of its MANIFEST.json, and nothing in it is
+// ever rewritten: there is no top-level manifest, no default release and no
+// mutable file. A release is found by its id, which LibrePaper's build pins.
+// This repository ships bundles only, so there is no legacy per-file
 // `texlive` snapshot section and no bloom filter. `bibliographyIdentity`
-// used to fetch `biblatex.sty` from a CDN at import time; here it
-// is read straight out of the bundle tar the release already staged, so
-// building the mirror needs no network at all.
+// reads `biblatex.sty` straight out of the bundle tar the release already
+// staged, so building the mirror needs no network at all.
 //
 //   node tools/build-mirror.mjs --staged staged --sha256 <manifest digest> --out mirror
 //
-// Idempotent: re-running with the same staged input and the same --out
-// changes nothing on disk. Older releases already in --out are kept --
-// `manifest.releases` only grows, and `default_release` moves to the new one
-// -- exactly as the importer it replaces did.
+// The out directory is owned by this tool: it is emptied first, so a rebuild
+// never leaves an older layout or an older release behind. Re-running with
+// the same staged input produces the same bytes.
 
 import { createHash } from 'node:crypto'
 import fs from 'node:fs'
@@ -231,18 +228,7 @@ function canonicalDigest(value) {
   return sha256(Buffer.from(JSON.stringify(canon(value))))
 }
 
-/* ----------------------------------------------------------------- manifest */
-
-function readManifest(outDir) {
-  const p = path.join(outDir, 'manifest.json')
-  if (!fs.existsSync(p)) return { format: 1, version: 1, releases: {} }
-  return JSON.parse(fs.readFileSync(p, 'utf8'))
-}
-
-function writeManifest(outDir, manifest) {
-  fs.mkdirSync(outDir, { recursive: true })
-  fs.writeFileSync(path.join(outDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n')
-}
+/* ------------------------------------------------------------------ helpers */
 
 function sizeOf(files, names) {
   return names.reduce((sum, name) => sum + (files[name]?.size || 0), 0)
@@ -252,9 +238,9 @@ function sizeOf(files, names) {
 // Ported from LibrePaper's former importer's bundlesEntry: reshapes
 // staged.bundles ({ index, sha256, snapshot, count, bytes, receipt }, already
 // verified byte-for-byte by readRelease above since bundles/bundles.json is
-// one of manifest.files) into what the mirror manifest keeps per release --
-// the index's own mirror-relative URL, so worker.js can resolve it against
-// `base` the same way it resolves every other release file.
+// one of manifest.files) into what release.json keeps --
+// the index's own release-relative URL, so the loader can resolve it against
+// the release directory the same way it resolves every other release file.
 export function bundlesEntry(staged, files) {
   if (staged.bundles == null) return null
   const { index, sha256: digest, snapshot, count, bytes } = staged.bundles
@@ -327,31 +313,43 @@ export function bibliographyIdentity(payload) {
 
 /* --------------------------------------------------------------- buildMirror */
 
+// Everything the mirror serves is immutable (every path is under a release
+// directory named by a digest, and bundle tars under a digest of their own),
+// so one rule covers the whole tree. CORS is for the browser loader.
+const HEADERS = `/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+`
+
 export function buildMirror({ stagedDir, expectedDigest, outDir }) {
   const { manifest: staged, files: payload, digest, engines } = readRelease(stagedDir, expectedDigest)
   const engineRelease = digest
   // No texlive snapshot travels with a bundled release, so the release id is
-  // just the engine release -- unlike LibrePaper's `<engineRelease>+<snapshot>`,
-  // which named a per-file TeX Live pin this repository does not ship.
+  // just the engine release.
   const releaseId = engineRelease
-  const releaseDir = `engines/${engineRelease}`
 
+  // The out directory is this tool's: drop whatever an earlier build left
+  // (an older release, the former engines/ level, manifest.json) so the
+  // result is exactly one release.
+  fs.rmSync(outDir, { recursive: true, force: true })
+  const releaseDir = path.join(outDir, releaseId)
+
+  // Every path in `files` and below is relative to the release directory.
   const files = {}
   for (const [name, bytes] of payload) {
-    const url = `${releaseDir}/${name}`
-    const dest = path.join(outDir, url)
+    const dest = path.join(releaseDir, name)
     fs.mkdirSync(path.dirname(dest), { recursive: true })
-    if (!fs.existsSync(dest) || sha256(fs.readFileSync(dest)) !== sha256(bytes)) fs.writeFileSync(dest, bytes)
-    files[name] = { url, sha256: sha256(bytes), size: bytes.length }
+    fs.writeFileSync(dest, bytes)
+    files[name] = { url: name, sha256: sha256(bytes), size: bytes.length }
   }
 
   const bibliography = bibliographyIdentity(payload)
   const bundles = bundlesEntry(staged, files)
 
   const entry = {
+    format: 2,
     id: releaseId,
     engine_release: engineRelease,
-    base: `${releaseDir}/`,
     engines,
     files,
     bibliography,
@@ -365,24 +363,16 @@ export function buildMirror({ stagedDir, expectedDigest, outDir }) {
     },
     licences: {
       ...Object.fromEntries(staged.families.map(({ family, combinedTerms }) => [family, combinedTerms])),
-      notices: `${releaseDir}/`,
+      notices: '',
     },
     sizes: {
       ...Object.fromEntries(Object.entries(engines).map(([name, spec]) => [name, sizeOf(files, spec.files)])),
     },
   }
-
-  const manifest = readManifest(outDir)
-  manifest.format = 1
-  manifest.version = 1
-  manifest.releases ||= {}
-  const previous = manifest.releases[releaseId]
-  if (previous?.vm) entry.vm = previous.vm
   entry.digest = canonicalDigest({ ...entry, digest: undefined })
-  manifest.releases[releaseId] = entry
-  manifest.default_release = releaseId
-  writeManifest(outDir, manifest)
-  return { releaseId, entry, manifest }
+  fs.writeFileSync(path.join(releaseDir, 'release.json'), JSON.stringify(entry, null, 2) + '\n')
+  fs.writeFileSync(path.join(outDir, '_headers'), HEADERS)
+  return { releaseId, entry }
 }
 
 /* --------------------------------------------------------------------- run */
