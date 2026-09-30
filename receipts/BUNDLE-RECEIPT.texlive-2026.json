@@ -64,7 +64,7 @@
   ],
   "index": {
     "bytes": 14470938,
-    "sha256": "064d0ad3ee8411bebe3fa9849dbc0540da7e8efb3753ef61ba98976f1e2c7866"
+    "sha256": "ce1794d4dc0987d7914a9ef1147ad6b042572a7eb88b8026262e4c308eb0e956"
   },
   "bundles": [
     {
@@ -1861,9 +1861,9 @@
     },
     {
       "name": "fonts/dvipdfmx/updmap",
-      "url": "b/04c081b75751aba54e9f30d6a4083e76ec19774b626c40e5c8cd3a9e83f1ab9f/fonts-dvipdfmx-updmap.tar",
+      "url": "b/4d0c824519eae31e938b12026e629f6b4a379e71561afc4b2a26a68ea11c0c7e/fonts-dvipdfmx-updmap.tar",
       "size": 13824,
-      "sha256": "04c081b75751aba54e9f30d6a4083e76ec19774b626c40e5c8cd3a9e83f1ab9f",
+      "sha256": "4d0c824519eae31e938b12026e629f6b4a379e71561afc4b2a26a68ea11c0c7e",
       "files": 1
     },
     {
@@ -4024,16 +4024,16 @@
     },
     {
       "name": "fonts/dvips/updmap.part1",
-      "url": "b/80d5707bb04ef3e158a65954e5ba16fdc65dae397f745aacf4d2a1fe1bbd434c/fonts-dvips-updmap.part1.tar",
+      "url": "b/50e1c088e1f66b4b696b4a91c69c418651a50cfb5baefc6ef3269f196fe3bf66/fonts-dvips-updmap.part1.tar",
       "size": 16423424,
-      "sha256": "80d5707bb04ef3e158a65954e5ba16fdc65dae397f745aacf4d2a1fe1bbd434c",
+      "sha256": "50e1c088e1f66b4b696b4a91c69c418651a50cfb5baefc6ef3269f196fe3bf66",
       "files": 5
     },
     {
       "name": "fonts/dvips/updmap.part2",
-      "url": "b/ae6658a1cb23321c325c9a54b38f89d646d5bb9ff32226bcfc600ab906a67d6b/fonts-dvips-updmap.part2.tar",
+      "url": "b/84f5a4952a6eb65c78b6758b7b0b4aae9673d9fd98bf3832bbb91d989df2f882/fonts-dvips-updmap.part2.tar",
       "size": 5552640,
-      "sha256": "ae6658a1cb23321c325c9a54b38f89d646d5bb9ff32226bcfc600ab906a67d6b",
+      "sha256": "84f5a4952a6eb65c78b6758b7b0b4aae9673d9fd98bf3832bbb91d989df2f882",
       "files": 1
     },
     {
@@ -4850,16 +4850,16 @@
     },
     {
       "name": "fonts/pdftex/pdftex-map",
-      "url": "b/7352fa6c2fa63fdf6fe89be02d7603fe33cf2907499c1479e729b67b78e78b19/fonts-pdftex-pdftex-map.tar",
+      "url": "b/2ae9887180971a2bf840d665c45a87bc19c497dc7a2db5d008167004b2d6a300/fonts-pdftex-pdftex-map.tar",
       "size": 5543424,
-      "sha256": "7352fa6c2fa63fdf6fe89be02d7603fe33cf2907499c1479e729b67b78e78b19",
+      "sha256": "2ae9887180971a2bf840d665c45a87bc19c497dc7a2db5d008167004b2d6a300",
       "files": 1
     },
     {
       "name": "fonts/pdftex/updmap",
-      "url": "b/03273c9f2fb7a33da964b70aff050a91fbe965fad35dfb3469dfa6349427da7f/fonts-pdftex-updmap.tar",
+      "url": "b/8db73dedf00c5b202883e771fdca8a1265c97859358d0c085bf621d63cc15abe/fonts-pdftex-updmap.tar",
       "size": 11083776,
-      "sha256": "03273c9f2fb7a33da964b70aff050a91fbe965fad35dfb3469dfa6349427da7f",
+      "sha256": "8db73dedf00c5b202883e771fdca8a1265c97859358d0c085bf621d63cc15abe",
       "files": 2
     },
     {
