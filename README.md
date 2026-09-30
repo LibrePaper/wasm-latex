@@ -12,25 +12,18 @@ receipts and notices that let a reader verify that.
 
 ## Making a release
 
-From a clean checkout of `main`, with Docker, `gh` signed in, and LibrePaper
-cloned beside this repository:
+```sh
+make vendor                          # once
+make rebuild                         # ~2 h
+git add receipts/ && git commit -m "Record receipts"
+make release TAG=engines-YYYY.MM.DD  # new tag every time
+make mirror                          # prints the hash
 
-    make vendor                         # once: fetch and verify the TeX Live tree
-    make rebuild                        # engines, Biber, bundles, formats, receipts (about two hours)
-    git add receipts/ && git commit -m "Record receipts from the rebuild"
-    make release TAG=engines-YYYY.MM.DD # tag, publish the source, stage and gate
-    make mirror                         # mirror/<sha256>/; prints the release hash
-
-Then, in `../librepaper`:
-
-    deploy/deploy-mirror.sh --test      # bucket, CORS, credentials
-    deploy/deploy-mirror.sh             # upload to OVH
-    # set the latex row in assets.lock to the new tag and hash, and commit
-
-Tags are never moved or reused: a failed release gets a new tag. The GitHub
-release must be public (not a draft) before `deploy-mirror.sh` will run.
-`make help` lists every target; [`docs/release.md`](docs/release.md)
-explains each step and what the release gate checks.
+cd ../librepaper
+deploy/deploy-mirror.sh --test
+deploy/deploy-mirror.sh
+# assets.lock: latex row -> new tag and hash
+```
 
 ## Docs
 
