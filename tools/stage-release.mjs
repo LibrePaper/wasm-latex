@@ -94,7 +94,7 @@ if (files.includes('biber.wasm')) {
 fs.copyFileSync('RELINK.md', path.join(outDir, 'RELINK.md'))
 fs.copyFileSync('linked-components.json', path.join(outDir, 'linked-components.json'))
 
-// Bundles: package delivery for the browser tier (SPEC-latex.md, "Hosting").
+// Bundles: package delivery for the browser tier (docs/build.md, Release).
 // Copied verbatim into out/bundles/ so bundles.json's relative "b/<sha256>/..."
 // URLs keep resolving after the copy, then recorded on the manifest so the
 // importer can verify the index the same way it verifies engine artifacts.

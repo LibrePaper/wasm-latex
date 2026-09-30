@@ -6,7 +6,7 @@
 // This is the repository-owned replacement for the release-import half of
 // LibrePaper's former importer: LibrePaper used to build and hold the mirror
 // itself; now this repository builds it and LibrePaper just points a URL at
-// it (SPEC-latex.md, "Hosting"). The mirror holds exactly one release, in one
+// it (docs/build.md, Release). The mirror holds exactly one release, in one
 // directory named by the sha256 of its MANIFEST.json, and nothing in it is
 // ever rewritten: there is no top-level manifest, no default release and no
 // mutable file. A release is found by its id, which LibrePaper's build pins.

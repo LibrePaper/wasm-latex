@@ -92,12 +92,11 @@ const log = (...a) => { if (!quiet) console.error(...a) }
 const smokeDocPath = arg('smoke-doc', null)
 const smokeEvidencePath = arg('smoke-evidence', null)
 
-// --bundles <dir>: resolve through a bundle index (SPEC-latex.md "Package
-// delivery: bundles, not files") instead of the per-file harness resolver
-// below. --texmf trees are still required in this mode: they are the fallback
-// for anything the index has no entry for (in practice, nothing but a
-// format-10 request should ever fall back — see resolveViaBundleIndex in
-// pdftex-worker.js).
+// --bundles <dir>: resolve through a bundle index (docs/build.md, Bundles)
+// instead of the per-file harness resolver below. --texmf trees are still
+// required in this mode: they are the fallback for anything the index has no
+// entry for (in practice, nothing but a format-10 request should ever fall
+// back — see resolveViaBundleIndex in pdftex-worker.js).
 const bundlesDirArg = arg('bundles', null)
 const bundlesDir = bundlesDirArg ? path.resolve(bundlesDirArg) : null
 if (bundlesDir && engine === 'xetex') {
@@ -125,11 +124,11 @@ if (!texmfDirs.length || texmfDirs.some((d) => !fs.existsSync(d))) {
 // resolver has to as well. Getting this wrong is quiet: the format still builds,
 // it is just built from the wrong latex.ltx.
 //
-// FORMAT_SEARCH_ORDER lives in wasm-build/kpse-resolve.cjs (one copy, per
-// SPEC-latex.md's "The resolver": the runtime worker ranks candidate paths from
-// bundles.json with the same table, and two copies of that ordering would
-// drift). It already covers 36 (truetype) and 47 (opentype), the XeTeX-only
-// entries this file used to keep a local copy of.
+// FORMAT_SEARCH_ORDER lives in wasm-build/kpse-resolve.cjs (one copy shared
+// between the format build and the runtime worker, per docs/build.md Bundles,
+// so two copies of that ordering would never drift). It already covers 36
+// (truetype) and 47 (opentype), the XeTeX-only entries this file used to keep
+// a local copy of.
 const { FORMAT_SEARCH_ORDER, readTar, sha256Hex } = require('../wasm-build/kpse-resolve.cjs')
 
 const index = new Map()   // basename -> [{ root, rel }, ...]
@@ -194,7 +193,7 @@ function resolveFile(format, name) {
 // texmf trees. The builder itself (the otfinfo invocation, the record format,
 // the field-by-field comment) lives in tools/xetex-fontlist.mjs, shared with
 // the CLI that produces the copy shipped as a bundle member (see
-// tools/build-bundles.mjs's --extra flag and docs/bundles.md).
+// tools/build-bundles.mjs's --extra flag and docs/build.md).
 
 // --- The engine's file requests arrive as synchronous XHR --------------------
 // URL shape is <endpoint>pdftex/<format>/<name>; the endpoint is a sentinel
@@ -563,10 +562,10 @@ if (process.argv.includes('--smoke') || process.argv.includes('--smoke-both')) {
     if (bundlesDir) {
       const c = xhrCounts.smoke || { perFile: 0, bundle: 0, index: 0 }
       log(`xhr      smoke phase: ${c.perFile} per-file, ${c.bundle} bundle, ${c.index} index`)
-      // The numbers to hold the design to (SPEC-latex.md): a warm compile makes
-      // no per-file request at all. The smoke document is plain pdfLaTeX, so
-      // everything it needs must come from `core` — if this fires, the core
-      // bundle list (or the resolver ranking) is missing something.
+      // Performance target (docs/build.md): a warm compile makes no per-file
+      // request at all. The smoke document is plain pdfLaTeX, so everything it
+      // needs must come from `core` — if this fires, the core bundle list (or
+      // the resolver ranking) is missing something.
       if (c.perFile !== 0) {
         console.error(`\nbundle-mode smoke compile made ${c.perFile} per-file request(s); expected zero`)
         process.exit(1)
