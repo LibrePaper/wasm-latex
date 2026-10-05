@@ -16,11 +16,12 @@
 #   make release [TAG=engines-2026.1]   (default: engines-YYYY.MM.DD)
 #                    test, source, publish-source, stage, and annotate the release
 #                    with the manifest hash — the whole chain, refusing early on a
-#                    dirty tree or an existing tag; ends by printing the `make
-#                    mirror` and `make push` commands rather than running them
+#                    dirty tree or an existing tag; ends by printing the next
+#                    steps rather than running them
 #   make mirror      build the mirror LibrePaper serves from staged/       -> mirror/
 #                    (MANIFEST_SHA256=<digest> pins a reviewed hash instead)
-#   make push        publish mirror/ to OVH object storage (needs S3 credentials)
+#
+# Publishing mirror/ happens from ../librepaper: tools/assets/mirror publish.
 #
 # `make engines` builds every engine into wasm-build/dist with Docker;
 # `make rebuild` does that and then regenerates all the data and receipts.
@@ -34,15 +35,12 @@ SOURCE_OUT  ?= dist-source
 IMAGE       ?= librepaper-pdftex-wasm
 FAMILIES    ?= pdftex bibtex bibtex8 biber makeindex xetex dvipdfm
 MIRROR      ?= mirror
-KEYS        ?= ../librepaper/tools/deploy-keys.yaml
-# Shared S3 publisher from the LibrePaper application repository.
-PUBLISHER   ?= ../librepaper/tools/publish-mirror.mjs
 TEXMF_ARGS   = --texmf $(TEXMF_DIST) --texmf $(TEXMF_VAR)
 TEXLIVE_REF  = $(shell cat wasm-build/texlive-source-2026.ref)
 DOCKER_RUN   = docker run --rm --platform linux/amd64 -v $(abspath $(DIST)):/dist
 DOCKER_BUILD = docker buildx build --platform linux/amd64 --load
 
-.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release release-tagged clean-staged mirror push secrets engines rebuild
+.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release release-tagged clean-staged mirror engines rebuild
 
 BIBER_IMAGE ?= librepaper-biber-wasm-experimental
 BIBER_OUT ?= $(DIST)
@@ -152,7 +150,7 @@ release-tagged:  # the chain itself, with TAG fixed once so it cannot drift mid-
 	echo ""; \
 	echo "Staged and annotated. Review $(STAGED)/MANIFEST.json, then:"; \
 	echo "  make mirror        # staged manifest $$HASH"; \
-	echo "  then publish and pin it from ../librepaper (docs/dev/asset-mirrors.md)"
+	echo "  then from ../librepaper: tools/assets/mirror publish, and pin it (docs/dev/asset-mirrors.md)"
 
 clean-staged:  ## Remove the staged directory
 	rm -rf $(STAGED)
@@ -165,16 +163,3 @@ mirror:  ## Build the one-release static mirror (mirror/<id>/) LibrePaper serves
 	echo "mirror: staged manifest $$HASH becomes mirror/$$HASH/ (mirror/ is emptied first)"; \
 	node tools/build-mirror.mjs --staged $(STAGED) --sha256 "$$HASH" --out $(MIRROR)
 	node tools/check-mirror.mjs $(MIRROR)
-
-push:  ## Publish the checked mirror to OVH S3 (needs S3 credentials)
-	@node tools/check-mirror.mjs "$(MIRROR)"
-	node "$(PUBLISHER)" --dir "$(MIRROR)" --prefix latex
-
-# A target cannot export credentials into the shell that ran make, so this opens
-# a subshell with the shared keys decrypted in its environment; exit to drop them.
-# For one command instead of a shell: sops exec-env "$(KEYS)" '<command>'
-secrets:  ## Open a shell with S3 credentials in its environment
-	@test -f "$(KEYS)" || { echo "no $(KEYS) -- clone LibrePaper/librepaper beside this repo, or set KEYS="; exit 1; }
-	@test -t 0 || { echo "make secrets opens an interactive subshell and needs a terminal" >&2; exit 2; }
-	@echo "$(KEYS) is loaded in this shell; exit to drop them"
-	@sops exec-env "$(KEYS)" "$${SHELL:-/bin/sh}"
