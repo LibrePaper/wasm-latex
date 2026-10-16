@@ -2,6 +2,7 @@
 #
 #   make vendor      fetch, verify and unpack the TeX Live tree -> vendor/ (network, 5 GB)
 #   make test        every check that runs without Docker or network
+#   make sha256      rebuild the SHA-256 wasm module and embed it in kpse-resolve.cjs (needs Rust)
 #   make fontlist    generate xetexfontlist.txt with otfinfo  -> $(DIST)/xetexfontlist.txt
 #   make bundles     pack the vendored texmf tree, plus the
 #                    font list, into per-package bundles       -> wasm-build/dist/bundles
@@ -40,7 +41,7 @@ TEXLIVE_REF  = $(shell cat wasm-build/texlive-source-2026.ref)
 DOCKER_RUN   = docker run --rm --platform linux/amd64 -v $(abspath $(DIST)):/dist
 DOCKER_BUILD = docker buildx build --platform linux/amd64 --load
 
-.PHONY: help vendor test fontlist bundles format inventory source publish-source stage check release release-tagged clean-staged mirror engines rebuild
+.PHONY: help vendor sha256 test fontlist bundles format inventory source publish-source stage check release release-tagged clean-staged mirror engines rebuild
 
 BIBER_IMAGE ?= librepaper-biber-wasm-experimental
 BIBER_OUT ?= $(DIST)
@@ -79,6 +80,9 @@ test:  ## Unit tests, pin check, and the resolver test
 	node wasm-build/write-latexml-receipt.test.mjs
 	node wasm-build/kpse-resolve.test.cjs
 	node wasm-build/bundle-mode.test.cjs
+
+sha256:  ## Rebuild the SHA-256 wasm module and embed it in wasm-build/kpse-resolve.cjs
+	node tools/build-sha256.mjs
 
 fontlist:  ## Generate xetexfontlist.txt (otfinfo over every OpenType/TrueType font)
 	node tools/xetex-fontlist.mjs $(TEXMF_ARGS) --out $(DIST)/xetexfontlist.txt
