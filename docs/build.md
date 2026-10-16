@@ -79,7 +79,7 @@ Bundle-mode resolution in `kpse_find_file_impl` (once `loadbundleindex` has load
 
 The XHR stays synchronous because kpathsea is synchronous and the engine is not re-entrant. The worker's `downloading` message gains the bundle name and size, so progress indicators report "amsmath, 1.2 MB" instead of a stream of file names.
 
-Where the Cache Storage API is available, verified bundles are stored in the `librepaper-bundles` cache keyed by their digested URL, and preloaded on the next `loadbundleindex`. Editing sessions then make no requests; the count is driven only by new users and new packages. A warm compile of any corpus document makes no request.
+The engine never uses Cache Storage. It records the exact answer to every lookup (a path, or "not in the index") and the files those answers point at. The host stores this working set per release and per engine kind, and hands it back with `loadworkingset` on the next start. A lookup the working set answers needs neither the index nor a request, so `bundles.json` is parsed only on the first miss. The host asks for the working set with `workingset` after each compile and gets it back only when it changed.
 
 Without `loadbundleindex` the worker behaves as before, one file per request, which the format harness and the previous LibrePaper mirror still use.
 

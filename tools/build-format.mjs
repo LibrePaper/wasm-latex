@@ -469,7 +469,7 @@ if (bundlesDir) {
     console.error('\nloadbundleindex failed')
     process.exit(1)
   }
-  log(`bundles  index loaded: ${loaded.bundles} bundles, ${loaded.files} files, ${loaded.cached} restored from Cache Storage`)
+  log('bundles  index loaded (parsed on the first lookup)')
 }
 
 const started = Date.now()
