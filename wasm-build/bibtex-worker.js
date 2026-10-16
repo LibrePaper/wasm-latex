@@ -8,7 +8,7 @@ importScripts("bundle-mode.js");
 
 var TEXCACHEROOT = "/tex";
 var WORKROOT = "/work";
-var TEXMFROOT = "/texmf"; // bundle members unpack here; see loadbundleindex
+var TEXMFROOT = "/texmf"; // bundle members unpack here; see bundle-mode.js
 
 var texlive200_cache = {};
 var texlive404_cache = {};
@@ -32,8 +32,8 @@ Module["preRun"] = function() {
 };
 
 // Bundle-mode resolver (SPEC-latex.md "The resolver"); shared logic lives in
-// wasm-build/bundle-mode.js. self.bundleMode.index stays null until
-// loadbundleindex succeeds; kpse_find_file_impl consults it first, after the
+// wasm-build/bundle-mode.js. bundleMode.handle() answers the bundle messages in
+// onmessage. kpse_find_file_impl consults bundleMode.active first, after the
 // session caches, and falls through to the legacy per-file XHR path only
 // when no index is loaded.
 self.bundleMode = BundleMode.create({
@@ -41,7 +41,7 @@ self.bundleMode = BundleMode.create({
   texmfRoot: TEXMFROOT,
   workRoot: WORKROOT,
   endpoint: function() { return self.texlive_endpoint; },
-  postMessage: function(msg) { self.postMessage(msg); }
+  postMessage: function(msg, transfer) { self.postMessage(msg, transfer || []); }
 });
 
 Module["postRun"] = function() {
@@ -101,7 +101,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
     return 0;
   }
 
-  if (self.bundleMode.index) {
+  if (self.bundleMode.active) {
     var bundleResult = self.bundleMode.resolve(reqname, format);
     if (!bundleResult.fallthrough) {
       if (bundleResult.path !== undefined) {
@@ -242,6 +242,7 @@ function readFileRoutine(url) {
 
 self["onmessage"] = function(ev) {
   var data = ev.data;
+  if (self.bundleMode.handle(data)) return;
   var cmd = data["cmd"];
 
   if (cmd === "compilebibtex") {
@@ -269,39 +270,14 @@ self["onmessage"] = function(ev) {
     try { 
       FS.mkdir(WORKROOT + "/" + data.url); 
       self.postMessage({ "result": "ok", "cmd": "mkdir" });
-    } catch (e) { 
-      self.postMessage({ "result": "failed", "cmd": "mkdir" });
+    } catch (e) {
+      // EEXIST (errno 20) is success: the host creates every directory of a nested path.
+      self.postMessage({ "result": e && e.errno === 20 ? "ok" : "failed", "cmd": "mkdir" });
     }
   } else if (cmd === "readfile") {
     readFileRoutine(data.url);
   } else if (cmd === "settexliveurl") {
     self.texlive_endpoint = data.url;
-  } else if (cmd === "loadbundleindex") {
-    // SPEC-latex.md "The index" / "The resolver". data: {data, msgId, preload?}.
-    var libMsgId = data.msgId;
-    try {
-      self.bundleMode.loadIndex(data.data);
-      var bundleCount = Object.keys(self.bundleMode.index.bundles || {}).length;
-      var fileCount = Object.keys(self.bundleMode.index.files || {}).length;
-      self.bundleMode.preloadFromCacheStorage(data.preload).then(function(result) {
-        self.postMessage({
-          "result": "ok", "cmd": "loadbundleindex", "msgId": libMsgId,
-          "bundles": bundleCount, "files": fileCount,
-          "cached": result.cached, "skipped": result.skipped
-        });
-      }).catch(function(e) {
-        self.postMessage({ "result": "failed", "cmd": "loadbundleindex", "msgId": libMsgId, "log": String(e) });
-      });
-    } catch (e) {
-      self.postMessage({ "result": "failed", "cmd": "loadbundleindex", "msgId": libMsgId, "log": String(e) });
-    }
-  } else if (cmd === "preloadbundle") {
-    var pbOutcome = self.bundleMode.preloadBundle(data.name, new Uint8Array(data.data));
-    if (pbOutcome !== "ok") {
-      self.postMessage({ "result": "failed", "cmd": "preloadbundle", "msgId": data.msgId, "log": pbOutcome + " for bundle " + data.name });
-    } else {
-      self.postMessage({ "result": "ok", "cmd": "preloadbundle", "msgId": data.msgId });
-    }
   }
 };
 

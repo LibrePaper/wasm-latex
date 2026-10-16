@@ -209,11 +209,16 @@ async function main() {
   }))
   self.onmessage({ data: { cmd: 'loadbundleindex', data: index.buffer, msgId: 1 } })
   await new Promise((resolve) => setImmediate(resolve))
-  assert.deepEqual(message(), {
-    result: 'ok', cmd: 'loadbundleindex', msgId: 1, bundles: 1, files: 2, cached: 0, skipped: 0,
+  assert.deepEqual(message(), { result: 'ok', cmd: 'loadbundleindex', msgId: 1 })
+  self.onmessage({
+    data: {
+      cmd: 'loadworkingset',
+      resolutions: [[26, 'foo.sty', 'tex/latex/base/foo.sty']],
+      files: tarBuffer,
+      msgId: 2,
+    },
   })
-  self.onmessage({ data: { cmd: 'preloadbundle', name: 'core', data: tarBuffer, msgId: 2 } })
-  assert.deepEqual(message(), { result: 'ok', cmd: 'preloadbundle', msgId: 2, log: '' })
+  assert.deepEqual(message(), { result: 'ok', cmd: 'loadworkingset', msgId: 2, files: 1 })
 
   const pointer = module._alloc(32)
   module.HEAPU8.set(new TextEncoder().encode('foo.sty\0'), pointer)
