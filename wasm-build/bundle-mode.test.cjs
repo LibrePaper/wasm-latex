@@ -26,7 +26,7 @@ function test(name, fn) {
     tests.push({ name: name, fn: fn });
 }
 
-// --- A tiny ustar writer (single-member, short names only — enough for these
+// --- A tiny ustar writer (single-member, short names only; enough for these
 // fixtures; kpse-resolve.test.cjs exercises the long-name/multi-member cases). ---
 
 function padBlock(buf) {
@@ -124,56 +124,6 @@ function makeFakeXHR() {
     return { ctor: FakeXHR, routes: routes, calls: calls };
 }
 
-function makeFakeCacheStorage() {
-    var named = new Map(); // cache name -> Map(url -> Uint8Array)
-    function FakeResponse(bytes) {
-        this._bytes = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
-    }
-    FakeResponse.prototype.arrayBuffer = function() {
-        var b = this._bytes;
-        return Promise.resolve(b.buffer.slice(b.byteOffset, b.byteOffset + b.byteLength));
-    };
-    function FakeCache(store) {
-        this.store = store;
-    }
-    FakeCache.prototype.keys = function() {
-        var store = this.store;
-        return Promise.resolve(Array.from(store.keys()).map(function(url) { return { url: url }; }));
-    };
-    FakeCache.prototype.match = function(request) {
-        var url = typeof request === "string" ? request : request.url;
-        var bytes = this.store.get(url);
-        return Promise.resolve(bytes ? new FakeResponse(bytes) : undefined);
-    };
-    FakeCache.prototype.put = function(url, response) {
-        var store = this.store;
-        return response.arrayBuffer().then(function(buf) {
-            store.set(url, new Uint8Array(buf));
-        });
-    };
-    FakeCache.prototype.delete = function(request) {
-        var url = typeof request === "string" ? request : request.url;
-        var had = this.store.has(url);
-        this.store.delete(url);
-        return Promise.resolve(had);
-    };
-    return {
-        ResponseCtor: FakeResponse,
-        open: function(name) {
-            if (!named.has(name)) named.set(name, new Map());
-            return Promise.resolve(new FakeCache(named.get(name)));
-        },
-        // test helper: seed a cache entry directly, bypassing put()
-        seed: function(name, url, bytes) {
-            if (!named.has(name)) named.set(name, new Map());
-            named.get(name).set(url, bytes);
-        },
-        has: function(name, url) {
-            return named.has(name) && named.get(name).has(url);
-        }
-    };
-}
-
 // --- Fixture: one bundle, one member ------------------------------------------
 
 const TIKZ_TAR = buildTar([{ name: "tex/latex/tikz/tikz.sty", data: "tikz sty contents" }]);
@@ -200,154 +150,346 @@ function makeIndex() {
 
 const ENDPOINT = "https://cdn.example/";
 
+
+
+const TIKZ_URL = ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar";
+const AMSMATH_URL = ENDPOINT + "b/" + AMSMATH_SHA + "/tex-latex-amsmath.tar";
+
 function makeEnv(overrides) {
     var fs = makeFakeFS();
     var xhr = makeFakeXHR();
-    var cacheStorage = makeFakeCacheStorage();
     global.XMLHttpRequest = xhr.ctor;
-    global.Response = cacheStorage.ResponseCtor;
     var evidenceLog = [];
+    var messages = []; // every env.postMessage call: { message, transfer }
     var env = {
         FS: fs,
         texmfRoot: "/texmf",
         workRoot: "/work",
         endpoint: function() { return ENDPOINT; },
-        postMessage: function() {},
+        postMessage: function(message, transfer) { messages.push({ message: message, transfer: transfer }); },
         evidence: function(reqname, format, outcome, attempts) {
             evidenceLog.push({ reqname: reqname, format: format, outcome: outcome, attempts: attempts });
-        },
-        caches: cacheStorage
+        }
     };
     for (var k in overrides) env[k] = overrides[k];
-    return { env: env, fs: fs, xhr: xhr, cacheStorage: cacheStorage, evidenceLog: evidenceLog };
+    return { env: env, fs: fs, xhr: xhr, evidenceLog: evidenceLog, messages: messages };
+}
+
+function toBuffer(u8) {
+    return u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength);
+}
+
+// Create an instance with the index stored (not parsed) via the message.
+function makeInstance(index, overrides) {
+    const ctx = makeEnv(overrides);
+    const bm = BundleMode.create(ctx.env);
+    const bytes = Buffer.from(JSON.stringify(index || makeIndex()), "utf8");
+    assert.strictEqual(bm.handle({ cmd: "loadbundleindex", data: toBuffer(toU8(bytes)), msgId: 1 }), true);
+    ctx.bm = bm;
+    return ctx;
+}
+
+function lastReply(ctx) {
+    return ctx.messages[ctx.messages.length - 1];
+}
+
+function workingsetReply(ctx, limit) {
+    assert.strictEqual(ctx.bm.handle({ cmd: "workingset", limit: limit, msgId: 9 }), true);
+    return lastReply(ctx).message;
 }
 
 // --- Tests ---------------------------------------------------------------------
 
-test("resolve hits: fetches once, unpacks, verifies digest, writes back to Cache Storage", () => {
-    const { env, fs, xhr, cacheStorage } = makeEnv();
-    xhr.routes[ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar"] = { status: 200, body: TIKZ_U8 };
-    const bm = BundleMode.create(env);
-    bm.loadIndex(JSON.stringify(makeIndex()));
+test("loadbundleindex stores the bytes, replies with the msgId and does not parse", () => {
+    const ctx = makeEnv();
+    const bm = BundleMode.create(ctx.env);
+    assert.strictEqual(bm.active, false);
+    const bytes = toU8(Buffer.from(JSON.stringify(makeIndex()), "utf8"));
+    assert.strictEqual(bm.handle({ cmd: "loadbundleindex", data: toBuffer(bytes), msgId: 7 }), true);
+    assert.strictEqual(bm.active, true);
+    assert.deepStrictEqual(lastReply(ctx).message, { result: "ok", cmd: "loadbundleindex", msgId: 7 });
+    assert.strictEqual(bm.stats.indexParsed, false);
+});
+
+test("resolve hits: fetches once, unpacks, verifies digest", () => {
+    const { bm, fs, xhr } = makeInstance();
+    xhr.routes[TIKZ_URL] = { status: 200, body: TIKZ_U8 };
 
     const result = bm.resolve("tikz.sty", 26);
     assert.strictEqual(result.path, "/texmf/tex/latex/tikz/tikz.sty");
+    assert.strictEqual(result.bundle, "tex/latex/tikz");
     assert.strictEqual(
         Buffer.from(fs.readFile(result.path)).toString("utf8"),
         "tikz sty contents"
     );
     assert.strictEqual(xhr.calls.length, 1);
 
-    // A second resolve for a sibling in the same bundle must not re-fetch.
+    // The same name again is a memo hit and must not re-fetch.
     bm.resolve("tikz.sty", 26);
     assert.strictEqual(xhr.calls.length, 1);
-
-    // Cache Storage write-back is fire-and-forget (open().then(cache => cache.put(...))),
-    // several microtask turns deep; a setImmediate flushes them all before checking.
-    return new Promise((resolve) => setImmediate(resolve)).then(() => {
-        assert.ok(cacheStorage.has("librepaper-bundles", ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar"));
-    });
+    assert.strictEqual(bm.stats.bundleFetches, 1);
+    assert.strictEqual(bm.stats.memoMisses, 1);
+    assert.strictEqual(bm.stats.memoHits, 1);
+    assert.strictEqual(bm.stats.indexParsed, true);
 });
 
 test("absence: a name absent from the index makes no request", () => {
-    const { env, xhr } = makeEnv();
-    const bm = BundleMode.create(env);
-    bm.loadIndex(JSON.stringify(makeIndex()));
-
+    const { bm, xhr, evidenceLog } = makeInstance();
     const result = bm.resolve("nosuchfile.sty", 26);
     assert.deepStrictEqual(result, { absent: true });
     assert.strictEqual(xhr.calls.length, 0);
+    assert.strictEqual(evidenceLog[evidenceLog.length - 1].outcome, "mirror-absent");
 });
 
-test("digest mismatch: error result, bundle not unpacked", () => {
-    const { env, fs, xhr } = makeEnv();
-    // Serve AMSMATH bytes under the tikz bundle's URL — sha256 will not match
-    // the index's recorded digest for tex/latex/tikz.
-    xhr.routes[ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar"] = { status: 200, body: AMSMATH_U8 };
-    const bm = BundleMode.create(env);
-    bm.loadIndex(JSON.stringify(makeIndex()));
+test("format 10 with no index entry falls through", () => {
+    const { bm } = makeInstance();
+    assert.deepStrictEqual(bm.resolve("nosuch.fmt", 10), { fallthrough: true });
+});
+
+test("resolve before any index is loaded falls through and bm is inactive", () => {
+    const ctx = makeEnv();
+    const bm = BundleMode.create(ctx.env);
+    assert.strictEqual(bm.active, false);
+    assert.deepStrictEqual(bm.resolve("tikz.sty", 26), { fallthrough: true });
+});
+
+test("lazy index: nothing is parsed until the first memo miss", () => {
+    const { bm } = makeInstance();
+    assert.strictEqual(bm.stats.indexParsed, false);
+    assert.strictEqual(bm.stats.indexParseMs, 0);
+    bm.resolve("nosuchfile.sty", 26);
+    assert.strictEqual(bm.stats.indexParsed, true);
+});
+
+test("a pure-memo compile never parses the index", () => {
+    const a = makeInstance();
+    a.xhr.routes[TIKZ_URL] = { status: 200, body: TIKZ_U8 };
+    a.bm.resolve("tikz.sty", 26);
+    a.bm.resolve("nosuchfile.sty", 26);
+    const ws = workingsetReply(a, 1 << 30);
+
+    const b = makeInstance();
+    b.bm.handle({ cmd: "loadworkingset", resolutions: ws.resolutions, files: ws.files, msgId: 2 });
+    const r = b.bm.resolve("tikz.sty", 26);
+    assert.strictEqual(r.path, "/texmf/tex/latex/tikz/tikz.sty");
+    assert.deepStrictEqual(b.bm.resolve("nosuchfile.sty", 26), { absent: true });
+    assert.strictEqual(b.xhr.calls.length, 0);
+    assert.strictEqual(b.bm.stats.indexParsed, false);
+    assert.strictEqual(b.bm.stats.memoHits, 2);
+    assert.strictEqual(b.bm.stats.memoMisses, 0);
+});
+
+test("memo exactness: a restored resolution is returned verbatim even if the index ranks differently", () => {
+    const index = makeIndex();
+    const aaa = "tex/latex/aaa/foo.sty";
+    const zzz = "tex/latex/zzz/foo.sty";
+    index.bundles["tex/latex/aaa"] = { url: "b/x/aaa.tar", size: 1, sha256: "0", files: 1 };
+    index.bundles["tex/latex/zzz"] = { url: "b/x/zzz.tar", size: 1, sha256: "0", files: 1 };
+    index.files[aaa] = "tex/latex/aaa";
+    index.files[zzz] = "tex/latex/zzz";
+    const ranked = resolveName(26, "foo.sty", buildNameIndex(index.files)).path;
+    const other = ranked === aaa ? zzz : aaa;
+
+    const tar = BundleMode.writeTar([[other, new Uint8Array(Buffer.from("restored", "utf8"))]]);
+    const { bm, fs, xhr } = makeInstance(index);
+    bm.handle({ cmd: "loadworkingset", resolutions: [[26, "foo.sty", other], [26, "gone.sty", null], [10, "gone.fmt", null]], files: toBuffer(tar), msgId: 3 });
+
+    const r = bm.resolve("foo.sty", 26);
+    assert.strictEqual(r.relpath, other);
+    assert.strictEqual(Buffer.from(fs.readFile(r.path)).toString("utf8"), "restored");
+    assert.deepStrictEqual(bm.resolve("gone.sty", 26), { absent: true });
+    assert.deepStrictEqual(bm.resolve("gone.fmt", 10), { fallthrough: true });
+    assert.strictEqual(xhr.calls.length, 0);
+    assert.strictEqual(bm.stats.indexParsed, false);
+});
+
+test("a memo hit whose file is not written yet still fetches its bundle", () => {
+    const { bm, fs, xhr } = makeInstance();
+    xhr.routes[TIKZ_URL] = { status: 200, body: TIKZ_U8 };
+    bm.handle({
+        cmd: "loadworkingset",
+        resolutions: [[26, "tikz.sty", "tex/latex/tikz/tikz.sty"]],
+        files: toBuffer(BundleMode.writeTar([])),
+        msgId: 4
+    });
+    const r = bm.resolve("tikz.sty", 26);
+    assert.strictEqual(r.path, "/texmf/tex/latex/tikz/tikz.sty");
+    assert.strictEqual(r.bundle, "tex/latex/tikz");
+    assert.strictEqual(xhr.calls.length, 1);
+    assert.strictEqual(Buffer.from(fs.readFile(r.path)).toString("utf8"), "tikz sty contents");
+    assert.strictEqual(bm.stats.indexParsed, true);
+});
+
+test("loadworkingset replies with the member count and does not dirty the memo", () => {
+    const tar = BundleMode.writeTar([["tex/latex/tikz/tikz.sty", new Uint8Array(Buffer.from("x", "utf8"))]]);
+    const ctx = makeInstance();
+    ctx.bm.handle({
+        cmd: "loadworkingset",
+        resolutions: [[26, "tikz.sty", "tex/latex/tikz/tikz.sty"]],
+        files: toBuffer(tar),
+        msgId: 5
+    });
+    assert.deepStrictEqual(lastReply(ctx).message, { result: "ok", cmd: "loadworkingset", msgId: 5, files: 1 });
+    ctx.bm.resolve("tikz.sty", 26);
+    assert.strictEqual(workingsetReply(ctx, 1 << 30).changed, false);
+});
+
+test("working set round trip: export, load into a fresh instance, resolve with no XHR and no parse", () => {
+    const a = makeInstance();
+    a.xhr.routes[TIKZ_URL] = { status: 200, body: TIKZ_U8 };
+    a.bm.resolve("tikz.sty", 26);
+    a.bm.resolve("nosuchfile.sty", 26);
+    const ws = workingsetReply(a, 1 << 30);
+    assert.strictEqual(ws.result, "ok");
+    assert.strictEqual(ws.cmd, "workingset");
+    assert.strictEqual(ws.msgId, 9);
+    assert.strictEqual(ws.changed, true);
+    assert.deepStrictEqual(
+        ws.resolutions.slice().sort(),
+        [[26, "nosuchfile.sty", null], [26, "tikz.sty", "tex/latex/tikz/tikz.sty"]].sort()
+    );
+    assert.ok(ws.files instanceof ArrayBuffer);
+    const sent = lastReply(a);
+    assert.deepStrictEqual(sent.transfer, [ws.files]);
+    assert.strictEqual(ws.stats.bundleFetches, 1);
+    assert.strictEqual(ws.stats.indexParsed, true);
+
+    const b = makeInstance();
+    b.bm.handle({ cmd: "loadworkingset", resolutions: ws.resolutions, files: ws.files, msgId: 2 });
+    assert.deepStrictEqual(lastReply(b).message, { result: "ok", cmd: "loadworkingset", msgId: 2, files: 1 });
+    const r = b.bm.resolve("tikz.sty", 26);
+    assert.strictEqual(Buffer.from(b.fs.readFile(r.path)).toString("utf8"), "tikz sty contents");
+    assert.deepStrictEqual(b.bm.resolve("nosuchfile.sty", 26), { absent: true });
+    assert.strictEqual(b.xhr.calls.length, 0);
+    assert.strictEqual(b.bm.stats.indexParsed, false);
+    assert.strictEqual(b.bm.stats.bundleFetches, 0);
+});
+
+test("the limit falls back to the keys used in this session", () => {
+    const a = makeInstance();
+    a.xhr.routes[TIKZ_URL] = { status: 200, body: TIKZ_U8 };
+    a.xhr.routes[AMSMATH_URL] = { status: 200, body: AMSMATH_U8 };
+    a.bm.resolve("amsmath.sty", 26);
+    a.bm.resolve("tikz.sty", 26);
+    const ws = workingsetReply(a, 1 << 30);
+
+    const b = makeInstance();
+    b.xhr.routes[TIKZ_URL] = { status: 200, body: TIKZ_U8 };
+    b.bm.handle({ cmd: "loadworkingset", resolutions: ws.resolutions, files: ws.files, msgId: 2 });
+    b.bm.resolve("tikz.sty", 26); // memo hit, file already unpacked
+    // Make the memo dirty with a fresh miss, then export under a tiny limit.
+    b.bm.resolve("nosuchfile.sty", 26);
+    const small = workingsetReply(b, 1);
+    assert.strictEqual(small.changed, true);
+    assert.deepStrictEqual(
+        small.resolutions.map((r) => r[1]).sort(),
+        ["nosuchfile.sty", "tikz.sty"]
+    );
+    // amsmath was restored but never used here, so it is not in the small set.
+    assert.ok(!small.resolutions.some((r) => r[1] === "amsmath.sty"));
+});
+
+test("workingset reports changed:false when clean and after an export", () => {
+    const ctx = makeInstance();
+    let ws = workingsetReply(ctx, 1 << 30);
+    assert.strictEqual(ws.changed, false);
+    assert.strictEqual(ws.resolutions, undefined);
+    assert.strictEqual(ws.files, undefined);
+    assert.strictEqual(typeof ws.stats, "object");
+
+    ctx.bm.resolve("nosuchfile.sty", 26);
+    ws = workingsetReply(ctx, 1 << 30);
+    assert.strictEqual(ws.changed, true);
+    ws = workingsetReply(ctx, 1 << 30);
+    assert.strictEqual(ws.changed, false);
+});
+
+test("writeTar: long names (over 100 bytes), empty and multi-block members read back by readTar", () => {
+    const longPath = "tex/latex/" + "deep/".repeat(30) + "file-with-a-long-name.sty";
+    assert.ok(longPath.length > 100);
+    const big = new Uint8Array(1300);
+    for (let i = 0; i < big.length; i++) big[i] = i % 251;
+    const entries = [
+        ["short.sty", new Uint8Array(Buffer.from("short", "utf8"))],
+        [longPath, big],
+        ["empty.sty", new Uint8Array(0)]
+    ];
+    const tar = BundleMode.writeTar(entries);
+    assert.strictEqual(tar.length % 512, 0);
+    const seen = [];
+    readTar(tar, (name, bytes) => seen.push([name, Buffer.from(bytes)]));
+    assert.deepStrictEqual(seen.map((s) => s[0]), entries.map((e) => e[0]));
+    entries.forEach((e, i) => assert.ok(Buffer.from(e[1]).equals(seen[i][1])));
+});
+
+test("digest mismatch: error result, bundle not unpacked, not memoised", () => {
+    const ctx = makeInstance();
+    const { bm, fs, xhr } = ctx;
+    // Serve AMSMATH bytes under the tikz bundle's URL: size and sha256 will
+    // not match the index's recorded values for tex/latex/tikz.
+    xhr.routes[TIKZ_URL] = { status: 200, body: AMSMATH_U8 };
 
     const result = bm.resolve("tikz.sty", 26);
-    assert.deepStrictEqual(result, { error: "digest-mismatch", bundle: "tex/latex/tikz" });
+    assert.ok(result.error === "digest-mismatch" || result.error === "size-mismatch");
+    assert.strictEqual(result.bundle, "tex/latex/tikz");
     assert.ok(!bm.loaded.has("tex/latex/tikz"));
     assert.throws(() => fs.readFile("/texmf/tex/latex/tikz/tikz.sty"));
+    assert.strictEqual(workingsetReply(ctx, 1 << 30).changed, false);
 });
 
-test("transport error does not poison: a later resolve retries the fetch", () => {
-    const { env, xhr } = makeEnv();
-    xhr.routes[ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar"] = { throwErr: true };
-    const bm = BundleMode.create(env);
-    bm.loadIndex(JSON.stringify(makeIndex()));
+test("same-size wrong bytes give digest-mismatch", () => {
+    const { bm, xhr } = makeInstance();
+    const wrong = new Uint8Array(TIKZ_U8.length);
+    wrong.fill(7);
+    xhr.routes[TIKZ_URL] = { status: 200, body: wrong };
+    assert.deepStrictEqual(bm.resolve("tikz.sty", 26), { error: "digest-mismatch", bundle: "tex/latex/tikz" });
+});
+
+test("wrong size gives size-mismatch", () => {
+    const { bm, xhr } = makeInstance();
+    xhr.routes[TIKZ_URL] = { status: 200, body: new Uint8Array(3) };
+    assert.deepStrictEqual(bm.resolve("tikz.sty", 26), { error: "size-mismatch", bundle: "tex/latex/tikz" });
+});
+
+test("transport error is not memoised: a later resolve retries the fetch", () => {
+    const ctx = makeInstance();
+    const { bm, xhr } = ctx;
+    xhr.routes[TIKZ_URL] = { throwErr: true };
 
     const first = bm.resolve("tikz.sty", 26);
     assert.deepStrictEqual(first, { error: "transport-error", bundle: "tex/latex/tikz" });
     assert.ok(!bm.loaded.has("tex/latex/tikz"));
+    assert.strictEqual(workingsetReply(ctx, 1 << 30).changed, false);
 
-    // Fix the route and resolve again: bundle-mode itself keeps no negative
-    // cache for a transport error, so it must attempt the fetch again (the
-    // caller's own 404 cache is what must stay unpoisoned — see
-    // resolveViaBundleIndex in pdftex-worker.js, which only writes
-    // texlive404_cache on `absent`, never on `error`).
-    xhr.routes[ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar"] = { status: 200, body: TIKZ_U8 };
+    xhr.routes[TIKZ_URL] = { status: 200, body: TIKZ_U8 };
     const second = bm.resolve("tikz.sty", 26);
     assert.strictEqual(second.path, "/texmf/tex/latex/tikz/tikz.sty");
     assert.strictEqual(xhr.calls.length, 2);
+    assert.strictEqual(workingsetReply(ctx, 1 << 30).changed, true);
 });
 
-test("preload scope: restores only the named bundles and reports skipped", () => {
-    const { env, fs, xhr, cacheStorage } = makeEnv();
-    cacheStorage.seed("librepaper-bundles", ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar", TIKZ_U8);
-    cacheStorage.seed("librepaper-bundles", ENDPOINT + "b/" + AMSMATH_SHA + "/tex-latex-amsmath.tar", AMSMATH_U8);
-    const bm = BundleMode.create(env);
-    bm.loadIndex(JSON.stringify(makeIndex()));
-
-    return bm.preloadFromCacheStorage(["tex/latex/tikz"]).then((result) => {
-        assert.strictEqual(result.cached, 1);
-        assert.strictEqual(result.skipped, 1);
-        assert.ok(bm.loaded.has("tex/latex/tikz"));
-        assert.ok(!bm.loaded.has("tex/latex/amsmath"));
-        assert.strictEqual(xhr.calls.length, 0); // preload never hits the network
-
-        // The unscoped bundle is still unpacked on demand, from the network,
-        // since it was skipped rather than restored.
-        xhr.routes[ENDPOINT + "b/" + AMSMATH_SHA + "/tex-latex-amsmath.tar"] = { status: 200, body: AMSMATH_U8 };
-        const result2 = bm.resolve("amsmath.sty", 26);
-        assert.strictEqual(result2.path, "/texmf/tex/latex/amsmath/amsmath.sty");
+test("format-10 hit is copied into the work directory", () => {
+    const index = makeIndex();
+    index.files["tex/latex/tikz/pdflatex.fmt"] = "tex/latex/tikz";
+    const tar = BundleMode.writeTar([["tex/latex/tikz/pdflatex.fmt", new Uint8Array(Buffer.from("fmt", "utf8"))]]);
+    const { bm, fs } = makeInstance(index);
+    bm.handle({
+        cmd: "loadworkingset",
+        resolutions: [[10, "pdflatex.fmt", "tex/latex/tikz/pdflatex.fmt"]],
+        files: toBuffer(tar),
+        msgId: 6
     });
+    const r = bm.resolve("pdflatex.fmt", 10);
+    assert.strictEqual(r.path, "/texmf/tex/latex/tikz/pdflatex.fmt");
+    assert.strictEqual(Buffer.from(fs.readFile("/work/pdflatex.fmt")).toString("utf8"), "fmt");
 });
 
-test("preload without scope restores every cached bundle matching the index", () => {
-    const { env, cacheStorage } = makeEnv();
-    cacheStorage.seed("librepaper-bundles", ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar", TIKZ_U8);
-    cacheStorage.seed("librepaper-bundles", ENDPOINT + "b/" + AMSMATH_SHA + "/tex-latex-amsmath.tar", AMSMATH_U8);
-    const bm = BundleMode.create(env);
-    bm.loadIndex(JSON.stringify(makeIndex()));
-
-    return bm.preloadFromCacheStorage().then((result) => {
-        assert.strictEqual(result.cached, 2);
-        assert.strictEqual(result.skipped, 0);
-        assert.ok(bm.loaded.has("tex/latex/tikz"));
-        assert.ok(bm.loaded.has("tex/latex/amsmath"));
-    });
-});
-
-test("stale cache entry (digest no longer matches) is deleted, not unpacked or counted", () => {
-    const { env, cacheStorage } = makeEnv();
-    const url = ENDPOINT + "b/" + TIKZ_SHA + "/tex-latex-tikz.tar";
-    // Seed the cache with bytes that do NOT match the index's recorded digest
-    // for this bundle — as if the release rotated under the cached entry.
-    cacheStorage.seed("librepaper-bundles", url, AMSMATH_U8);
-    const bm = BundleMode.create(env);
-    bm.loadIndex(JSON.stringify(makeIndex()));
-
-    return bm.preloadFromCacheStorage().then((result) => {
-        // Only the stale tikz entry is in the cache at all (amsmath was never
-        // seeded); it is deleted rather than counted as cached or skipped.
-        assert.strictEqual(result.cached, 0);
-        assert.strictEqual(result.skipped, 0);
-        assert.ok(!bm.loaded.has("tex/latex/tikz"));
-        assert.ok(!cacheStorage.has("librepaper-bundles", url), "stale entry must be deleted from Cache Storage");
-    });
+test("handle returns false for unknown commands and posts nothing", () => {
+    const ctx = makeInstance();
+    const before = ctx.messages.length;
+    assert.strictEqual(ctx.bm.handle({ cmd: "compile", msgId: 1 }), false);
+    assert.strictEqual(ctx.bm.handle({ cmd: "preloadbundle", msgId: 2 }), false);
+    assert.strictEqual(ctx.messages.length, before);
 });
 
 async function main() {
