@@ -79,7 +79,7 @@ self.kpse_find_file_impl = function kpseFindFile(namePtr, format) {
   if (local) {
     return allocateString(local);
   }
-  if (!bundleMode?.index) return 0;
+  if (!bundleMode?.active) return 0;
   const result = bundleMode.resolve(requested, format);
   if (result.path) return allocateString(result.path);
   return 0;
@@ -317,7 +317,7 @@ function initialize() {
       texmfRoot: TEXMF_ROOT,
       workRoot: WORK_ROOT,
       endpoint: () => texliveEndpoint,
-      postMessage: (message) => self.postMessage(message),
+      postMessage: (message, transfer) => self.postMessage(message, transfer || []),
       evidence: (requested, format, outcome, attempts) => {
         self.postMessage({ cmd: "resolver", evidence: { requestedName: requested, format, outcome, attempts } });
       },
@@ -332,6 +332,7 @@ function initialize() {
 }
 
 self.onmessage = function ({ data }) {
+  if (bundleMode && bundleMode.handle(data)) return;
   const cmd = data.cmd;
   try {
     if (cmd === "settexliveurl") {
@@ -365,19 +366,6 @@ self.onmessage = function ({ data }) {
       moduleInstance._clear_files();
       projectFiles.clear();
       self.postMessage({ result: "ok", cmd: "flushcache" });
-    } else if (cmd === "loadbundleindex") {
-      const counts = bundleMode.loadIndex(data.data);
-      bundleMode.preloadFromCacheStorage(data.preload).then((cached) => {
-        self.postMessage({
-          result: "ok", cmd: "loadbundleindex", msgId: data.msgId,
-          bundles: counts.bundles,
-          files: counts.files,
-          cached: cached.cached, skipped: cached.skipped,
-        });
-      }).catch((error) => self.postMessage({ result: "failed", cmd: "loadbundleindex", msgId: data.msgId, log: String(error) }));
-    } else if (cmd === "preloadbundle") {
-      const result = bundleMode.preloadBundle(data.name, new Uint8Array(data.data));
-      self.postMessage({ result: result === "ok" ? "ok" : "failed", cmd: "preloadbundle", msgId: data.msgId, log: result === "ok" ? "" : result });
     } else if (cmd === "compilelatex") {
       const source = data.source || new TextDecoder().decode(projectFiles.get(mainFile) || new Uint8Array());
       self.postMessage(compile(source, mainFile));
