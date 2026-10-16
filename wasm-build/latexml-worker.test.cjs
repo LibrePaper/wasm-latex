@@ -200,7 +200,6 @@ async function main() {
 
   const tar = tarFile('tex/latex/base/foo.sty', 'package')
   const digest = crypto.createHash('sha256').update(tar).digest('hex')
-  const tarBuffer = Uint8Array.from(tar).buffer
   const longName = `tex/latex/base/${'long-'.repeat(80)}.sty`
   const index = new TextEncoder().encode(JSON.stringify({
     schemaVersion: 1,
@@ -213,12 +212,15 @@ async function main() {
   self.onmessage({
     data: {
       cmd: 'loadworkingset',
-      resolutions: [[26, 'foo.sty', 'tex/latex/base/foo.sty']],
-      files: tarBuffer,
+      resolutions: [[26, 'foo.sty', 'tex/latex/base/foo.sty'], [26, longName.split('/').pop(), longName]],
+      files: context.BundleMode.writeTar([
+        ['tex/latex/base/foo.sty', new TextEncoder().encode('package')],
+        [longName, new TextEncoder().encode('long')],
+      ]).buffer,
       msgId: 2,
     },
   })
-  assert.deepEqual(message(), { result: 'ok', cmd: 'loadworkingset', msgId: 2, files: 1 })
+  assert.deepEqual(message(), { result: 'ok', cmd: 'loadworkingset', msgId: 2, files: 2 })
 
   const pointer = module._alloc(32)
   module.HEAPU8.set(new TextEncoder().encode('foo.sty\0'), pointer)
