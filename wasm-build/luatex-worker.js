@@ -49,16 +49,15 @@ Module.preRun = () => {
 }
 
 // Bundle-mode resolver (SPEC-latex.md "The resolver"); shared logic lives in
-// wasm-build/bundle-mode.js. self.bundleMode.index stays null until
-// loadbundleindex succeeds; kpse_find_file_impl consults it first, after the
-// session caches, and falls through to the legacy per-file XHR path only
-// when no index is loaded.
+// wasm-build/bundle-mode.js, which answers loadbundleindex, loadworkingset
+// and workingset itself. kpse_find_file_impl consults it once the host has
+// sent the index, and falls through to the legacy per-file XHR path before.
 self.bundleMode = BundleMode.create({
   get FS() { return FS },
   texmfRoot: TEXMFROOT,
   workRoot: WORKROOT,
   endpoint: () => self.texlive_endpoint,
-  postMessage: (msg) => self.postMessage(msg),
+  postMessage: (msg, transfer) => self.postMessage(msg, transfer || []),
   evidence: (...args) => self.resolverEvidence(...args),
 })
 Module.postRun = () => {
@@ -184,7 +183,7 @@ function injectLuaotfloadNames() {
   // bundle); else fetch once and register it in texlive200 so dumpcache
   // persists it for the next visit.
   let path = texlive200[NAMES_CK]
-  if (!path && self.bundleMode.index) {
+  if (!path && self.bundleMode.active) {
     const result = self.bundleMode.resolve('luaotfload-names.lua', 51)
     if (result.path !== undefined) {
       path = result.path
@@ -343,6 +342,7 @@ function compileFormatRoutine() {
 
 self.onmessage = (ev) => {
   const data = ev.data
+  if (self.bundleMode.handle(data)) return
   const cmd = data.cmd
   if (cmd === 'compilelatex') compileLaTeXRoutine()
   else if (cmd === 'compileformat') compileFormatRoutine()
@@ -430,32 +430,6 @@ self.onmessage = (ev) => {
     self.postMessage({ result: 'ok', cmd: 'dumpcache', msgId: data.msgId, files, notFound }, transfer)
   } else if (cmd === 'flushcache') {
     cleanDir(WORKROOT)
-  } else if (cmd === 'loadbundleindex') {
-    // SPEC-latex.md "The index" / "The resolver". data: {data, msgId, preload?}.
-    const msgId = data.msgId
-    try {
-      self.bundleMode.loadIndex(data.data)
-      const bundleCount = Object.keys(self.bundleMode.index.bundles || {}).length
-      const fileCount = Object.keys(self.bundleMode.index.files || {}).length
-      self.bundleMode.preloadFromCacheStorage(data.preload).then((result) => {
-        self.postMessage({
-          result: 'ok', cmd: 'loadbundleindex', msgId,
-          bundles: bundleCount, files: fileCount,
-          cached: result.cached, skipped: result.skipped,
-        })
-      }).catch((e) => {
-        self.postMessage({ result: 'failed', cmd: 'loadbundleindex', msgId, log: String(e) })
-      })
-    } catch (e) {
-      self.postMessage({ result: 'failed', cmd: 'loadbundleindex', msgId, log: String(e) })
-    }
-  } else if (cmd === 'preloadbundle') {
-    const outcome = self.bundleMode.preloadBundle(data.name, new Uint8Array(data.data))
-    if (outcome !== 'ok') {
-      self.postMessage({ result: 'failed', cmd: 'preloadbundle', msgId: data.msgId, log: `${outcome} for bundle ${data.name}` })
-    } else {
-      self.postMessage({ result: 'ok', cmd: 'preloadbundle', msgId: data.msgId })
-    }
   } else if (cmd === 'grace') {
     self.close()
   }
@@ -554,7 +528,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
     return _allocate(intArrayFromString(texlive200[cacheKey]))
   }
 
-  if (self.bundleMode.index) {
+  if (self.bundleMode.active) {
     const result = self.bundleMode.resolve(reqname, format)
     if (!result.fallthrough) {
       if (result.path !== undefined) {

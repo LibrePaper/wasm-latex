@@ -32,7 +32,7 @@ const sha256 = (bytes) => createHash('sha256').update(bytes).digest('hex')
 /* ------------------------------------------------------------- ENGINE_FILE_SETS */
 // Copied verbatim from LibrePaper's latex/tools/release.mjs. Every worker
 // importScripts() both kpse-resolve.js (the resolver core) and
-// bundle-mode.js (the loadbundleindex/preloadbundle handlers)
+// bundle-mode.js (the loadbundleindex/loadworkingset/workingset handlers)
 // unconditionally, so an engine missing either fails at importScripts before
 // it can even answer `configure`. An engine whose complete file set is not
 // in the staged release's artifacts is not advertised -- see readRelease

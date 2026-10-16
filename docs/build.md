@@ -79,7 +79,7 @@ Bundle-mode resolution in `kpse_find_file_impl` (once `loadbundleindex` has load
 
 The XHR stays synchronous because kpathsea is synchronous and the engine is not re-entrant. The worker's `downloading` message gains the bundle name and size, so progress indicators report "amsmath, 1.2 MB" instead of a stream of file names.
 
-Where the Cache Storage API is available, verified bundles are stored in the `librepaper-bundles` cache keyed by their digested URL, and preloaded on the next `loadbundleindex`. Editing sessions then make no requests; the count is driven only by new users and new packages. A warm compile of any corpus document makes no request.
+The engine never uses Cache Storage. It records the exact answer to every lookup (a path, or "not in the index") and the files those answers point at. The host stores this working set per release and per engine kind, and hands it back with `loadworkingset` on the next start. A lookup the working set answers needs neither the index nor a request, so `bundles.json` is parsed only on the first miss. The host asks for the working set with `workingset` after each compile and gets it back only when it changed.
 
 Without `loadbundleindex` the worker behaves as before, one file per request, which the format harness and the previous LibrePaper mirror still use.
 
@@ -148,6 +148,17 @@ TeX stamps the dump with the current date. The harness freezes the clock at `SOU
 `--smoke` for XeTeX compiles a fontspec document twice (once selecting the font by family name, once by file name; `--font-variant name|file` picks one, `--smoke-both` runs both), then feeds the `.xdv` XeTeX writes to a second, independently booted `dvipdfm` engine session (same texmf index, same XHR shim) and asserts the result starts with `%PDF-` and embeds an LM font. That second assertion has to look past xdvipdfmx's default use of compressed PDF object streams (a plain byte search for `LMRoman` misses a correctly embedded font whose `/BaseFont` entry lives inside a Flate-compressed `/ObjStm`), so the harness also inflates every `stream`...`endstream` region and searches the decompressed bytes.
 
 XeTeX runs with `-synctex=1` and the worker returns the `.synctex(.gz)` bytes on the compile reply as a `synctex` field, mirroring `pdftex-worker.js`.
+
+## SHA-256 module
+
+`wasm-build/kpse-resolve.cjs` verifies bundles with `sha256Hex`, which runs inside a synchronous callback from the TeX engine, so `crypto.subtle` cannot be used. It is a small `no_std` Rust crate in `wasm-build/sha256`, compiled to wasm and embedded as base64 between the `BEGIN`/`END GENERATED SHA256 WASM` markers.
+
+Rebuild and embed it (needs Rust with the `wasm32-unknown-unknown` target):
+
+```sh
+make sha256
+node tools/build-sha256.mjs --check   # CI: fails if the embedded bytes are stale
+```
 
 ## Biber
 

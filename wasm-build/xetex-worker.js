@@ -21,7 +21,7 @@ importScripts('kpse-resolve.js')
 importScripts('bundle-mode.js')
 
 const TEXCACHEROOT = '/tex'
-const TEXMFROOT = '/texmf' // bundle members unpack here; see loadbundleindex
+const TEXMFROOT = '/texmf' // bundle members unpack here; see bundle-mode.js
 const WORKROOT = '/work'
 // biome-ignore lint: emscripten populates Module
 var Module = self.Module = {}
@@ -44,8 +44,8 @@ Module.preRun = () => {
 }
 
 // Bundle-mode resolver (SPEC-latex.md "The resolver"); shared logic lives in
-// wasm-build/bundle-mode.js. self.bundleMode.index stays null until
-// loadbundleindex succeeds; kpse_find_file_impl consults it first, after the
+// wasm-build/bundle-mode.js. bundleMode.handle() answers the bundle messages in
+// onmessage. kpse_find_file_impl consults bundleMode.active first, after the
 // session caches, and falls through to the legacy per-file XHR path only
 // when no index is loaded.
 self.bundleMode = BundleMode.create({
@@ -53,7 +53,7 @@ self.bundleMode = BundleMode.create({
   texmfRoot: TEXMFROOT,
   workRoot: WORKROOT,
   endpoint: () => self.texlive_endpoint,
-  postMessage: (msg) => self.postMessage(msg),
+  postMessage: (msg, transfer) => self.postMessage(msg, transfer || []),
   evidence: (...args) => self.resolverEvidence(...args),
 })
 
@@ -308,6 +308,7 @@ function compileFormatRoutine() {
 
 self.onmessage = (ev) => {
   const data = ev.data
+  if (self.bundleMode.handle(data)) return
   const cmd = data.cmd
   if (cmd === 'compilelatex') compileLaTeXRoutine()
   else if (cmd === 'compileformat') compileFormatRoutine()
@@ -318,7 +319,11 @@ self.onmessage = (ev) => {
   } else if (cmd === 'mkdir') {
     try {
       FS.mkdir(`${WORKROOT}/${data.url}`)
-    } catch {}
+      self.postMessage({ result: 'ok', cmd: 'mkdir' })
+    } catch (e) {
+      // EEXIST (errno 20) is success: the host creates every directory of a nested path.
+      self.postMessage({ result: e && e.errno === 20 ? 'ok' : 'failed', cmd: 'mkdir' })
+    }
   } else if (cmd === 'writefile') {
     try {
       FS.writeFile(`${WORKROOT}/${data.url}`, data.src)
@@ -378,32 +383,6 @@ self.onmessage = (ev) => {
     self.postMessage({ result: 'ok', cmd: 'dumpcache', files, notFound }, transfer)
   } else if (cmd === 'flushcache') {
     cleanDir(WORKROOT)
-  } else if (cmd === 'loadbundleindex') {
-    // SPEC-latex.md "The index" / "The resolver". data: {data, msgId, preload?}.
-    const msgId = data.msgId
-    try {
-      self.bundleMode.loadIndex(data.data)
-      const bundleCount = Object.keys(self.bundleMode.index.bundles || {}).length
-      const fileCount = Object.keys(self.bundleMode.index.files || {}).length
-      self.bundleMode.preloadFromCacheStorage(data.preload).then((result) => {
-        self.postMessage({
-          result: 'ok', cmd: 'loadbundleindex', msgId,
-          bundles: bundleCount, files: fileCount,
-          cached: result.cached, skipped: result.skipped,
-        })
-      }).catch((e) => {
-        self.postMessage({ result: 'failed', cmd: 'loadbundleindex', msgId, log: String(e) })
-      })
-    } catch (e) {
-      self.postMessage({ result: 'failed', cmd: 'loadbundleindex', msgId, log: String(e) })
-    }
-  } else if (cmd === 'preloadbundle') {
-    const outcome = self.bundleMode.preloadBundle(data.name, new Uint8Array(data.data))
-    if (outcome !== 'ok') {
-      self.postMessage({ result: 'failed', cmd: 'preloadbundle', msgId: data.msgId, log: `${outcome} for bundle ${data.name}` })
-    } else {
-      self.postMessage({ result: 'ok', cmd: 'preloadbundle', msgId: data.msgId })
-    }
   } else if (cmd === 'loadicudata') {
     // When bundle mode is loaded against the bundles directory, ICU data is
     // not in any bundle (it is not a texmf file) — the host supplies it
@@ -469,7 +448,7 @@ function kpse_find_file_impl(nameptr, format, _mustexist) {
     return _allocate(intArrayFromString(texlive200[cacheKey]))
   }
 
-  if (self.bundleMode.index) {
+  if (self.bundleMode.active) {
     const result = self.bundleMode.resolve(reqname, format)
     if (!result.fallthrough) {
       if (result.path !== undefined) {

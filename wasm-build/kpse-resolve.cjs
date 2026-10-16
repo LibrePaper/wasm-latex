@@ -16,7 +16,7 @@
 // the index's flat "files" map into a resolver over ranked paths), and
 // sha256Hex/readTar (verifying and unpacking a bundle without a browser crypto
 // API, since kpathsea's callback into JS is synchronous and crypto.subtle is
-// not).
+// not). sha256Hex runs a small synchronous wasm module.
 
 // Extensions the XHR fallback appends for a given kpathsea format id.
 function retryExtensions(format) {
@@ -187,80 +187,45 @@ function resolveName(format, reqname, nameIndex) {
 
 // --- SHA-256 --------------------------------------------------------------
 //
-// Synchronous, pure JS. kpathsea's callback into JS is synchronous (the engine
-// is not re-entrant), so crypto.subtle — Promise-based everywhere it exists —
-// cannot be used to verify a bundle before unpacking it.
+// A small wasm module (wasm-build/sha256, rebuilt by tools/build-sha256.mjs),
+// compiled and instantiated synchronously on first use. The embedded base64
+// sits between the markers below; do not edit it by hand.
 
-var SHA256_K = [
-    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
-];
+// BEGIN GENERATED SHA256 WASM
+var SHA256_WASM_BASE64 = "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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGfmCWqFrme7cvNuPDr1T6V/Ug5RjGgFm6vZgx8ZzeBbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIgCBG5hbWUAERBzaGEyNTZfd2FzbS53YXNtAcYBCAAoX1JOdkNzY1dVcWI0RkpFdlJfMTFzaGEyNTZfd2FzbThjb21wcmVzcwEGZmluaXNoAjlfUk52TnROdENzNW9CVlplRkVXem1fNGNvcmU1c2xpY2U1aW5kZXgxNnNsaWNlX2luZGV4X2ZhaWwDBGluaXQEDmlucHV0X2NhcGFjaXR5BQlpbnB1dF9wdHIGBnVwZGF0ZQctX1JOdk50Q3M1b0JWWmVGRVd6bV80Y29yZTlwYW5pY2tpbmc5cGFuaWNfZm10BxIBAA9fX3N0YWNrX3BvaW50ZXIJEQIABy5yb2RhdGEBBS5kYXRhAFUJcHJvZHVjZXJzAghsYW5ndWFnZQEEUnVzdAAMcHJvY2Vzc2VkLWJ5AQVydXN0YyUxLjk5LjAtbmlnaHRseSAoMTExNzdmMjIzIDIwMjYtMDgtMDIpAJQBD3RhcmdldF9mZWF0dXJlcwgrC2J1bGstbWVtb3J5Kw9idWxrLW1lbW9yeS1vcHQrFmNhbGwtaW5kaXJlY3Qtb3ZlcmxvbmcrCm11bHRpdmFsdWUrD211dGFibGUtZ2xvYmFscysTbm9udHJhcHBpbmctZnB0b2ludCsPcmVmZXJlbmNlLXR5cGVzKwhzaWduLWV4dA==";
+// END GENERATED SHA256 WASM
 
-function rotr(x, n) { return (x >>> n) | (x << (32 - n)); }
+var sha256Instance = null;
+
+function sha256Exports() {
+    if (sha256Instance) return sha256Instance;
+    if (!SHA256_WASM_BASE64) {
+        throw new Error("sha256: embedded wasm module is empty; run node tools/build-sha256.mjs");
+    }
+    var bin = atob(SHA256_WASM_BASE64);
+    var wasmBytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) wasmBytes[i] = bin.charCodeAt(i);
+    var module = new WebAssembly.Module(wasmBytes);
+    sha256Instance = new WebAssembly.Instance(module, {}).exports;
+    return sha256Instance;
+}
 
 // bytes: a Uint8Array. Returns the 64-hex-char digest.
 function sha256Hex(bytes) {
-    var h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
-    var h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
-
-    var bitLenLow = (bytes.length << 3) >>> 0;
-    // bytes.length can exceed 2^29 (a bundle can be tens of MB), so the high
-    // 32 bits of the 64-bit bit-length must come from the part that
-    // `<< 3` on a 32-bit int would otherwise drop.
-    var bitLenHigh = Math.floor(bytes.length / 0x20000000);
-
-    var padLen = ((bytes.length + 9 + 63) & ~63);
-    var msg = new Uint8Array(padLen);
-    msg.set(bytes);
-    msg[bytes.length] = 0x80;
-    msg[padLen - 8] = (bitLenHigh >>> 24) & 0xff;
-    msg[padLen - 7] = (bitLenHigh >>> 16) & 0xff;
-    msg[padLen - 6] = (bitLenHigh >>> 8) & 0xff;
-    msg[padLen - 5] = bitLenHigh & 0xff;
-    msg[padLen - 4] = (bitLenLow >>> 24) & 0xff;
-    msg[padLen - 3] = (bitLenLow >>> 16) & 0xff;
-    msg[padLen - 2] = (bitLenLow >>> 8) & 0xff;
-    msg[padLen - 1] = bitLenLow & 0xff;
-
-    var w = new Int32Array(64);
-    for (var offset = 0; offset < padLen; offset += 64) {
-        for (var t = 0; t < 16; t++) {
-            var i = offset + t * 4;
-            w[t] = (msg[i] << 24) | (msg[i + 1] << 16) | (msg[i + 2] << 8) | msg[i + 3];
-        }
-        for (t = 16; t < 64; t++) {
-            var s0 = rotr(w[t - 15], 7) ^ rotr(w[t - 15], 18) ^ (w[t - 15] >>> 3);
-            var s1 = rotr(w[t - 2], 17) ^ rotr(w[t - 2], 19) ^ (w[t - 2] >>> 10);
-            w[t] = (w[t - 16] + s0 + w[t - 7] + s1) | 0;
-        }
-
-        var a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, hh = h7;
-        for (t = 0; t < 64; t++) {
-            var S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25);
-            var ch = (e & f) ^ (~e & g);
-            var temp1 = (hh + S1 + ch + SHA256_K[t] + w[t]) | 0;
-            var S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22);
-            var maj = (a & b) ^ (a & c) ^ (b & c);
-            var temp2 = (S0 + maj) | 0;
-            hh = g; g = f; f = e; e = (d + temp1) | 0;
-            d = c; c = b; b = a; a = (temp1 + temp2) | 0;
-        }
-        h0 = (h0 + a) | 0; h1 = (h1 + b) | 0; h2 = (h2 + c) | 0; h3 = (h3 + d) | 0;
-        h4 = (h4 + e) | 0; h5 = (h5 + f) | 0; h6 = (h6 + g) | 0; h7 = (h7 + hh) | 0;
+    var ex = sha256Exports();
+    var cap = ex.input_capacity();
+    ex.init();
+    for (var off = 0; off < bytes.length; off += cap) {
+        var n = Math.min(cap, bytes.length - off);
+        // Re-read the memory each chunk: it is the same buffer unless the
+        // module grows, but this keeps the view valid either way.
+        new Uint8Array(ex.memory.buffer, ex.input_ptr(), n).set(bytes.subarray(off, off + n));
+        ex.update(n);
     }
-
-    var out = [h0, h1, h2, h3, h4, h5, h6, h7];
+    var digest = new Uint8Array(ex.memory.buffer, ex.finish(), 32);
     var hex = "";
-    for (var oi = 0; oi < out.length; oi++) {
-        hex += (out[oi] >>> 0).toString(16).replace(/^(.{0,7})$/, function(m) {
-            return "00000000".substring(m.length) + m;
-        });
+    for (var j = 0; j < 32; j++) {
+        hex += (digest[j] < 16 ? "0" : "") + digest[j].toString(16);
     }
     return hex;
 }

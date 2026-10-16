@@ -24,3 +24,4 @@ wasm-build/dist-unshipped/
 
 # Wrangler state from earlier deployments (if present)
 .wrangler/
+wasm-build/sha256/target/
