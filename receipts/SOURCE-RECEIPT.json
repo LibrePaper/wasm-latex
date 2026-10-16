@@ -5,10 +5,10 @@
     "bytes": 96749485
   },
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-22cc4303e051-source.tar.xz",
-  "bytes": 248421656,
-  "sha256": "70097cb96e64b81792a1db951cf1afa6c3e9e6e10ec704769ea56ebfa2a9097f",
-  "repositoryCommit": "22cc4303e051d4a0434ccba632dc8fa1d98f0262",
+  "archive": "librepaper-wasm-latex-4b964f788c2e-source.tar.xz",
+  "bytes": 248422924,
+  "sha256": "9f501f31f166e700430c9075eac8f02b6987e4c420aa79019ef81b7a15851354",
+  "repositoryCommit": "4b964f788c2e04bab55fb49de806f3b9fafc5a30",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
@@ -75,8 +75,8 @@
     },
     {
       "name": "bibtex.worker.js",
-      "bytes": 9544,
-      "sha256": "6329e78bbe7d4fa51324271e08b884fb2dfc59c9fc11451cd16f736b709fe668"
+      "bytes": 8374,
+      "sha256": "87080916e1ab89c3626897f327d6bcd10eea1bedd105879cf682ab7e02b96b2d"
     },
     {
       "name": "bibtex8.js",
@@ -90,13 +90,13 @@
     },
     {
       "name": "bibtex8.worker.js",
-      "bytes": 8761,
-      "sha256": "17ec60270fbf661717597bbbcfca2da31cf00dad9fd2933272523920c61ca02a"
+      "bytes": 7674,
+      "sha256": "c18f510a65d222a2bb964703cb2c9cde5c3a3a7c8baebfecb666021f6d925c56"
     },
     {
       "name": "bundle-mode.js",
-      "bytes": 14721,
-      "sha256": "190213759b6e9e155e5657dc517d229085bd6bf8d231a8df32ca14b386400d1f"
+      "bytes": 20698,
+      "sha256": "ad5a77843173ae06443078ae505348aae667a5d860a3af413e44dd819cd779c9"
     },
     {
       "name": "dvipdfm.js",
@@ -110,8 +110,8 @@
     },
     {
       "name": "dvipdfm.worker.js",
-      "bytes": 17932,
-      "sha256": "92329effb1de1b0c0692dba09193807ac15c7a06fcb23f2de85247d0cb9ffc45"
+      "bytes": 17063,
+      "sha256": "4a4d85dba4af47279336b4b53c753037a90031aa6ddae356963174492754a48c"
     },
     {
       "name": "icudt68l.dat.gz",
@@ -120,13 +120,13 @@
     },
     {
       "name": "kpse-resolve.js",
-      "bytes": 14857,
-      "sha256": "f8b93168aa57c42af958a887fc8a8346abe8237c2b1c9a2022b58c99d1912666"
+      "bytes": 17239,
+      "sha256": "06e3d6feec44854e21e1f73a162f4f0bbc3a720efc66fc8b8ed6211b6b6b1063"
     },
     {
       "name": "latexml.build.json",
       "bytes": 42150,
-      "sha256": "6738202147e74e57ae6756813c15657304ce472935b2dfe079ba0905c80489f3"
+      "sha256": "e04c2b8c2fb4fba4ce7e9dc9c6b46cf6b3205a6513f496e89fad5f7d1f9e0c79"
     },
     {
       "name": "latexml.css",
@@ -145,8 +145,8 @@
     },
     {
       "name": "latexml.worker.js",
-      "bytes": 15821,
-      "sha256": "5f0627d21b23177d4ab9fe36fda79e9f66be7dc280ec53b3ccc64b472ac0c0c1"
+      "bytes": 15094,
+      "sha256": "a037b3065ce2ed99138394b6b2fc0e48f576962360f4bd8e02120ad8077cdcfe"
     },
     {
       "name": "ltx-amsart.css",
@@ -200,8 +200,8 @@
     },
     {
       "name": "makeindex.worker.js",
-      "bytes": 8928,
-      "sha256": "41e2a896948063e81bcf4eaa21c4a2c590ef5288f45294c06514b970f1fabb28"
+      "bytes": 7841,
+      "sha256": "bdf00a1b49bd6eaa561b8a621ba42120d7bc0b86b0dc3eb38c2982d7cc226a86"
     },
     {
       "name": "pdftex-checkpoint.js",
@@ -235,8 +235,8 @@
     },
     {
       "name": "pdftex.worker.js",
-      "bytes": 84992,
-      "sha256": "c015db8fd8d7b5d01aa6a9a17460fbde792a723868422163149916231c43aae6"
+      "bytes": 82221,
+      "sha256": "22382d3b6be13c15a6f7f435359091bb9c4c5931b0bf89fc0e8ce26c0ca2c0c9"
     },
     {
       "name": "relaxng-schema-rustdoc-theme.css",
@@ -265,8 +265,8 @@
     },
     {
       "name": "xetex.worker.js",
-      "bytes": 19349,
-      "sha256": "442d521815a38909510fc1250262597ba91a15ef7a781d7b24e63cad2ce75f1a"
+      "bytes": 18397,
+      "sha256": "11f938613e2b02502e4ad4c83631336fd092a12dde51cdb0ed3a762ced862a57"
     }
   ]
 }
