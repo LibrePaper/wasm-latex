@@ -107,14 +107,52 @@ function nodeSha256(buf) {
     return crypto.createHash("sha256").update(buf).digest("hex");
 }
 
-test("sha256Hex matches node:crypto on various sizes", () => {
-    const sizes = [0, 1, 55, 56, 64, 65, 1024 * 1024];
+const MIB = 1024 * 1024;
+
+function pattern(size) {
+    const buf = Buffer.alloc(size);
+    for (let i = 0; i < size; i++) buf[i] = (i * 7 + 3) & 0xff;
+    return buf;
+}
+
+test("sha256Hex known vectors", () => {
+    const enc = (s) => new Uint8Array(Buffer.from(s, "latin1"));
+    assert.strictEqual(
+        sha256Hex(new Uint8Array(0)),
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855");
+    assert.strictEqual(
+        sha256Hex(enc("abc")),
+        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad");
+    assert.strictEqual(
+        sha256Hex(enc("abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq")),
+        "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1");
+    assert.strictEqual(
+        sha256Hex(new Uint8Array(Buffer.alloc(1000000, "a"))),
+        "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0");
+});
+
+test("sha256Hex returns 64 lower-case hex characters", () => {
+    assert.match(sha256Hex(new Uint8Array([1, 2, 3])), /^[0-9a-f]{64}$/);
+});
+
+test("sha256Hex matches node:crypto across chunk boundaries", () => {
+    const sizes = [0, 1, 55, 56, 63, 64, 65, MIB - 1, MIB, MIB + 1, 2 * MIB + 77, 3 * MIB];
     for (const size of sizes) {
-        const buf = Buffer.alloc(size);
-        for (let i = 0; i < size; i++) buf[i] = (i * 7 + 3) & 0xff;
+        const buf = crypto.randomBytes(size);
         const u8 = new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
-        assert.strictEqual(sha256Hex(u8), nodeSha256(buf), "size " + size);
+        assert.strictEqual(sha256Hex(u8), nodeSha256(buf), "random size " + size);
     }
+    const big = pattern(2 * MIB + 5);
+    assert.strictEqual(
+        sha256Hex(new Uint8Array(big.buffer, big.byteOffset, big.byteLength)),
+        nodeSha256(big),
+        "patterned buffer over 1 MiB");
+});
+
+test("sha256Hex handles a subarray view", () => {
+    const buf = pattern(1000);
+    const view = new Uint8Array(buf.buffer, buf.byteOffset + 10, 500);
+    assert.strictEqual(sha256Hex(view), nodeSha256(buf.subarray(10, 510)));
 });
 
 // --- readTar --------------------------------------------------------------------

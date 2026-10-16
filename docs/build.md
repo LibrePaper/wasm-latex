@@ -149,6 +149,17 @@ TeX stamps the dump with the current date. The harness freezes the clock at `SOU
 
 XeTeX runs with `-synctex=1` and the worker returns the `.synctex(.gz)` bytes on the compile reply as a `synctex` field, mirroring `pdftex-worker.js`.
 
+## SHA-256 module
+
+`wasm-build/kpse-resolve.cjs` verifies bundles with `sha256Hex`, which runs inside a synchronous callback from the TeX engine, so `crypto.subtle` cannot be used. It is a small `no_std` Rust crate in `wasm-build/sha256`, compiled to wasm and embedded as base64 between the `BEGIN`/`END GENERATED SHA256 WASM` markers.
+
+Rebuild and embed it (needs Rust with the `wasm32-unknown-unknown` target):
+
+```sh
+make sha256
+node tools/build-sha256.mjs --check   # CI: fails if the embedded bytes are stale
+```
+
 ## Biber
 
 `third-party/texlyre-biber/` contains an unmodified selection from [TeXlyre's build repository](https://github.com/TeXlyre/texlyre-busytex-build), pinned to `f544a51a99e7d3978bb70608e927a9a23f96d4a7`. `UPSTREAM.json` records the upstream path and SHA-256 of every selected file. The complete `biber/` directory, license, notice, root README, Makefile and Biber CI workflow are preserved. The latter three are reference material; our build invokes the Biber driver directly, not the upstream Makefile.
