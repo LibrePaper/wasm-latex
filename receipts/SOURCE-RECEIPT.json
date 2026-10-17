@@ -5,10 +5,10 @@
     "bytes": 96749485
   },
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-4b964f788c2e-source.tar.xz",
-  "bytes": 248422924,
-  "sha256": "9f501f31f166e700430c9075eac8f02b6987e4c420aa79019ef81b7a15851354",
-  "repositoryCommit": "4b964f788c2e04bab55fb49de806f3b9fafc5a30",
+  "archive": "librepaper-wasm-latex-8b5ff64b89bd-source.tar.xz",
+  "bytes": 248420932,
+  "sha256": "c6819d759651109ea14903099793851a267004b49ca5454bd5b597c8ef7bc63e",
+  "repositoryCommit": "8b5ff64b89bd4b5aefd3a9020eb4921f2cd8a4c5",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
@@ -120,8 +120,8 @@
     },
     {
       "name": "kpse-resolve.js",
-      "bytes": 17239,
-      "sha256": "06e3d6feec44854e21e1f73a162f4f0bbc3a720efc66fc8b8ed6211b6b6b1063"
+      "bytes": 17604,
+      "sha256": "2d40a735969033780968b29290c1cab284e8a0dca0d1a11b3d81741fb3ecdcb6"
     },
     {
       "name": "latexml.build.json",
