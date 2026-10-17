@@ -24,6 +24,9 @@ function retryExtensions(format) {
     if (format === 3) return [".tfm"];
     if (format === 33) return [".vf"];
     if (format === 7) return [".bst"];
+    if (format === 47) return [".otf"];
+    if (format === 36) return [".ttf", ".ttc"];
+    if (format === 32) return [".pfb"];
     return [];
 }
 

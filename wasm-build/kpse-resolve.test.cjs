@@ -86,6 +86,33 @@ test("resolveName finds bare xkeyval by appending .tex", () => {
     assert.strictEqual(hit.path, "tex/generic/xkeyval/xkeyval.tex");
 });
 
+test("resolveName finds bare opentype lmroman10-regular by appending .otf", () => {
+    const idx = makeIndex({
+        "fonts/opentype/public/lm/lmroman10-regular.otf": "fonts/public/lm",
+    });
+    const hit = resolveName(47, "lmroman10-regular", idx);
+    assert.ok(hit, "expected a hit");
+    assert.ok(hit.path.endsWith("/lmroman10-regular.otf"), hit.path);
+});
+
+test("resolveName finds bare truetype name by appending .ttf", () => {
+    const idx = makeIndex({
+        "fonts/truetype/dejavu/DejaVuSans.ttf": "fonts/dejavu",
+    });
+    const hit = resolveName(36, "DejaVuSans", idx);
+    assert.ok(hit, "expected a hit");
+    assert.ok(hit.path.endsWith("/DejaVuSans.ttf"), hit.path);
+});
+
+test("resolveName finds bare type1 name by appending .pfb", () => {
+    const idx = makeIndex({
+        "fonts/type1/public/cm/cmr10.pfb": "fonts/public/cm",
+    });
+    const hit = resolveName(32, "cmr10", idx);
+    assert.ok(hit, "expected a hit");
+    assert.ok(hit.path.endsWith("/cmr10.pfb"), hit.path);
+});
+
 test("resolveName strips extensions to widen the search too", () => {
     const idx = makeIndex({
         "tex/latex/foo/foo.sty": "tex/latex/foo",
