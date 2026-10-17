@@ -99,9 +99,12 @@ var FORMAT_SEARCH_ORDER = {
     28: ['web2c/'],                               // pool files
     32: ['fonts/type1/'],                         // .pfb
     33: ['fonts/vf/'],                            // virtual fonts
-    36: ['fonts/truetype/'],
+    // xdvipdfmx asks for OpenType fonts with the truetype format (36) and for
+    // TrueType fonts with the opentype format, so each sfnt format also offers
+    // the other's tree, after its own.
+    36: ['fonts/truetype/', 'fonts/opentype/'],
     44: ['fonts/enc/'],                           // encodings
-    47: ['fonts/opentype/'],
+    47: ['fonts/opentype/', 'fonts/truetype/'],
     48: ['tex/generic/config/', 'web2c/'],        // pdftex.cfg
     51: ['tex/luatex/', 'tex/generic/', 'scripts/'], // .lua
 };

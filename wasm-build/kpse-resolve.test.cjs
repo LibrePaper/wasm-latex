@@ -104,6 +104,22 @@ test("resolveName finds bare truetype name by appending .ttf", () => {
     assert.ok(hit.path.endsWith("/DejaVuSans.ttf"), hit.path);
 });
 
+test("resolveName finds an opentype file requested with the truetype format", () => {
+    // xdvipdfmx asks for lmroman17-regular.otf as kpse format 36.
+    const idx = makeIndex({
+        "fonts/opentype/public/lm/lmroman17-regular.otf": "fonts/public/lm",
+    });
+    const hit = resolveName(36, "lmroman17-regular.otf", idx);
+    assert.ok(hit, "expected a hit");
+    assert.strictEqual(hit.path, "fonts/opentype/public/lm/lmroman17-regular.otf");
+});
+
+test("rankPaths prefers a format's own font tree over the other sfnt tree", () => {
+    const paths = ["fonts/opentype/a/x.ttf", "fonts/truetype/b/x.ttf"];
+    assert.deepStrictEqual(rankPaths(36, paths)[0], "fonts/truetype/b/x.ttf");
+    assert.deepStrictEqual(rankPaths(47, paths)[0], "fonts/opentype/a/x.ttf");
+});
+
 test("resolveName finds bare type1 name by appending .pfb", () => {
     const idx = makeIndex({
         "fonts/type1/public/cm/cmr10.pfb": "fonts/public/cm",
