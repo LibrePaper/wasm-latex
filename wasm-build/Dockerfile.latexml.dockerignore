@@ -13,3 +13,5 @@
 !wasm-build/latexml-wasm/
 !wasm-build/latexml-wasm/**
 wasm-build/latexml-wasm/target/
+wasm-build/dist/
+wasm-build/dist-unshipped/

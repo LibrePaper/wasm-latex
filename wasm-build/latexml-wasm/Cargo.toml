@@ -18,6 +18,7 @@ latexml_core = { path = "../../../latexml-oxide/latexml_core" }
 latexml_contrib = { path = "../../../latexml-oxide/latexml_contrib" }
 latexml_package = { path = "../../../latexml-oxide/latexml_package" }
 latexml_post = { path = "../../../latexml-oxide/latexml_post" }
+log = "0.4"
 
 [build-dependencies]
 cc = "1"

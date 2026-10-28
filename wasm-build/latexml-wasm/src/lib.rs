@@ -90,6 +90,12 @@ fn install_files(state: &State) -> Result<(), String> {
 }
 
 fn convert(state: &mut State, source: String) {
+    // LaTeXML's warnings and errors reach the conversion log (response.log)
+    // only through its own `log` logger, which the convenience API installs
+    // and this ABI must install itself; without it they are dropped and a
+    // failed conversion reports no reason. The console gate stays off: the
+    // log carries the messages. A second call only resets the gate.
+    latexml_core::util::logger::init(log::LevelFilter::Off).ok();
     state.output.clear();
     state.diagnostics.clear();
     state.status = 3;
