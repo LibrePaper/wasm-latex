@@ -95,7 +95,7 @@ export KPATHSEA_SKIP_TOOLCHAIN_CHECK=1
 
 cd "${ROOT}/wasm-build/latexml-wasm"
 export CARGO_TARGET_DIR="${CARGO_TARGET_DIR:-${BUILD}/cargo-target}"
-export RUSTFLAGS="${RUSTFLAGS:-} -C link-arg=-sMODULARIZE=1 -C link-arg=-sEXPORT_NAME=LatexmlModule -C link-arg=-sFORCE_FILESYSTEM=1 -C link-arg=-sALLOW_MEMORY_GROWTH=1 -C link-arg=-sINITIAL_MEMORY=134217728 -C link-arg=-sSTACK_SIZE=8388608 -C link-arg=-sEXPORTED_RUNTIME_METHODS=FS,HEAPU8,UTF8ToString,stringToNewUTF8 -C link-arg=-Wl,--wrap=kpathsea_find_file -C link-arg=--js-library -C link-arg=/src/wasm-build/library-latexml.js"
+export RUSTFLAGS="${RUSTFLAGS:-} -C link-arg=-sMODULARIZE=1 -C link-arg=-sEXPORT_NAME=LatexmlModule -C link-arg=-sFORCE_FILESYSTEM=1 -C link-arg=-sALLOW_MEMORY_GROWTH=1 -C link-arg=-sINITIAL_MEMORY=134217728 -C link-arg=-sSTACK_SIZE=67108864 -C link-arg=-sEXPORTED_RUNTIME_METHODS=FS,HEAPU8,UTF8ToString,stringToNewUTF8 -C link-arg=-Wl,--wrap=kpathsea_find_file -C link-arg=--js-library -C link-arg=/src/wasm-build/library-latexml.js"
 cargo rustc --release --locked --target wasm32-unknown-emscripten --bin latexml_wasm -- \
   -C link-arg=-sEXPORTED_FUNCTIONS=_main,_alloc,_dealloc,_add_file,_clear_files,_set_main,_compile,_output_ptr,_output_len,_diagnostics_ptr,_diagnostics_len,_status \
   -C "link-arg=-Wl,-Map=$DIST/latexml.map"
