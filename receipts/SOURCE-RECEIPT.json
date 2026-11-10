@@ -5,10 +5,10 @@
     "bytes": 96749485
   },
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-883b585389e4-source.tar.xz",
-  "bytes": 248427420,
-  "sha256": "8594ac888fe41bd930dced68ee1354e1600c00207e75d6625600c2470fb1ebd2",
-  "repositoryCommit": "883b585389e41873b4ef3aa0815e3ec27d14003c",
+  "archive": "librepaper-wasm-latex-7dbad518a089-source.tar.xz",
+  "bytes": 248429568,
+  "sha256": "7a993d9188a5572afc275bb515159f0cdf253d3a38c9f1b9154d69c0aabac6aa",
+  "repositoryCommit": "7dbad518a08994c2797ea1a45e740fb46969c4bb",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
@@ -126,7 +126,7 @@
     {
       "name": "latexml.build.json",
       "bytes": 42150,
-      "sha256": "8ceb4e76d49a6c20a6a0d6b26123071ecafb9d82d8475390e5efb7f62d61e632"
+      "sha256": "837394f701c6619fa97906834cc58d0707e7404311aa726c4c3511f1b5d4e4bb"
     },
     {
       "name": "latexml.css",
@@ -135,18 +135,18 @@
     },
     {
       "name": "latexml.js",
-      "bytes": 81002,
-      "sha256": "ca6f0caf9e42425cd4e9552a34d9b99a275a0ab3db50932e08233e56b06a5303"
+      "bytes": 81136,
+      "sha256": "d4105601fb4e8fa53dc66e110e508b8b44543d2b44ea5298e05206ac36a08084"
     },
     {
       "name": "latexml.wasm",
-      "bytes": 21715117,
-      "sha256": "01122295afc5f60280f93f276a3c9ed49b474a79f4d5558023d483d12b18fcbd"
+      "bytes": 21715562,
+      "sha256": "e1328db0f94327bf3d8c7f9a9efb23cb3cae31b04ef37df6766f85816a07d630"
     },
     {
       "name": "latexml.worker.js",
-      "bytes": 15094,
-      "sha256": "a037b3065ce2ed99138394b6b2fc0e48f576962360f4bd8e02120ad8077cdcfe"
+      "bytes": 15668,
+      "sha256": "da12d58b152d9a6d3fb4c8d7c46501700199f05e484b50e5df6c4282f791d97d"
     },
     {
       "name": "ltx-amsart.css",
