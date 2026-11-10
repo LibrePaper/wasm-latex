@@ -265,7 +265,7 @@ async function main() {
     'project images in HTML and SVG xlink attributes are both inlined')
   assert.deepEqual(JSON.parse(JSON.stringify(compile.diagnostics)), [{ severity: 'warning', message: 'one recoverable warning' }])
   assert.equal(compile.log, 'one recoverable warning')
-  assert.deepEqual(compile.sources, ['main.tex', null])
+  assert.deepEqual(JSON.parse(JSON.stringify(compile.sources)), ['main.tex', null])
   assert.ok(module.deallocations.some(({ pointer, length }) => pointer === grownResolved && length > 0),
     'resolver result allocation is released after compile')
 
