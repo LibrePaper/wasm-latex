@@ -235,6 +235,8 @@ To update the vendor snapshot, select a new upstream commit, copy the same paths
 
 The LaTeXML browser engine converts a staged LaTeX project to HTML in a Web Worker. Its runtime payload is `latexml.worker.js`, `latexml.js`, `latexml.wasm`, the shared resolver and bundle helpers, the LaTeXML CSS sheets, and `latexml.build.json`. The worker inlines the CSS links emitted by LaTeXML, including document-class sheets, and rewrites project image URLs to data URLs so the returned HTML can be rendered in an isolated iframe.
 
+The build enables LaTeXML's source map, so elements carry `data-sourcepos` locators. The worker returns the engine's tag-to-file table as `sources`, with project files as project-relative paths and bundled packages as `null`.
+
 The wrapper enables LaTeXML's Graphics postprocessor before HTML conversion. It resolves each digested `graphicx` node and computes `imagewidth` and `imageheight` from its TeX dimensions and the source image's intrinsic size. Thus `width=0.12\linewidth` is evaluated in the current TeX context, including macros and minipages; it is not reconstructed from source text or converted to a viewport percentage by JavaScript.
 
 Sources live in `/work` and generated graphics in `/output` in the worker's virtual filesystem. The worker embeds the referenced output bytes without changing HTML dimensions. Both directories are cleared between snapshots. PNG/JPEG and SVG sizing uses the upstream processor's native copy-and-size path. Operations that require external image-converter executables remain subject to the browser runtime's limitations.

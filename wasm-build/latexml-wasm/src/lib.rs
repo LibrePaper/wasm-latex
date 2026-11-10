@@ -14,7 +14,10 @@ use std::{
 };
 
 use latexml::{converter::Converter, post};
-use latexml_core::common::{Config, OutputFormat};
+use latexml_core::{
+    common::{Config, OutputFormat, arena},
+    state::source_table_snapshot,
+};
 
 const WORK_ROOT: &str = "/work";
 const OUTPUT_ROOT: &str = "/output";
@@ -24,6 +27,7 @@ struct State {
     main: String,
     output: Vec<u8>,
     diagnostics: Vec<u8>,
+    sources: Vec<u8>,
     status: u32,
 }
 
@@ -34,6 +38,7 @@ impl Default for State {
             main: String::from("main.tex"),
             output: Vec::new(),
             diagnostics: Vec::new(),
+            sources: Vec::new(),
             status: 0,
         }
     }
@@ -98,6 +103,7 @@ fn convert(state: &mut State, source: String) {
     latexml_core::util::logger::init(log::LevelFilter::Off).ok();
     state.output.clear();
     state.diagnostics.clear();
+    state.sources.clear();
     state.status = 3;
     if let Err(error) = install_files(state) {
         set_failure(state, error);
@@ -113,6 +119,8 @@ fn convert(state: &mut State, source: String) {
         bindings_dispatch: Some(Rc::new(latexml_package::dispatch)),
         extra_bindings_dispatch: Some(Rc::new(latexml_contrib::dispatch)),
         search_paths: Some(vec![WORK_ROOT.to_string(), "/texmf".to_string()]),
+        // Elements carry data-sourcepos so the worker can map them to files.
+        source_map: Some(true),
         ..Config::default()
     };
     let mut converter = Converter::from_config(options.clone());
@@ -137,6 +145,14 @@ fn convert(state: &mut State, source: String) {
         }
     };
 
+    // Tag -> source file table of the document just converted; the index is
+    // the tag written into data-sourcepos.
+    let sources = source_table_snapshot()
+        .into_iter()
+        .map(arena::to_string)
+        .collect::<Vec<_>>()
+        .join("\n")
+        .into_bytes();
     let Some(xml) = response.result else {
         set_failure(state, response.log);
 
@@ -192,6 +208,7 @@ fn convert(state: &mut State, source: String) {
     // releases the engine. reset_thread_engine is only safe before thread exit.
     state.output = output;
     state.diagnostics = diagnostics;
+    state.sources = sources;
     state.status = status;
 }
 
@@ -280,6 +297,16 @@ pub extern "C" fn diagnostics_ptr() -> *const u8 {
 #[unsafe(no_mangle)]
 pub extern "C" fn diagnostics_len() -> usize {
     STATE.with(|cell| cell.borrow().diagnostics.len())
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn sources_ptr() -> *const u8 {
+    STATE.with(|cell| cell.borrow().sources.as_ptr())
+}
+
+#[unsafe(no_mangle)]
+pub extern "C" fn sources_len() -> usize {
+    STATE.with(|cell| cell.borrow().sources.len())
 }
 
 #[unsafe(no_mangle)]

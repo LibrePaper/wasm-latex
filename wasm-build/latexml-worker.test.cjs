@@ -107,6 +107,7 @@ function makeModule() {
     main: '',
     output: { pointer: 0, length: 0 },
     diagnostics: { pointer: 0, length: 0 },
+    sources: { pointer: 0, length: 0 },
     next: 1024,
   }
   module.growMemory = () => {
@@ -147,12 +148,15 @@ function makeModule() {
     const diagnostics = write('one recoverable warning')
     module.output = output
     module.diagnostics = diagnostics
+    module.sources = write('/work/main.tex\n/texmf/foo.sty')
   }
   module._status = () => 1
   module._output_ptr = () => module.output.pointer
   module._output_len = () => module.output.length
   module._diagnostics_ptr = () => module.diagnostics.pointer
   module._diagnostics_len = () => module.diagnostics.length
+  module._sources_ptr = () => module.sources.pointer
+  module._sources_len = () => module.sources.length
   return module
 }
 
@@ -261,6 +265,7 @@ async function main() {
     'project images in HTML and SVG xlink attributes are both inlined')
   assert.deepEqual(JSON.parse(JSON.stringify(compile.diagnostics)), [{ severity: 'warning', message: 'one recoverable warning' }])
   assert.equal(compile.log, 'one recoverable warning')
+  assert.deepEqual(compile.sources, ['main.tex', null])
   assert.ok(module.deallocations.some(({ pointer, length }) => pointer === grownResolved && length > 0),
     'resolver result allocation is released after compile')
 

@@ -201,6 +201,13 @@ function inlineResources(html) {
     });
 }
 
+// Engine source-table entries are "/work/<path>" for project files and
+// "/texmf/..." or other absolute paths for bundled packages; only the former
+// map back to a project path.
+function projectSourcePath(entry) {
+  return entry.startsWith(`${WORK_ROOT}/`) ? entry.slice(WORK_ROOT.length + 1) : null;
+}
+
 function compile(source, name) {
   runtimeLog = [];
   const sourceBytes = new TextEncoder().encode(source);
@@ -216,6 +223,10 @@ function compile(source, name) {
     const status = moduleInstance._status();
     const diagnosticPtr = moduleInstance._diagnostics_ptr();
     const diagnosticLen = moduleInstance._diagnostics_len();
+    const sourcesText = typeof moduleInstance._sources_ptr === "function"
+      ? readText(moduleInstance._sources_ptr(), moduleInstance._sources_len())
+      : "";
+    const sources = sourcesText ? sourcesText.split("\n").map(projectSourcePath) : [];
     let html = readText(outPtr, outLen);
     const log = [readText(diagnosticPtr, diagnosticLen), ...runtimeLog].filter(Boolean).join("\n");
     html = inlineResources(html);
@@ -226,6 +237,7 @@ function compile(source, name) {
       status,
       html: html || null,
       log,
+      sources,
       diagnostics: log ? [{ severity: status === 0 ? "info" : status === 1 ? "warning" : "error", message: log }] : [],
     };
   } finally {
