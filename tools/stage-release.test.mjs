@@ -27,6 +27,12 @@ function runOk(source = true, bundles = null) {
   assert.equal(result.status, 0, result.stderr)
   return manifest
 }
+function runDist(dist) {
+  const args = [stage, '--dist', dist, '--out', 'staged-capabilities', '--source-url', 'https://example.org/source.tar.xz']
+  const result = spawnSync(process.execPath, args, { cwd: root, encoding: 'utf8' })
+  assert.equal(result.status, 0, result.stderr)
+  return JSON.parse(fs.readFileSync(path.join(root, 'staged-capabilities/MANIFEST.json')))
+}
 const check = fileURLToPath(new URL('./check-release.mjs', import.meta.url))
 function writeBundleFixture(dir, { snapshot = 'texlive-test', phantom = false } = {}) {
   const coreBytes = Buffer.from('core-tar-fixture-bytes')
@@ -153,6 +159,24 @@ try {
   assert.notEqual(manifest.releaseGate, 'passed', 'a bundle index naming a missing file must not pass the gate')
 
   console.log('stage-release: bundle staging, verification, and corruption detection checked')
+
+  // capabilities: "retain" only when all four engine controllers carry the handler.
+  const controllerDir = (name, texts) => {
+    fs.rmSync(path.join(root, name), { recursive: true, force: true })
+    for (const [file, text] of Object.entries(texts)) write(`${name}/${file}`, text)
+    return name
+  }
+  const handler = 'self.onmessage = (ev) => { if (cmd === "retain") retainRoutine(ev.data.keep) }\n'
+  const plain = 'self.onmessage = (ev) => { if (cmd === "flushcache") cleanDir(WORKROOT) }\n'
+  const allWithRetain = Object.fromEntries(['pdftex', 'xetex', 'luatex', 'dvipdfm'].map((e) => [`${e}.worker.js`, handler]))
+  const oneMissing = { ...allWithRetain, 'luatex.worker.js': plain }
+  const withRetain = runDist(controllerDir('retain-all', allWithRetain))
+  assert.deepEqual(withRetain.capabilities, ['retain'], 'all four controllers with the handler advertise retain')
+  const without = runDist(controllerDir('retain-missing', oneMissing))
+  assert.deepEqual(without.capabilities, [], 'one controller without the handler withholds retain')
+  const absent = runDist(controllerDir('retain-absent', { 'pdftex.worker.js': handler, 'xetex.worker.js': handler, 'luatex.worker.js': handler }))
+  assert.deepEqual(absent.capabilities, [], 'a missing controller withholds retain')
+  console.log('stage-release: retain capability computed from the controllers')
 } finally {
   fs.rmSync(root, { recursive: true, force: true })
 }

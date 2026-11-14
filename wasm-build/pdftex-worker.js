@@ -18,6 +18,7 @@
 //   loadbundleindex, loadworkingset, workingset
 //                   (bundle mode, answered by bundle-mode.js before dispatch)
 //   flushcache      — clear the working directory
+//   retain          — keep the listed files, delete the rest (see retainRoutine)
 //   grace           — gracefully shut down the worker
 //
 // Package delivery (SPEC-latex.md, "Package delivery: bundles, not files"):
@@ -219,6 +220,42 @@ function cleanDir(dir) {
     }
 }
 
+// Remove every file under dir whose path relative to WORKROOT is not in keepSet.
+// `prefix` is the relative path of dir ("" at the root). Directories stay.
+// Same traversal and error tolerance as cleanDir.
+function retainDir(dir, keepSet, prefix) {
+    var l = FS.readdir(dir);
+    for (var i in l) {
+        var item = l[i];
+        if (item === "." || item === "..") continue;
+        var rel = prefix ? prefix + "/" + item : item;
+        var path = dir + "/" + item;
+
+        var fsStat = undefined;
+        try {
+            fsStat = FS.stat(path);
+        } catch(err) {
+            console.error("Not able to fsstat " + path);
+            continue;
+        }
+
+        if (FS.isDir(fsStat.mode)) {
+            retainDir(path, keepSet, rel);
+        } else if (!keepSet[rel]) {
+            try {
+                FS.unlink(path);
+            } catch(err) {
+                console.error("Not able to unlink " + path);
+            }
+        }
+    }
+}
+
+// Size and mtime of a file, as retain compares them with what writefile left.
+function retainStamp(st) {
+    return { size: st.size, mtime: st.mtime.getTime ? st.mtime.getTime() : +st.mtime };
+}
+
 // --- Execution context -------------------------------------------------------
 
 // Prepare for a compilation by resetting the log, restoring the heap to its
@@ -379,6 +416,9 @@ self._preambleFmtData = null;
 self._preambleInputFiles = null;
 self._fmtIsNative = false;    // true only when base format was built by our WASM binary
 self._preambleSnapshotEnabled = true;  // host opt-out: false forces full compiles
+
+// path -> {size, mtime} of each file the host wrote with writefile (see retainRoutine)
+self._retainWrites = Object.create(null);
 
 // Split TeX source into preamble (before \begin{document}) and body (including it).
 function extractPreamble(texSource) {
@@ -1377,10 +1417,66 @@ function writeFileRoutine(filename, content) {
         invalidatePreambleForWrite(filename);
         FS.writeFile(WORKROOT + "/" + filename, content);
         hcNoteHostWrite(filename, content);
+        self._retainWrites[filename] = retainStamp(FS.stat(WORKROOT + "/" + filename));
         self.postMessage({ "result": "ok", "cmd": "writefile" });
     } catch(err) {
         console.error("Unable to write file " + filename);
         self.postMessage({ "result": "failed", "cmd": "writefile" });
+    }
+}
+
+// retain: the host lists the files it wants kept (paths relative to WORKROOT),
+// and every other file is deleted. A kept file the host did not write last is
+// deleted and reported in `dirty`, so the host rewrites it: it has no record from
+// writefile, its size or mtime changed (a compile overwrote it), or it is missing.
+// Then it resets the state flushcache resets, except the directory wipe.
+// Replies "ok" with the dirty list, or "failed" so the host can fall back to flushcache.
+function retainRoutine(keep) {
+    try {
+        var keepSet = Object.create(null);
+        for (var k = 0; k < keep.length; k++) keepSet[keep[k]] = true;
+        retainDir(WORKROOT, keepSet, "");
+
+        var dirty = [];
+        for (var i = 0; i < keep.length; i++) {
+            var rel = keep[i];
+            var full = WORKROOT + "/" + rel;
+            var fsStat = null;
+            try {
+                fsStat = FS.stat(full);
+            } catch(err) {
+                dirty.push(rel);
+                continue;
+            }
+            if (FS.isDir(fsStat.mode)) {
+                dirty.push(rel);
+                continue;
+            }
+            var rec = self._retainWrites[rel];
+            var now = retainStamp(fsStat);
+            if (!rec || rec.size !== now.size || rec.mtime !== now.mtime) {
+                try {
+                    FS.unlink(full);
+                } catch(err) {
+                    console.error("Not able to unlink " + full);
+                }
+                delete self._retainWrites[rel];
+                dirty.push(rel);
+            }
+        }
+        // Records of files that are no longer kept go with them.
+        for (var p in self._retainWrites) {
+            if (!keepSet[p]) delete self._retainWrites[p];
+        }
+
+        hcReset();
+        self._preambleFmtData = null;
+        self._preambleInputFiles = null;
+        self._preambleHash = "";
+        self.postMessage({ "result": "ok", "cmd": "retain", "dirty": dirty });
+    } catch(err) {
+        console.error("retain failed: " + err);
+        self.postMessage({ "result": "failed", "cmd": "retain", "error": String(err) });
     }
 }
 
@@ -1573,11 +1669,14 @@ self["onmessage"] = function(ev) {
     } else if (cmd === "flushcache") {
         cleanDir(WORKROOT);
         hcReset();
+        self._retainWrites = Object.create(null);
         // A snapshot can embed project-local inputs. It must never survive a
         // project replacement whose preamble text happens to hash identically.
         self._preambleFmtData = null;
         self._preambleInputFiles = null;
         self._preambleHash = "";
+    } else if (cmd === "retain") {
+        retainRoutine(data["keep"]);
     } else if (cmd === "buildcheckpoint") {
         buildCheckpointRoutine(data);
     } else if (cmd === "compilefromcheckpoint") {

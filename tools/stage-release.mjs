@@ -198,6 +198,17 @@ function payload(dir, prefix = '') {
   })
 }
 
+// Capabilities the host may rely on. A controller without the handler ignores
+// `retain` and never replies, so "retain" is advertised only when every engine
+// controller in the dist directory carries it.
+const RETAIN_CONTROLLERS = ['pdftex', 'xetex', 'luatex', 'dvipdfm'].map((engine) => `${engine}.worker.js`)
+const RETAIN_HANDLER = /cmd === (["'])retain\1/
+const hasRetain = RETAIN_CONTROLLERS.every((name) => {
+  const file = path.join(distDir, name)
+  return fs.existsSync(file) && RETAIN_HANDLER.test(fs.readFileSync(file, 'utf8'))
+})
+const capabilities = hasRetain ? ['retain'] : []
+
 const manifest = {
   schemaVersion: 1,
   producedBy: 'tools/stage-release.mjs',
@@ -207,6 +218,7 @@ const manifest = {
   files: payload(outDir),
   correspondingSource: sourceUrl ? { url: sourceUrl, sha256: sourceReceipt?.sha256 ?? null } : null,
   bundles: bundlesInfo,
+  capabilities,
 }
 fs.writeFileSync(path.join(outDir, 'MANIFEST.json'), JSON.stringify(manifest, null, 2) + '\n')
 

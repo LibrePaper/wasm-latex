@@ -23,6 +23,8 @@ importScripts('bundle-mode.js')
 const TEXCACHEROOT = '/tex'
 const TEXMFROOT = '/texmf' // bundle members unpack here; see bundle-mode.js
 const WORKROOT = '/work'
+// path -> {size, mtime} of each file the host wrote with writefile (see retainRoutine)
+self._retainWrites = Object.create(null)
 // biome-ignore lint: emscripten populates Module
 var Module = self.Module = {}
 if (self.__librepaperEngineBinary) Module.wasmBinary = self.__librepaperEngineBinary
@@ -306,6 +308,79 @@ function compileFormatRoutine() {
   postOutput(`${WORKROOT}/xelatex.fmt`, status)
 }
 
+// Remove every file under dir whose path relative to WORKROOT is not in keepSet.
+// `prefix` is the relative path of dir ('' at the root). Directories stay.
+// Same traversal and error tolerance as cleanDir.
+function retainDir(dir, keepSet, prefix) {
+  for (const item of FS.readdir(dir)) {
+    if (item === '.' || item === '..') continue
+    const rel = prefix ? `${prefix}/${item}` : item
+    const path = `${dir}/${item}`
+    let st
+    try {
+      st = FS.stat(path)
+    } catch {
+      continue
+    }
+    if (FS.isDir(st.mode)) retainDir(path, keepSet, rel)
+    else if (!keepSet[rel]) {
+      try {
+        FS.unlink(path)
+      } catch {}
+    }
+  }
+}
+
+// Size and mtime of a file, as retain compares them with what writefile left.
+function retainStamp(st) {
+  return { size: st.size, mtime: st.mtime.getTime ? st.mtime.getTime() : +st.mtime }
+}
+
+// retain: the host lists the files it wants kept (paths relative to WORKROOT),
+// and every other file is deleted. A kept file the host did not write last is
+// deleted and reported in `dirty`, so the host rewrites it: it has no record from
+// writefile, its size or mtime changed (a compile overwrote it), or it is missing.
+// Replies 'ok' with the dirty list, or 'failed' so the host can fall back to flushcache.
+function retainRoutine(keep) {
+  try {
+    const keepSet = Object.create(null)
+    for (const rel of keep) keepSet[rel] = true
+    retainDir(WORKROOT, keepSet, '')
+
+    const dirty = []
+    for (const rel of keep) {
+      const path = `${WORKROOT}/${rel}`
+      let st
+      try {
+        st = FS.stat(path)
+      } catch {
+        dirty.push(rel)
+        continue
+      }
+      if (FS.isDir(st.mode)) {
+        dirty.push(rel)
+        continue
+      }
+      const rec = self._retainWrites[rel]
+      const now = retainStamp(st)
+      if (!rec || rec.size !== now.size || rec.mtime !== now.mtime) {
+        try {
+          FS.unlink(path)
+        } catch {}
+        delete self._retainWrites[rel]
+        dirty.push(rel)
+      }
+    }
+    // Records of files that are no longer kept go with them.
+    for (const rel of Object.keys(self._retainWrites)) {
+      if (!keepSet[rel]) delete self._retainWrites[rel]
+    }
+    self.postMessage({ result: 'ok', cmd: 'retain', dirty })
+  } catch (e) {
+    self.postMessage({ result: 'failed', cmd: 'retain', error: String(e) })
+  }
+}
+
 self.onmessage = (ev) => {
   const data = ev.data
   if (self.bundleMode.handle(data)) return
@@ -327,6 +402,7 @@ self.onmessage = (ev) => {
   } else if (cmd === 'writefile') {
     try {
       FS.writeFile(`${WORKROOT}/${data.url}`, data.src)
+      self._retainWrites[data.url] = retainStamp(FS.stat(`${WORKROOT}/${data.url}`))
       self.postMessage({ result: 'ok', cmd: 'writefile' })
     } catch {
       self.postMessage({ result: 'failed', cmd: 'writefile' })
@@ -383,6 +459,9 @@ self.onmessage = (ev) => {
     self.postMessage({ result: 'ok', cmd: 'dumpcache', files, notFound }, transfer)
   } else if (cmd === 'flushcache') {
     cleanDir(WORKROOT)
+    self._retainWrites = Object.create(null)
+  } else if (cmd === 'retain') {
+    retainRoutine(data.keep)
   } else if (cmd === 'loadicudata') {
     // When bundle mode is loaded against the bundles directory, ICU data is
     // not in any bundle (it is not a texmf file) — the host supplies it

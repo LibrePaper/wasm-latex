@@ -77,6 +77,7 @@ test:  ## Unit tests, pin check, and the resolver test
 	node tools/latexml-release.test.mjs
 	node tools/link-inventory-latexml.test.mjs
 	node wasm-build/latexml-worker.test.cjs
+	node wasm-build/retain.test.cjs
 	node wasm-build/write-latexml-receipt.test.mjs
 	node wasm-build/kpse-resolve.test.cjs
 	node wasm-build/bundle-mode.test.cjs
