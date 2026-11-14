@@ -354,6 +354,10 @@ export function buildMirror({ stagedDir, expectedDigest, outDir }) {
     files,
     bibliography,
     bundles,
+    // What the release's controllers understand beyond the base protocol,
+    // e.g. `retain` (keep /work between compiles). The host only sends a
+    // command its release advertises: an older controller never answers one.
+    capabilities: Array.isArray(staged.capabilities) ? staged.capabilities : [],
     vm: null,
     source: {
       corresponding_source: staged.correspondingSource,

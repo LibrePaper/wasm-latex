@@ -38,7 +38,7 @@ function load(FS, self, hcReset) {
 // In-memory stand-in for the parts of Emscripten's FS the routines use.
 // Nodes are kept flat, keyed by absolute path; directories are nodes too.
 function fakeFS() {
-  const nodes = new Map();
+  const nodes = new Map([["", { dir: true, size: 0, mtime: new Date(0) }]]); // the root
   const enoent = (p) => Object.assign(new Error("ENOENT: " + p), { errno: 44 });
   const parentOf = (p) => p.slice(0, p.lastIndexOf("/"));
   const FS = {
