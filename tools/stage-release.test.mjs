@@ -175,7 +175,9 @@ try {
   const without = runDist(controllerDir('retain-missing', oneMissing))
   assert.deepEqual(without.capabilities, [], 'one controller without the handler withholds retain')
   const absent = runDist(controllerDir('retain-absent', { 'pdftex.worker.js': handler, 'xetex.worker.js': handler, 'luatex.worker.js': handler }))
-  assert.deepEqual(absent.capabilities, [], 'a missing controller withholds retain')
+  assert.deepEqual(absent.capabilities, ['retain'], 'a controller the release does not ship (dvipdfm here) does not withhold retain')
+  const noPdftex = runDist(controllerDir('retain-no-pdftex', { 'xetex.worker.js': handler, 'dvipdfm.worker.js': handler }))
+  assert.deepEqual(noPdftex.capabilities, [], 'without pdfTeX there is nothing to retain for')
   console.log('stage-release: retain capability computed from the controllers')
 } finally {
   fs.rmSync(root, { recursive: true, force: true })

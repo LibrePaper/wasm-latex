@@ -199,14 +199,14 @@ function payload(dir, prefix = '') {
 }
 
 // Capabilities the host may rely on. A controller without the handler ignores
-// `retain` and never replies, so "retain" is advertised only when every engine
-// controller in the dist directory carries it.
+// `retain` and never replies, so "retain" is advertised only when every one of
+// these controllers the release ships carries it (a release need not ship all
+// of them: LuaTeX is optional), and pdfTeX's is among them.
 const RETAIN_CONTROLLERS = ['pdftex', 'xetex', 'luatex', 'dvipdfm'].map((engine) => `${engine}.worker.js`)
 const RETAIN_HANDLER = /cmd === (["'])retain\1/
-const hasRetain = RETAIN_CONTROLLERS.every((name) => {
-  const file = path.join(distDir, name)
-  return fs.existsSync(file) && RETAIN_HANDLER.test(fs.readFileSync(file, 'utf8'))
-})
+const shipped = RETAIN_CONTROLLERS.filter((name) => fs.existsSync(path.join(distDir, name)))
+const hasRetain = shipped.includes('pdftex.worker.js') &&
+  shipped.every((name) => RETAIN_HANDLER.test(fs.readFileSync(path.join(distDir, name), 'utf8')))
 const capabilities = hasRetain ? ['retain'] : []
 
 const manifest = {
