@@ -356,7 +356,16 @@ function retainDir(dir, keepSet, prefix) {
     } catch {
       continue
     }
-    if (FS.isDir(st.mode)) retainDir(path, keepSet, rel)
+    if (FS.isDir(st.mode)) {
+      retainDir(path, keepSet, rel)
+      // A directory left empty goes too, as flushcache removes it: the next
+      // project may have a file by that name, which a directory would block.
+      try {
+        if (FS.readdir(path).length <= 2) FS.rmdir(path)
+      } catch (e) {
+        console.error('Not able to rmdir ' + path)
+      }
+    }
     else if (!keepSet[rel]) {
       try {
         FS.unlink(path)

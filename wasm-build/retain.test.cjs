@@ -67,6 +67,12 @@ function fakeFS() {
     isDir(mode) {
       return (mode & 0o170000) === 0o040000;
     },
+    rmdir(p) {
+      const n = nodes.get(p);
+      if (!n || !n.dir) throw enoent(p);
+      for (const q of nodes.keys()) if (q.startsWith(p + "/")) throw Object.assign(new Error("ENOTEMPTY: " + p), { errno: 55 });
+      nodes.delete(p);
+    },
     unlink(p) {
       const n = nodes.get(p);
       if (!n || n.dir) throw enoent(p);
@@ -186,6 +192,27 @@ test("nested directories are walked, kept files survive and directories stay", (
   assert.ok(!t.has("figs/c.png"));
   assert.ok(t.FS.nodes.has(WORKROOT + "/figs"), "directories are not removed");
   assert.ok(t.FS.nodes.has(WORKROOT + "/figs/deep"), "nested directories are not removed");
+});
+
+test("a directory left empty is removed, so a file of that name can replace it", () => {
+  const t = fixture();
+  t.FS.mkdir(WORKROOT + "/assets");
+  t.host("assets/image.png", "png");
+  t.api.retainRoutine(["assets"]);
+  assert.equal(t.FS.nodes.has(WORKROOT + "/assets"), false, "the emptied directory is gone");
+  assert.deepEqual(t.last().dirty, ["assets"], "the new file is missing, so dirty");
+  t.host("assets", "now a file");
+  assert.equal(t.has("assets"), true);
+});
+
+test("a directory that still holds a kept file stays", () => {
+  const t = fixture();
+  t.FS.mkdir(WORKROOT + "/chapters");
+  t.host("chapters/one.tex", "one");
+  t.host("chapters/two.tex", "two");
+  t.api.retainRoutine(["chapters/one.tex"]);
+  assert.equal(t.FS.nodes.has(WORKROOT + "/chapters"), true);
+  assert.equal(t.has("chapters/two.tex"), false);
 });
 
 test("records of files no longer kept are dropped", () => {
