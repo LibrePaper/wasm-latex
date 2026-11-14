@@ -5,10 +5,10 @@
     "bytes": 96749485
   },
   "schemaVersion": 1,
-  "archive": "librepaper-wasm-latex-7dbad518a089-source.tar.xz",
-  "bytes": 248429568,
-  "sha256": "7a993d9188a5572afc275bb515159f0cdf253d3a38c9f1b9154d69c0aabac6aa",
-  "repositoryCommit": "7dbad518a08994c2797ea1a45e740fb46969c4bb",
+  "archive": "librepaper-wasm-latex-92c10a9dbdea-source.tar.xz",
+  "bytes": 248437660,
+  "sha256": "32c6f79314da3ed27abfadce4037226098e7dac388475243e89d4c13a325e931",
+  "repositoryCommit": "92c10a9dbdeac54c626a6ea25d72ceaf0b0502c9",
   "dirty": false,
   "uncommittedBuildPaths": [],
   "texliveSourceCommit": "fb6158926661cb7a7246b3a94a0cb170a9624d5a",
@@ -110,8 +110,8 @@
     },
     {
       "name": "dvipdfm.worker.js",
-      "bytes": 17063,
-      "sha256": "4a4d85dba4af47279336b4b53c753037a90031aa6ddae356963174492754a48c"
+      "bytes": 20056,
+      "sha256": "8ec5b55511fdb425d3607b6f7ea9791c56b3acbdb3ec0ea1c6cfc5a644cc75b2"
     },
     {
       "name": "icudt68l.dat.gz",
@@ -235,8 +235,8 @@
     },
     {
       "name": "pdftex.worker.js",
-      "bytes": 82221,
-      "sha256": "22382d3b6be13c15a6f7f435359091bb9c4c5931b0bf89fc0e8ce26c0ca2c0c9"
+      "bytes": 86291,
+      "sha256": "bcd24317df1fcdd420f76de6fd9fa0827e69f056a19f2d060a73453223c1251a"
     },
     {
       "name": "relaxng-schema-rustdoc-theme.css",
@@ -265,8 +265,8 @@
     },
     {
       "name": "xetex.worker.js",
-      "bytes": 18397,
-      "sha256": "11f938613e2b02502e4ad4c83631336fd092a12dde51cdb0ed3a762ced862a57"
+      "bytes": 21381,
+      "sha256": "e80503109d8048b5a9ed025b28d2a9c5920d3dd187ce4a3a03ae6f4c215085d2"
     }
   ]
 }
